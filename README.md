@@ -47,7 +47,7 @@
 
 1. **複製專案**
 ```bash
-git clone https://github.com/你的用戶名/princess-connect-guide.git
+git clone https://github.com/chen126888/princess-connect-guide.git
 cd princess-connect-guide
 ```
 
