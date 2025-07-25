@@ -1,0 +1,79 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 角色資料模型
+model Character {
+  id          String   @id @default(cuid())
+  角色名稱      String   @unique
+  暱稱         String?
+  位置         String   // 前衛、中衛、後衛
+  角色定位      String?
+  常駐限定      String?  @map("常駐/限定")
+  屬性         String?
+  能力偏向      String?
+  競技場進攻    String?
+  競技場防守    String?
+  戰隊戰等抄作業場合 String?
+  說明         String?
+  
+  // 時間戳記
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("characters")
+}
+
+// 商店資料模型
+model ShopItem {
+  id          String   @id @default(cuid())
+  name        String
+  shopType    ShopType
+  priority    Int
+  cost        Int
+  description String
+  
+  // 時間戳記
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([name, shopType], name: "name_shopType")
+  @@map("shop_items")
+}
+
+// 攻略文章模型
+model Guide {
+  id      String    @id @default(cuid())
+  title   String
+  type    GuideType
+  content String
+  author  String?
+  
+  // 時間戳記
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("guides")
+}
+
+// 移除枚舉類型定義，改用String儲存原始資料
+
+enum ShopType {
+  DUNGEON
+  ARENA_1V1
+  ARENA_3V3
+  CLAN
+}
+
+enum GuideType {
+  PVP
+  CLAN_BATTLE
+  BEGINNER
+  GENERAL
+}
