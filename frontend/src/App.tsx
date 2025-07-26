@@ -26,13 +26,13 @@ const navItems = [
 
 // 開發中佔位組件
 const UnderDevelopment = ({ title }: { title: string }) => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+  <div className="min-h-screen flex items-center justify-center bg-white py-8">
     <div className="text-center">
       <div className="text-8xl mb-8">🚧</div>
-      <h1 className="text-4xl font-bold text-white mb-4">{title}</h1>
-      <p className="text-xl text-white/80 mb-8">此功能正在開發中，敬請期待！</p>
-      <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-6 max-w-md mx-auto">
-        <p className="text-white/90 leading-relaxed">
+      <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
+      <p className="text-xl text-gray-600 mb-8">此功能正在開發中，敬請期待！</p>
+      <div className="bg-white border border-gray-200 rounded-xl p-6 max-w-md mx-auto" style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+        <p className="text-gray-700 leading-relaxed">
           我們正在努力為您準備最好的遊戲攻略內容，
           請關注更新資訊，謝謝您的耐心等候！
         </p>
@@ -69,16 +69,16 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600">
+    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
       {/* Header 導航 */}
-      <header className="bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-50">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           {/* 標題 */}
           <div className="text-center mb-6">
-            <h1 className="text-3xl font-bold text-white mb-2">
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">
               🌸 公主連結攻略網站 🌸
             </h1>
-            <p className="text-white/80">Princess Connect! Re:Dive Guide</p>
+            <p className="text-gray-600">Princess Connect! Re:Dive Guide</p>
           </div>
           
           {/* 導航按鈕 */}
@@ -87,11 +87,12 @@ function App() {
               <button
                 key={item.key}
                 onClick={() => setCurrentPage(item.key)}
-                className={`px-4 py-2 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 ${
+                className={`px-4 py-2 font-medium transition-all duration-200 flex items-center gap-2 ${
                   currentPage === item.key
-                    ? 'bg-white text-purple-600 shadow-lg transform scale-105'
-                    : 'bg-white/20 text-white hover:bg-white/30 hover:transform hover:scale-105'
+                    ? 'bg-blue-500 text-white shadow-md transform scale-105'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:scale-105'
                 }`}
+                style={{ borderRadius: '8px' }}
               >
                 <span className="text-lg">{item.icon}</span>
                 <span className="text-sm md:text-base">{item.label}</span>

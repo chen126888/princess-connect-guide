@@ -12,6 +12,9 @@ export interface Character {
   競技場防守?: string;
   戰隊戰等抄作業場合?: string;
   說明?: string;
+  // 圖片欄位
+  頭像檔名?: string; // 普通頭像檔名
+  六星頭像檔名?: string; // 六星頭像檔名
   createdAt?: string;
   updatedAt?: string;
 }

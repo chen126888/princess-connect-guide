@@ -2,6 +2,19 @@ import React, { useState, useEffect } from 'react';
 import type { Character } from '../../types';
 import { characterApi } from '../../services/api';
 import { Search, Loader } from 'lucide-react';
+import Card from '../../components/Common/Card'; 
+import Button from '../../components/Common/Button';
+import PageContainer from '../../components/Common/PageContainer';
+
+// 圖片路徑生成函數
+const getCharacterImagePath = (character: Character): { sixStar: string | null; normal: string | null } => {
+  const API_BASE_URL = 'http://localhost:3000';
+  
+  return {
+    sixStar: character.六星頭像檔名 ? `${API_BASE_URL}/images/characters/${character.六星頭像檔名}` : null,
+    normal: character.頭像檔名 ? `${API_BASE_URL}/images/characters/${character.頭像檔名}` : null
+  };
+};
 
 // 篩選狀態類型
 interface FilterState {
@@ -14,49 +27,37 @@ interface FilterState {
   availability: string[];
 }
 
-// 圓形 Checkbox 組件
-const RoundCheckbox = ({ 
-  label, 
-  checked, 
-  onChange, 
-  variant = 'default' 
-}: { 
-  label: string; 
-  checked: boolean; 
-  onChange: (checked: boolean) => void;
-  variant?: 'default' | 'element';
-}) => (
-  <label className="flex items-center space-x-1.5 cursor-pointer group">
-    <div className="relative">
-      <input
-        type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="sr-only"
-      />
-      <div className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
-        checked 
-          ? 'bg-white border-white shadow-lg' 
-          : 'border-white/60 group-hover:border-white'
-      }`}>
-        {checked && (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 bg-purple-600 rounded-full"></div>
-          </div>
-        )}
-      </div>
-    </div>
-    <span className={`text-xs font-medium transition-colors ${
-      checked ? 'text-white' : 'text-white/80 group-hover:text-white'
-    }`}>
-      {label}
-    </span>
-  </label>
-);
 
 // 角色圖片組件（含懸停詳情）
 const CharacterImage = ({ character }: { character: Character }) => {
   const [showTooltip, setShowTooltip] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const imagePaths = getCharacterImagePath(character);
+
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const img = e.target as HTMLImageElement;
+    if (!imageError && imagePaths.sixStar && img.src === imagePaths.sixStar) {
+      // 六星圖片載入失敗，嘗試普通圖片
+      if (imagePaths.normal) {
+        img.src = imagePaths.normal;
+        setImageError(true);
+      } else {
+        // 沒有普通圖片，使用預設圖片
+        img.src = "/default-character.svg";
+      }
+    } else {
+      // 普通圖片也載入失敗，使用預設圖片
+      img.src = "/default-character.svg";
+    }
+  };
+
+  // 決定要顯示的圖片 URL
+  const getImageSrc = (): string => {
+    // 優先顯示六星圖片，沒有則顯示普通圖片，都沒有則顯示預設圖片
+    if (imagePaths.sixStar) return imagePaths.sixStar;
+    if (imagePaths.normal) return imagePaths.normal;
+    return "/default-character.svg";
+  };
 
   return (
     <div 
@@ -64,34 +65,45 @@ const CharacterImage = ({ character }: { character: Character }) => {
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
     >
-      <div className="w-16 h-16 bg-white/10 rounded-lg overflow-hidden border-2 border-white/30 hover:border-white transition-all duration-200">
+      <div 
+        className="w-16 h-16 bg-beige-300 overflow-hidden border-2 border-gray-300 hover:border-blue-400 transition-all duration-200 hover:shadow-md"
+        style={{ 
+          borderRadius: '8px',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+        }}
+      >
         <img
-          src="/default-character.svg"
+          src={getImageSrc()}
           alt={character.角色名稱}
           className="w-full h-full object-cover"
+          onError={handleImageError}
         />
       </div>
       
       {/* 懸停詳情 */}
       {showTooltip && (
-        <div className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-black/90 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-xl">
-          <h3 className="text-white font-bold mb-1">{character.角色名稱}</h3>
-          {character.暱稱 && (
-            <p className="text-white/70 text-sm mb-2">暱稱：{character.暱稱}</p>
-          )}
+        <div 
+          className="absolute z-10 bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-64 bg-white p-4 border border-gray-200"
+          style={{ 
+            borderRadius: '12px',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
+          }}
+        >
+          <h3 className="text-gray-800 font-bold mb-1">{character.角色名稱}</h3>
+          <p className="text-gray-600 text-sm mb-2">暱稱：{character.暱稱 || '(無資料)'}</p>
           <div className="space-y-1 text-xs">
-            <p className="text-white/90">位置：{character.位置}</p>
-            {character.角色定位 && <p className="text-white/90">定位：{character.角色定位}</p>}
-            {character.常駐限定 && <p className="text-white/90">獲得：{character.常駐限定}</p>}
-            {character.屬性 && <p className="text-white/90">屬性：{character.屬性}</p>}
-            {character.競技場進攻 && <p className="text-white/90">競技場進攻：{character.競技場進攻}</p>}
-            {character.競技場防守 && <p className="text-white/90">競技場防守：{character.競技場防守}</p>}
+            <p className="text-gray-700">位置：{character.位置}</p>
+            <p className="text-gray-700">定位：{character.角色定位 || '(無資料)'}</p>
+            <p className="text-gray-700">獲得：{character.常駐限定 || '(無資料)'}</p>
+            <p className="text-gray-700">屬性：{character.屬性 || '(無資料)'}</p>
+            <p className="text-gray-700">能力偏向：{character.能力偏向 || '(無資料)'}</p>
+            <p className="text-gray-700">競技場進攻：{character.競技場進攻 || '(無資料)'}</p>
+            <p className="text-gray-700">競技場防守：{character.競技場防守 || '(無資料)'}</p>
+            <p className="text-gray-700">戰隊戰等抄作業場合：{character.戰隊戰等抄作業場合 || '(無資料)'}</p>
           </div>
-          {character.說明 && (
-            <p className="text-white/80 text-xs mt-2 leading-relaxed border-t border-white/20 pt-2">
-              {character.說明}
-            </p>
-          )}
+          <p className="text-gray-600 text-xs mt-2 leading-relaxed border-t border-gray-200 pt-2">
+            說明：{character.說明 || '(無資料)'}
+          </p>
         </div>
       )}
     </div>
@@ -241,6 +253,39 @@ const Characters: React.FC = () => {
     }));
   };
 
+  // 處理"全部"按鈕點擊 - 如果全選則清空，否則全選
+  const handleSelectAll = (filterType: keyof Pick<FilterState, 'positions' | 'elements' | 'arenaTypes' | 'characterRoles' | 'availability'>) => {
+    const allOptions = filterOptions[filterType];
+    const isCurrentlyAllSelected = filters[filterType].length === allOptions.length;
+    
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: isCurrentlyAllSelected ? [] : allOptions
+    }));
+  };
+
+  // 處理單個按鈕點擊
+  const handleFilterButtonClick = (
+    filterType: keyof Pick<FilterState, 'positions' | 'elements' | 'arenaTypes' | 'characterRoles' | 'availability'>,
+    value: string
+  ) => {
+    const isCurrentlySelected = filters[filterType].includes(value);
+    const newFilterState = isCurrentlySelected
+      ? filters[filterType].filter(item => item !== value)
+      : [...filters[filterType], value];
+    
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: newFilterState
+    }));
+  };
+
+  // 檢查該類別是否所有按鈕都被選中
+  const isAllSelected = (filterType: keyof Pick<FilterState, 'positions' | 'elements' | 'arenaTypes' | 'characterRoles' | 'availability'>) => {
+    const allOptions = filterOptions[filterType];
+    return filters[filterType].length === allOptions.length;
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -271,178 +316,254 @@ const Characters: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="container mx-auto px-4">
-        {/* 篩選區域 */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 mb-8 border border-white/20">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* 左側 1/3 - 搜索和排序 */}
-            <div className="space-y-4">
-              {/* 搜索框 */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/60 w-4 h-4" />
+    <PageContainer>
+      {/* 主要功能區域 - 兩個卡片水平置中 */}
+      <div className="flex justify-center items-start">
+        {/* 左側卡片 - 30%寬度 */}
+        <div className="w-[30%]">
+          <Card>
+            {/* 搜索功能 */}
+            <div className="mb-6">
+              <h3 className="text-gray-700 font-medium mb-3 text-base">搜索角色</h3>
+              <div className="flex gap-2">
+                {/* 搜索輸入框 */}
                 <input
                   type="text"
-                  placeholder="搜尋角色名稱..."
+                  placeholder="輸入角色名稱或暱稱..."
                   value={filters.search}
                   onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-2 bg-white/20 border border-white/30 rounded-lg text-white placeholder-white/60 text-sm focus:ring-2 focus:ring-white/50"
+                  className="flex-1 px-4 py-3 bg-gray-50 border border-gray-300 text-gray-800 placeholder-gray-500 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:bg-white"
+                  style={{ borderRadius: '0.5rem' }}
                 />
-              </div>
-
-              {/* 排序 */}
-              <div>
-                <h3 className="text-white font-medium mb-2 text-sm">排序</h3>
-                <select
-                  value={filters.sortOrder}
-                  onChange={(e) => setFilters(prev => ({ ...prev, sortOrder: e.target.value as FilterState['sortOrder'] }))}
-                  className="w-full px-3 py-2 bg-white/20 border border-white/30 rounded-lg text-white text-sm"
+                {/* 搜索按鈕 */}
+                <button 
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-3 px-4 transition-colors duration-200 flex items-center justify-center"
+                  style={{ borderRadius: '0.5rem' }}
                 >
-                  <option value="T0_to_倉管" className="text-gray-800">T0 → 倉管</option>
-                  <option value="倉管_to_T0" className="text-gray-800">倉管 → T0</option>
-                </select>
+                  <Search style={{ width: '1rem', height: '1rem' }} />
+                </button>
               </div>
             </div>
 
-            {/* 右側 2/3 - 篩選選項 */}
-            <div className="lg:col-span-2">
-              <div className="bg-white/5 rounded-xl p-4 space-y-2.5">
-                {/* 位置 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-xs min-w-[50px]">位置:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <RoundCheckbox
-                      label="全部"
-                      checked={filters.positions.length === 0}
-                      onChange={(checked) => checked && setFilters(prev => ({ ...prev, positions: [] }))}
-                    />
-                    {filterOptions.positions.map(pos => (
-                      <RoundCheckbox
-                        key={pos}
-                        label={pos}
-                        checked={filters.positions.includes(pos)}
-                        onChange={(checked) => handleArrayFilterChange('positions', pos, checked)}
-                      />
-                    ))}
-                  </div>
-                </div>
+            {/* 分隔線 */}
+            <hr className="border-gray-200 mb-6" />
 
-                {/* 屬性 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-xs min-w-[50px]">屬性:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <RoundCheckbox
-                      label="全部"
-                      checked={filters.elements.length === 0}
-                      onChange={(checked) => checked && setFilters(prev => ({ ...prev, elements: [] }))}
-                    />
-                    {filterOptions.elements.map(element => (
-                      <RoundCheckbox
-                        key={element}
-                        label={element}
-                        checked={filters.elements.includes(element)}
-                        onChange={(checked) => handleArrayFilterChange('elements', element, checked)}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 競技場類型 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-xs min-w-[50px]">用途:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <RoundCheckbox
-                      label="全部"
-                      checked={filters.arenaTypes.length === 0}
-                      onChange={(checked) => checked && setFilters(prev => ({ ...prev, arenaTypes: [] }))}
-                    />
-                    {filterOptions.arenaTypes.map(type => (
-                      <RoundCheckbox
-                        key={type}
-                        label={type}
-                        checked={filters.arenaTypes.includes(type)}
-                        onChange={(checked) => handleArrayFilterChange('arenaTypes', type, checked)}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 角色定位 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-xs min-w-[50px]">定位:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <RoundCheckbox
-                      label="全部"
-                      checked={filters.characterRoles.length === 0}
-                      onChange={(checked) => checked && setFilters(prev => ({ ...prev, characterRoles: [] }))}
-                    />
-                    {filterOptions.characterRoles.map(role => (
-                      <RoundCheckbox
-                        key={role}
-                        label={role}
-                        checked={filters.characterRoles.includes(role)}
-                        onChange={(checked) => handleArrayFilterChange('characterRoles', role, checked)}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* 獲得方式 */}
-                <div className="flex items-center gap-2">
-                  <span className="text-white font-medium text-xs min-w-[50px]">獲得:</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    <RoundCheckbox
-                      label="全部"
-                      checked={filters.availability.length === 0}
-                      onChange={(checked) => checked && setFilters(prev => ({ ...prev, availability: [] }))}
-                    />
-                    {filterOptions.availability.map(avail => (
-                      <RoundCheckbox
-                        key={avail}
-                        label={avail}
-                        checked={filters.availability.includes(avail)}
-                        onChange={(checked) => handleArrayFilterChange('availability', avail, checked)}
-                      />
-                    ))}
-                  </div>
-                </div>
+            {/* 排序功能 */}
+            <div>
+              <h3 className="text-gray-700 font-medium mb-3 text-base">排序方式</h3>
+              <div className="flex gap-2">
+                <button
+                  className={`flex-1 px-4 py-3 text-xs rounded-lg border-2 transition-colors font-medium ${
+                    filters.sortOrder === 'T0_to_倉管'
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                  }`}
+                  onClick={() => setFilters(prev => ({ ...prev, sortOrder: 'T0_to_倉管' }))}
+                >
+                  T0 → 倉管
+                </button>
+                <button
+                  className={`flex-1 px-4 py-3 text-xs rounded-lg border-2 transition-colors font-medium ${
+                    filters.sortOrder === '倉管_to_T0'
+                      ? 'bg-blue-500 text-white border-blue-500'
+                      : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                  }`}
+                  onClick={() => setFilters(prev => ({ ...prev, sortOrder: '倉管_to_T0' }))}
+                >
+                  倉管 → T0
+                </button>
               </div>
             </div>
-          </div>
-
-          {/* 搜尋按鈕 */}
-          <div className="mt-6 text-center">
-            <p className="text-white/80 text-sm">
-              找到 {filteredCharacters.length} 個角色
-            </p>
-          </div>
+          </Card>
         </div>
 
-        {/* 結果顯示 - 按評級分組 */}
-        <div className="space-y-8">
-          {Object.entries(groupedCharacters).map(([rating, characters]) => (
-            <div key={rating} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20">
-              <h2 className="text-2xl font-bold text-white mb-4 text-center">
-                {rating} 級別 ({characters.length} 個角色)
-              </h2>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {characters.map(character => (
-                  <CharacterImage key={character.id} character={character} />
-                ))}
+        {/* 中間間隔 - 5%寬度 */}
+        <div className="w-[5%]"></div>
+        
+        {/* 右側卡片 - 60%寬度 */}
+        <div className="w-[60%]">
+          <Card>
+            <div className="space-y-3">
+              {/* 位置篩選 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">位置</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                      isAllSelected('positions')
+                        ? 'bg-gray-500 text-white border-gray-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={() => handleSelectAll('positions')}
+                  >
+                    全部
+                  </button>
+                  {filterOptions.positions.map(position => (
+                    <button
+                      key={position}
+                      className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                        filters.positions.includes(position)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                      }`}
+                      onClick={() => handleFilterButtonClick('positions', position)}
+                    >
+                      {position}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 屬性篩選 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">屬性</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                      isAllSelected('elements')
+                        ? 'bg-gray-500 text-white border-gray-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={() => handleSelectAll('elements')}
+                  >
+                    全部
+                  </button>
+                  {filterOptions.elements.map(element => (
+                    <button
+                      key={element}
+                      className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                        filters.elements.includes(element)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                      }`}
+                      onClick={() => handleFilterButtonClick('elements', element)}
+                    >
+                      {element}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 用途篩選 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">用途</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                      isAllSelected('arenaTypes')
+                        ? 'bg-gray-500 text-white border-gray-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={() => handleSelectAll('arenaTypes')}
+                  >
+                    全部
+                  </button>
+                  {filterOptions.arenaTypes.map(type => (
+                    <button
+                      key={type}
+                      className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                        filters.arenaTypes.includes(type)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                      }`}
+                      onClick={() => handleFilterButtonClick('arenaTypes', type)}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 定位篩選 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">定位</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                      isAllSelected('characterRoles')
+                        ? 'bg-gray-500 text-white border-gray-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={() => handleSelectAll('characterRoles')}
+                  >
+                    全部
+                  </button>
+                  {filterOptions.characterRoles.map(role => (
+                    <button
+                      key={role}
+                      className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                        filters.characterRoles.includes(role)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                      }`}
+                      onClick={() => handleFilterButtonClick('characterRoles', role)}
+                    >
+                      {role}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 獲得方式篩選 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">獲得</span>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                      isAllSelected('availability')
+                        ? 'bg-gray-500 text-white border-gray-500'
+                        : 'bg-white text-gray-700 border-gray-300 hover:border-gray-400'
+                    }`}
+                    onClick={() => handleSelectAll('availability')}
+                  >
+                    全部
+                  </button>
+                  {filterOptions.availability.map(avail => (
+                    <button
+                      key={avail}
+                      className={`px-3 py-1.5 text-xs rounded-lg border-2 transition-colors font-medium ${
+                        filters.availability.includes(avail)
+                          ? 'bg-blue-500 text-white border-blue-500'
+                          : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                      }`}
+                      onClick={() => handleFilterButtonClick('availability', avail)}
+                    >
+                      {avail}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
-          ))}
+          </Card>
         </div>
-
-        {filteredCharacters.length === 0 && (
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 text-center border border-white/20">
-            <div className="text-6xl mb-4">🔍</div>
-            <p className="text-white text-lg font-medium">沒有符合條件的角色</p>
-            <p className="text-white/70 mt-2">請嘗試調整篩選條件</p>
-          </div>
-        )}
       </div>
-    </div>
+
+      {/* 角色結果顯示 - 依照tier排序 */}
+      <div className="space-y-6 mt-8">
+        {Object.entries(groupedCharacters).map(([rating, characters]) => (
+          <Card key={rating}>
+            <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+              {rating} 級別
+            </h2>
+            <div className="flex flex-wrap gap-3 justify-center">
+              {characters.map(character => (
+                <CharacterImage key={character.id} character={character} />
+              ))}
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {filteredCharacters.length === 0 && (
+        <Card>
+          <div className="text-center py-4">
+            <div className="text-6xl mb-4">🔍</div>
+            <p className="text-gray-800 text-lg font-medium">沒有符合條件的角色</p>
+            <p className="text-gray-600 mt-2">請嘗試調整篩選條件</p>
+          </div>
+        </Card>
+      )}
+    </PageContainer>
   );
 };
 

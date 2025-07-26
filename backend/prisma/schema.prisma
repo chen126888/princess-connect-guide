@@ -23,12 +23,17 @@ model Character {
   戰隊戰等抄作業場合 String?
   說明         String?
   
+  // 圖片欄位
+  頭像檔名      String?  // 普通頭像檔名 (如: 優衣.png)
+  六星頭像檔名   String?  // 六星頭像檔名 (如: 六星優衣.png)
+  
   // 時間戳記
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
   @@map("characters")
 }
+
 
 // 商店資料模型
 model ShopItem {

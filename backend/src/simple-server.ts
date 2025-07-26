@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { PrismaClient } from '@prisma/client';
 
 dotenv.config();
@@ -15,6 +16,9 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json());
+
+// 靜態資源服務 - 提供角色圖片
+app.use('/images', express.static(path.join(__dirname, '../../data/images')));
 
 // 健康檢查
 app.get('/api/health', (req, res) => {

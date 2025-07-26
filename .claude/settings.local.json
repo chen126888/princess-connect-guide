@@ -4,7 +4,10 @@
       "Bash(mkdir:*)",
       "Bash(npm install:*)",
       "Bash(npm init:*)",
-      "Bash(npx:*)"
+      "Bash(npx:*)",
+      "Bash(ls:*)",
+      "Bash(curl:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": []
   }
