@@ -37,6 +37,7 @@ function App() {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [hoveredItem, setHoveredItem] = useState<PageType | null>(null);
 
   // 管理員登入處理
   const handleAdminLogin = async () => {
@@ -71,14 +72,30 @@ function App() {
     setCurrentPage('characters');
   };
 
+  // 導航項目的詳細資訊
+  const getItemDetails = (key: PageType) => {
+    const details = {
+      newbie: { description: '新手入門指南、基礎玩法教學' },
+      returnPlayer: { description: '回歸玩家快速上手指南' },
+      characters: { description: '完整角色圖鑑、能力查詢' },
+      shop: { description: '商店購買優先順序建議' },
+      arena: { description: '競技場 / 戰鬥試煉場 / 追憶' },
+      clanBattle: { description: '戰隊戰攻略、陣容推薦' },
+      dungeon: { description: '深域探索、關卡攻略' },
+      characterDevelopment: { description: '角色培養、裝備建議' },
+      characterEditor: { description: '角色資料編輯管理' }
+    };
+    return details[key] || { description: '' };
+  };
+
   // 取得導航項目 (根據管理員模式動態調整)
   const getNavItems = () => {
     const baseItems = [
       { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
-      { key: 'returnPlayer' as PageType, label: '回鍋玩家建議', icon: '🔄' },
+      { key: 'returnPlayer' as PageType, label: '回鍋建議', icon: '🔄' },
       { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
       { key: 'shop' as PageType, label: '商店攻略', icon: '🛒' },
-      { key: 'arena' as PageType, label: '競技場', icon: '🏟️' },
+      { key: 'arena' as PageType, label: '競技/試煉/追憶', icon: '🏟️' },
       { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
       { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
       { key: 'characterDevelopment' as PageType, label: '角色養成', icon: '📈' },
@@ -101,11 +118,11 @@ function App() {
       case 'newbie':
         return <UnderDevelopment title="新人指南" />;
       case 'returnPlayer':
-        return <UnderDevelopment title="回鍋玩家建議" />;
+        return <UnderDevelopment title="回鍋建議" />;
       case 'shop':
         return <UnderDevelopment title="商店攻略" />;
       case 'arena':
-        return <UnderDevelopment title="競技場攻略" />;
+        return <UnderDevelopment title="競技/試煉/追憶攻略" />;
       case 'clanBattle':
         return <UnderDevelopment title="戰隊戰攻略" />;
       case 'dungeon':
@@ -153,21 +170,38 @@ function App() {
           </div>
           
           {/* 導航按鈕 */}
-          <nav className="flex flex-wrap justify-center gap-2">
+          <nav className="flex flex-wrap justify-center gap-2 relative">
             {getNavItems().map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setCurrentPage(item.key)}
-                className={`px-4 py-2 font-medium transition-all duration-200 flex items-center gap-2 ${
-                  currentPage === item.key
-                    ? 'bg-blue-500 text-white shadow-md transform scale-105'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:scale-105'
-                } ${item.key === 'characterEditor' ? 'border-2 border-orange-400' : ''}`}
-                style={{ borderRadius: '8px' }}
-              >
-                <span className="text-lg">{item.icon}</span>
-                <span className="text-sm md:text-base">{item.label}</span>
-              </button>
+              <div key={item.key} className="relative">
+                <button
+                  onClick={() => setCurrentPage(item.key)}
+                  onMouseEnter={() => setHoveredItem(item.key)}
+                  onMouseLeave={() => setHoveredItem(null)}
+                  className={`px-4 py-2 font-medium transition-all duration-200 flex items-center gap-2 relative ${
+                    currentPage === item.key
+                      ? 'bg-blue-500 text-white shadow-md transform scale-105'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:scale-105'
+                  } ${item.key === 'characterEditor' ? 'border-2 border-orange-400' : ''}`}
+                  style={{ borderRadius: '8px' }}
+                >
+                  <span className="text-lg">{item.icon}</span>
+                  <span className="text-sm md:text-base">{item.label}</span>
+                </button>
+                
+                {/* Hover 提示卡片 */}
+                {hoveredItem === item.key && (
+                  <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max max-w-xs z-50">
+                    <div className="bg-gray-800 text-white text-sm px-3 py-2 rounded-lg shadow-lg">
+                      <div className="font-medium mb-1">{item.label}</div>
+                      <div className="text-gray-300 text-xs">
+                        {getItemDetails(item.key).description}
+                      </div>
+                      {/* 小箭頭 */}
+                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                    </div>
+                  </div>
+                )}
+              </div>
             ))}
           </nav>
         </div>

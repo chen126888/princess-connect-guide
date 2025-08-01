@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader } from 'lucide-react';
+import { Loader, Flame, Droplet, Wind, Sun, Moon } from 'lucide-react';
 import Card from '../../components/Common/Card';
 import PageContainer from '../../components/Common/PageContainer';
 import CharacterSearch from '../../components/Character/CharacterSearch';
@@ -73,6 +73,46 @@ const Characters: React.FC = () => {
     filterOptions
   } = useCharacterFilters(characters);
 
+  // 獲取屬性圖標
+  const getElementIcon = (element: string) => {
+    const iconMap: Record<string, React.ReactNode> = {
+      火屬: <Flame className="w-3 h-3" />,
+      水屬: <Droplet className="w-3 h-3" />,
+      風屬: <Wind className="w-3 h-3" />,
+      光屬: <Sun className="w-3 h-3" />,
+      闇屬: <Moon className="w-3 h-3" />
+    };
+    return iconMap[element];
+  };
+
+  // 獲取屬性樣式
+  const getElementStyles = (element: string) => {
+    const styleMap: Record<string, { default: string; selected: string }> = {
+      火屬: {
+        default: 'border-red-500 bg-red-100 text-red-600 hover:bg-red-200',
+        selected: 'border-red-500 bg-red-500 text-white'
+      },
+      水屬: {
+        default: 'border-blue-500 bg-blue-100 text-blue-600 hover:bg-blue-200',
+        selected: 'border-blue-500 bg-blue-500 text-white'
+      },
+      風屬: {
+        default: 'border-green-500 bg-green-100 text-green-600 hover:bg-green-200',
+        selected: 'border-green-500 bg-green-500 text-white'
+      },
+      光屬: {
+        default: 'border-yellow-500 bg-yellow-100 text-yellow-600 hover:bg-yellow-200',
+        selected: 'border-yellow-500 bg-yellow-500 text-white'
+      },
+      闇屬: {
+        default: 'border-purple-500 bg-purple-100 text-purple-600 hover:bg-purple-200',
+        selected: 'border-purple-500 bg-purple-500 text-white'
+      }
+    };
+    return styleMap[element] || { default: '', selected: '' };
+  };
+
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -141,15 +181,32 @@ const Characters: React.FC = () => {
                 isAllSelected={isAllSelected('positions')}
               />
 
-              <FilterSection
-                title="屬性"
-                filterType="elements"
-                options={filterOptions.elements}
-                selectedValues={filters.elements}
-                onToggle={(value) => handleArrayFilterChange('elements', value, !filters.elements.includes(value))}
-                onSelectAll={() => handleSelectAll('elements')}
-                isAllSelected={isAllSelected('elements')}
-              />
+              {/* 屬性篩選 - 特殊樣式 */}
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">屬性</span>
+                <div className="flex flex-wrap gap-2">
+                  <FilterButton
+                    active={isAllSelected('elements')}
+                    onClick={() => handleSelectAll('elements')}
+                    variant="all"
+                  >
+                    全部
+                  </FilterButton>
+                  {filterOptions.elements.map(option => (
+                    <button
+                      key={option}
+                      onClick={() => handleArrayFilterChange('elements', option, !filters.elements.includes(option))}
+                      className={`px-3 py-1 text-xs rounded-lg border-2 transition-colors font-medium flex items-center justify-center ${
+                        filters.elements.includes(option)
+                          ? getElementStyles(option).selected
+                          : getElementStyles(option).default
+                      }`}
+                    >
+                      {getElementIcon(option)}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
               <FilterSection
                 title="用途"
