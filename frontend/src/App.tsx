@@ -14,17 +14,6 @@ type PageType =
   | 'dungeon' 
   | 'characterDevelopment';
 
-// 導航項目配置
-const navItems = [
-  { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
-  { key: 'returnPlayer' as PageType, label: '回鍋玩家建議', icon: '🔄' },
-  { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
-  { key: 'shop' as PageType, label: '商店攻略', icon: '🛒' },
-  { key: 'arena' as PageType, label: '競技場', icon: '🏟️' },
-  { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
-  { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
-  { key: 'characterDevelopment' as PageType, label: '角色養成', icon: '📈' },
-];
 
 // 開發中佔位組件
 const UnderDevelopment = ({ title }: { title: string }) => (
