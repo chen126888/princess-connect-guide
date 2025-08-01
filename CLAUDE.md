@@ -12,17 +12,50 @@ princess-connect-guide/
 ├── frontend/                    # React 前端應用
 │   ├── public/
 │   ├── src/
-│   │   ├── pages/
-│   │   │   └── Characters/     # 角色圖鑑頁面
+│   │   ├── components/         # 可複用 UI 元件
+│   │   │   ├── Character/      # 角色相關元件
+│   │   │   │   ├── CharacterImageCard.tsx
+│   │   │   │   ├── CharacterInfoCard.tsx
+│   │   │   │   ├── CharacterSearch.tsx
+│   │   │   │   ├── CharacterSortControls.tsx
+│   │   │   │   └── CharacterTierGroup.tsx
+│   │   │   ├── CharacterEditor/ # 角色編輯相關元件
+│   │   │   │   ├── EditModeSelector.tsx
+│   │   │   │   └── modals/     # 編輯用對話框
+│   │   │   │       ├── AddCharacterModal.tsx
+│   │   │   │       ├── CharacterInfoModal.tsx
+│   │   │   │       ├── DeleteConfirmModal.tsx
+│   │   │   │       ├── DeleteSearchModal.tsx
+│   │   │   │       └── EditCharacterModal.tsx
+│   │   │   └── Common/         # 通用元件
+│   │   │       ├── Button.tsx
+│   │   │       ├── Card.tsx
+│   │   │       ├── FilterButton.tsx
+│   │   │       └── PageContainer.tsx
+│   │   ├── hooks/              # 自定義 React Hooks
+│   │   │   ├── useCharacterFilters.ts
+│   │   │   └── useCharacters.ts
+│   │   ├── pages/              # 頁面元件
+│   │   │   ├── Characters/     # 角色圖鑑頁面
+│   │   │   │   └── Characters.tsx
+│   │   │   └── CharacterEditor/ # 角色編輯頁面
+│   │   │       └── CharacterEditor.tsx
+│   │   ├── services/           # API 服務
+│   │   │   └── api.ts
 │   │   ├── types/              # TypeScript 類型定義
-│   │   ├── services/           # API 服務 (角色相關)
-│   │   └── App.tsx             # 主應用 (含導航)
+│   │   │   └── index.ts
+│   │   ├── App.tsx             # 主應用 (含導航)
+│   │   └── main.tsx
 │   ├── tailwind.config.cjs     # Tailwind 配置
 │   └── package.json
 ├── backend/                     # Node.js 後端
 │   ├── src/
-│   │   ├── routes/
-│   │   │   └── characters.ts   # 角色 API 路由
+│   │   ├── routes/             # API 路由
+│   │   │   ├── auth.ts         # 認證相關 API
+│   │   │   ├── characters.ts   # 角色 CRUD API
+│   │   │   └── upload.ts       # 檔案上傳 API
+│   │   ├── utils/              # 工具函數
+│   │   │   └── database.ts     # 資料庫連接與操作
 │   │   └── simple-server.ts    # 主服務器
 │   ├── prisma/
 │   │   ├── database.db         # SQLite 資料庫
@@ -53,6 +86,13 @@ princess-connect-guide/
 - **主導航**: 8 個功能按鈕（新人、回鍋玩家、角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成）
 - **單頁應用**: 切換頁面無需重新載入
 - **開發中頁面**: 除角色圖鑑外其他頁面顯示開發中狀態
+
+### ✅ 角色編輯系統
+- **完整 CRUD 操作**: 新增、查看、編輯、刪除角色
+- **批次搜尋刪除**: 支援按角色名稱搜尋後批次刪除
+- **模組化 UI 元件**: 可複用的對話框和表單元件
+- **檔案上傳功能**: 支援角色圖片上傳
+- **管理員認證**: 基本的登入驗證系統
 
 ## 技術實現
 
@@ -111,6 +151,12 @@ npm run dev
 - `GET /api/health` - 健康檢查
 - `GET /api/characters` - 獲取角色列表 (支援篩選參數)
 - `GET /api/characters/:id` - 獲取單一角色
+- `POST /api/characters` - 新增角色
+- `PUT /api/characters/:id` - 更新角色資料
+- `DELETE /api/characters/:id` - 刪除角色
+- `POST /api/auth/login` - 管理員登入
+- `POST /api/auth/create-admin` - 創建管理員帳號
+- `POST /api/upload/character-photo` - 上傳角色圖片
 
 ### 篩選參數
 - `位置`: 前衛、中衛、後衛
@@ -146,6 +192,6 @@ npm run dev
 
 ---
 
-**最後更新**: 2025年7月25日
+**最後更新**: 2025年8月1日
 **負責人**: 開發者
-**專案狀態**: 角色圖鑑功能完成，其他功能待開發
+**專案狀態**: 角色圖鑑和編輯功能完成，其他頁面功能待開發

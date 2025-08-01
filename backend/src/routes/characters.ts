@@ -1,35 +1,65 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import { dbGet, dbAll, dbRun } from '../utils/database';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // 取得所有角色
 router.get('/', async (req, res) => {
   try {
-    const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰等抄作業場合, page = 1, limit = 20 } = req.query;
+    const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰等抄作業場合, page = 1, limit = 100 } = req.query;
     
-    const where: any = {};
-    if (位置) where.位置 = 位置;
-    if (屬性) where.屬性 = 屬性;
-    if (競技場進攻) where.競技場進攻 = 競技場進攻;
-    if (競技場防守) where.競技場防守 = 競技場防守;
-    if (戰隊戰等抄作業場合) where.戰隊戰等抄作業場合 = 戰隊戰等抄作業場合;
+    // 建立篩選條件
+    const conditions: string[] = [];
+    const params: any[] = [];
     
-    const skip = (Number(page) - 1) * Number(limit);
+    if (位置) {
+      conditions.push('位置 = ?');
+      params.push(位置);
+    }
+    if (屬性) {
+      conditions.push('屬性 = ?');
+      params.push(屬性);
+    }
+    if (競技場進攻) {
+      conditions.push('競技場進攻 = ?');
+      params.push(競技場進攻);
+    }
+    if (競技場防守) {
+      conditions.push('競技場防守 = ?');
+      params.push(競技場防守);
+    }
+    if (戰隊戰等抄作業場合) {
+      conditions.push('戰隊戰等抄作業場合 = ?');
+      params.push(戰隊戰等抄作業場合);
+    }
     
-    const [characters, total] = await Promise.all([
-      prisma.character.findMany({
-        where,
-        skip,
-        take: Number(limit),
-        orderBy: { 角色名稱: 'asc' }
-      }),
-      prisma.character.count({ where })
+    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
+    const offset = (Number(page) - 1) * Number(limit);
+    
+    // 查詢角色列表
+    const charactersQuery = `
+      SELECT * FROM characters 
+      ${whereClause}
+      ORDER BY 角色名稱 ASC
+      LIMIT ? OFFSET ?
+    `;
+    const charactersParams = [...params, Number(limit), offset];
+    
+    // 查詢總數
+    const countQuery = `
+      SELECT COUNT(*) as total FROM characters 
+      ${whereClause}
+    `;
+    
+    const [characters, countResult] = await Promise.all([
+      dbAll(charactersQuery, charactersParams),
+      dbGet(countQuery, params)
     ]);
     
+    const total = countResult.total;
+    
     res.json({
-      data: characters,
+      characters: characters,
       pagination: {
         page: Number(page),
         limit: Number(limit),
@@ -47,9 +77,11 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const character = await prisma.character.findUnique({
-      where: { id }
-    });
+    
+    const character = await dbGet(
+      'SELECT * FROM characters WHERE id = ?', 
+      [id]
+    );
     
     if (!character) {
       return res.status(404).json({ error: 'Character not found' });
@@ -62,5 +94,144 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+// 更新角色資料
+router.put('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    
+    console.log('Update request for ID:', id);
+    console.log('Update data received:', updateData);
+    
+    // 建立更新欄位
+    const updateFields: string[] = [];
+    const params: any[] = [];
+    
+    // 支援的更新欄位 (使用中文欄位名)
+    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰等抄作業場合', '說明'];
+    
+    for (const field of allowedFields) {
+      if (updateData[field] !== undefined) {
+        // 特殊處理含有斜線的欄位名
+        const columnName = field === '常駐/限定' ? '[常駐/限定]' : `[${field}]`;
+        updateFields.push(`${columnName} = ?`);
+        params.push(updateData[field] || null); // 空字符串轉為 null
+      }
+    }
+    
+    if (updateFields.length === 0) {
+      console.log('No valid fields to update');
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+    
+    params.push(id); // WHERE 條件的 id
+    
+    const updateQuery = `
+      UPDATE characters 
+      SET ${updateFields.join(', ')}, updatedAt = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `;
+    
+    console.log('Update query:', updateQuery);
+    console.log('Query params:', params);
+    
+    const result = await dbRun(updateQuery, params);
+    console.log('Update result:', result);
+    
+    // 返回更新後的角色資料
+    const updatedCharacter = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    
+    res.json(updatedCharacter);
+  } catch (error: any) {
+    console.error('Error updating character:', error);
+    res.status(500).json({ error: 'Failed to update character', details: error.message });
+  }
+});
+
+// 新增角色
+router.post('/', async (req, res) => {
+  try {
+    const characterData = req.body;
+    
+    console.log('Creating new character:', characterData);
+    
+    // 檢查必要欄位
+    if (!characterData.角色名稱 || !characterData.位置) {
+      return res.status(400).json({ error: 'Character name and position are required' });
+    }
+    
+    // 檢查角色名稱是否已存在
+    const existingCharacter = await dbGet(
+      'SELECT * FROM characters WHERE [角色名稱] = ?',
+      [characterData.角色名稱]
+    );
+    
+    if (existingCharacter) {
+      return res.status(400).json({ error: 'Character with this name already exists' });
+    }
+    
+    // 建立新角色
+    const id = 'char_' + Date.now(); // 簡單的 ID 生成
+    
+    const insertQuery = `
+      INSERT INTO characters (
+        id, [角色名稱], [暱稱], [位置], [角色定位], [常駐/限定], 
+        [屬性], [能力偏向], [競技場進攻], [競技場防守], [戰隊戰等抄作業場合], 
+        [說明], createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+    `;
+    
+    const params = [
+      id,
+      characterData.角色名稱,
+      characterData.暱稱 || null,
+      characterData.位置,
+      characterData.角色定位 || null,
+      characterData['常駐/限定'] || null,
+      characterData.屬性 || null,
+      characterData.能力偏向 || null,
+      characterData.競技場進攻 || null,
+      characterData.競技場防守 || null,
+      characterData.戰隊戰等抄作業場合 || null,
+      characterData.說明 || null
+    ];
+    
+    await dbRun(insertQuery, params);
+    
+    // 返回新建立的角色資料
+    const newCharacter = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    
+    res.status(201).json(newCharacter);
+  } catch (error: any) {
+    console.error('Error creating character:', error);
+    res.status(500).json({ error: 'Failed to create character', details: error.message });
+  }
+});
+
+// 刪除角色
+router.delete('/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    console.log('Deleting character with ID:', id);
+    
+    // 檢查角色是否存在
+    const character = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    
+    if (!character) {
+      return res.status(404).json({ error: 'Character not found' });
+    }
+    
+    // 刪除角色
+    const result = await dbRun('DELETE FROM characters WHERE id = ?', [id]);
+    
+    console.log('Delete result:', result);
+    
+    res.json({ message: 'Character deleted successfully', deletedCharacter: character });
+  } catch (error: any) {
+    console.error('Error deleting character:', error);
+    res.status(500).json({ error: 'Failed to delete character', details: error.message });
+  }
+});
 
 export default router;

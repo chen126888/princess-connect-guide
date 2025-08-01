@@ -5,7 +5,7 @@ export interface Character {
   暱稱?: string;
   位置: string; // 前衛、中衛、後衛
   角色定位?: string;
-  常駐限定?: string; // 常駐/限定
+  '常駐/限定'?: string; // 常駐/限定
   屬性?: string; // 火屬、水屬、土屬、光屬、闇屬等
   能力偏向?: string;
   競技場進攻?: string; // T0、T1、T2、T3、T4、倉管等

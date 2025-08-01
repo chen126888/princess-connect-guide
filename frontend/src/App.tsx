@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import Characters from './pages/Characters/Characters';
+import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
 
 // 頁面類型定義
 type PageType = 
   | 'newbie' 
   | 'returnPlayer' 
   | 'characters' 
+  | 'characterEditor'
   | 'shop' 
   | 'arena' 
   | 'clanBattle' 
@@ -43,12 +45,70 @@ const UnderDevelopment = ({ title }: { title: string }) => (
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('characters');
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+
+  // 管理員登入處理
+  const handleAdminLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(loginForm),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setIsAdminMode(true);
+        setShowLoginModal(false);
+        setLoginForm({ username: '', password: '' });
+        alert(`歡迎 ${data.admin.name}，管理員模式已啟用！`);
+      } else {
+        alert(data.error || '登入失敗');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('連線錯誤，請檢查網路連線');
+    }
+  };
+
+  // 管理員登出
+  const handleAdminLogout = () => {
+    setIsAdminMode(false);
+    setCurrentPage('characters');
+  };
+
+  // 取得導航項目 (根據管理員模式動態調整)
+  const getNavItems = () => {
+    const baseItems = [
+      { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
+      { key: 'returnPlayer' as PageType, label: '回鍋玩家建議', icon: '🔄' },
+      { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
+      { key: 'shop' as PageType, label: '商店攻略', icon: '🛒' },
+      { key: 'arena' as PageType, label: '競技場', icon: '🏟️' },
+      { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
+      { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
+      { key: 'characterDevelopment' as PageType, label: '角色養成', icon: '📈' },
+    ];
+
+    if (isAdminMode) {
+      return [...baseItems, { key: 'characterEditor' as PageType, label: '角色編輯', icon: '✏️' }];
+    }
+
+    return baseItems;
+  };
 
   // 渲染當前頁面內容
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'characters':
         return <Characters />;
+      case 'characterEditor':
+        return isAdminMode ? <CharacterEditor /> : <Characters />;
       case 'newbie':
         return <UnderDevelopment title="新人指南" />;
       case 'returnPlayer':
@@ -73,6 +133,28 @@ function App() {
       {/* Header 導航 */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
+          {/* 右上角管理員區域 */}
+          <div className="absolute top-4 right-4">
+            {!isAdminMode ? (
+              <button
+                onClick={() => setShowLoginModal(true)}
+                className="bg-gray-500 text-white px-3 py-1 rounded text-sm hover:bg-gray-600 transition-colors"
+              >
+                管理員
+              </button>
+            ) : (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-green-600 font-medium">✓ 管理員模式</span>
+                <button
+                  onClick={handleAdminLogout}
+                  className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+                >
+                  登出
+                </button>
+              </div>
+            )}
+          </div>
+
           {/* 標題 */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -83,7 +165,7 @@ function App() {
           
           {/* 導航按鈕 */}
           <nav className="flex flex-wrap justify-center gap-2">
-            {navItems.map((item) => (
+            {getNavItems().map((item) => (
               <button
                 key={item.key}
                 onClick={() => setCurrentPage(item.key)}
@@ -91,7 +173,7 @@ function App() {
                   currentPage === item.key
                     ? 'bg-blue-500 text-white shadow-md transform scale-105'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:scale-105'
-                }`}
+                } ${item.key === 'characterEditor' ? 'border-2 border-orange-400' : ''}`}
                 style={{ borderRadius: '8px' }}
               >
                 <span className="text-lg">{item.icon}</span>
@@ -101,6 +183,58 @@ function App() {
           </nav>
         </div>
       </header>
+
+      {/* 管理員登入彈窗 */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">管理員登入</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">帳號</label>
+                <input
+                  type="text"
+                  value={loginForm.username}
+                  onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  placeholder="請輸入管理員帳號"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">密碼</label>
+                <input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  onKeyPress={(e) => e.key === 'Enter' && handleAdminLogin()}
+                  className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                  placeholder="請輸入密碼"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={handleAdminLogin}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+              >
+                登入
+              </button>
+              <button
+                onClick={() => {
+                  setShowLoginModal(false);
+                  setLoginForm({ username: '', password: '' });
+                }}
+                className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* 頁面內容 */}
       <main>

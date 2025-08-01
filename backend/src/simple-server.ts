@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import authRoutes from './routes/auth';
+import characterRoutes from './routes/characters';
+import uploadRoutes from './routes/upload';
 
 dotenv.config();
 
@@ -20,56 +23,17 @@ app.use(express.json());
 // 靜態資源服務 - 提供角色圖片
 app.use('/images', express.static(path.join(__dirname, '../../data/images')));
 
+// 路由
+app.use('/api/auth', authRoutes);
+app.use('/api/characters', characterRoutes);
+app.use('/api/upload', uploadRoutes);
+
 // 健康檢查
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'OK',
     timestamp: new Date().toISOString()
   });
-});
-
-// 角色列表
-app.get('/api/characters', async (req, res) => {
-  try {
-    console.log('🔍 API called - checking database...');
-    
-    const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰等抄作業場合, page = 1, limit = 100 } = req.query;
-    
-    const where: any = {};
-    if (位置) where.位置 = 位置;
-    if (屬性) where.屬性 = 屬性;
-    if (競技場進攻) where.競技場進攻 = 競技場進攻;
-    if (競技場防守) where.競技場防守 = 競技場防守;
-    if (戰隊戰等抄作業場合) where.戰隊戰等抄作業場合 = 戰隊戰等抄作業場合;
-    
-    const skip = (Number(page) - 1) * Number(limit);
-    
-    const [characters, total] = await Promise.all([
-      prisma.character.findMany({
-        where,
-        skip,
-        take: Number(limit),
-        orderBy: { 角色名稱: 'asc' }
-      }),
-      prisma.character.count({ where })
-    ]);
-    
-    console.log('📊 Query result sample:', characters[0]);
-    console.log('📊 Total characters:', total);
-    
-    res.json({
-      data: characters,
-      pagination: {
-        page: Number(page),
-        limit: Number(limit),
-        total,
-        pages: Math.ceil(total / Number(limit))
-      }
-    });
-  } catch (error) {
-    console.error('❌ Error:', error);
-    res.status(500).json({ error: 'Failed to fetch characters' });
-  }
 });
 
 // 啟動服務器
