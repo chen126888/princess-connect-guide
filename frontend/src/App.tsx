@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Characters from './pages/Characters/Characters';
 import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
+import Shop from './pages/Shop/Shop';
 
 // 頁面類型定義
 type PageType = 
@@ -78,7 +79,7 @@ function App() {
       newbie: { description: '新手入門指南、基礎玩法教學' },
       returnPlayer: { description: '回歸玩家快速上手指南' },
       characters: { description: '完整角色圖鑑、能力查詢' },
-      shop: { description: '商店購買優先順序建議' },
+      shop: { description: '各商店購買優先順序、物品分析' },
       arena: { description: '競技場 / 戰鬥試煉場 / 追憶' },
       clanBattle: { description: '戰隊戰攻略、陣容推薦' },
       dungeon: { description: '深域探索、關卡攻略' },
@@ -94,7 +95,7 @@ function App() {
       { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
       { key: 'returnPlayer' as PageType, label: '回鍋建議', icon: '🔄' },
       { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
-      { key: 'shop' as PageType, label: '商店攻略', icon: '🛒' },
+      { key: 'shop' as PageType, label: '商店', icon: '🛒' },
       { key: 'arena' as PageType, label: '競技/試煉/追憶', icon: '🏟️' },
       { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
       { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
@@ -120,7 +121,7 @@ function App() {
       case 'returnPlayer':
         return <UnderDevelopment title="回鍋建議" />;
       case 'shop':
-        return <UnderDevelopment title="商店攻略" />;
+        return <Shop />;
       case 'arena':
         return <UnderDevelopment title="競技/試煉/追憶攻略" />;
       case 'clanBattle':
