@@ -1,5 +1,4 @@
 import React from 'react';
-import { Loader } from 'lucide-react';
 import CharacterSearch from '../../components/Character/CharacterSearch';
 import CharacterInfoCard from '../../components/Character/CharacterInfoCard';
 import EditModeSelector from '../../components/CharacterEditor/EditModeSelector';

@@ -36,7 +36,7 @@ const FilterSection: React.FC<{
   onToggle: (value: string) => void;
   onSelectAll: () => void;
   isAllSelected: boolean;
-}> = ({ title, filterType, options, selectedValues, onToggle, onSelectAll, isAllSelected }) => (
+}> = ({ title, options, selectedValues, onToggle, onSelectAll, isAllSelected }) => (
   <div className="flex items-center gap-3 mb-3">
     <span className="text-gray-700 font-medium text-sm w-12 flex-shrink-0">{title}</span>
     <div className="flex flex-wrap gap-2">

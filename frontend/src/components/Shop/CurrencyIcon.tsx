@@ -1,5 +1,5 @@
 import React from 'react';
-import { Coins, Sword, Crown, Shield, Star, Gem, Link, Sparkles } from 'lucide-react';
+import { Coins, Sword, Crown, Shield, Star, Gem, Sparkles } from 'lucide-react';
 import type { Currency } from '../../types/shop';
 
 interface CurrencyIconProps {

@@ -7,64 +7,36 @@ export const dungeonShopItems: ShopItem[] = [
     name: '優花梨碎片',
     type: 'character',
     characterId: '優花梨',
-    icon: '✨',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'must_buy',
     sortOrder: 1,
-    description: '優花梨的角色記憶碎片',
-    recommendation: 'TP輔助專家，最高優先級',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_002',
     name: '步未碎片',
     type: 'character',
     characterId: '步未',
-    icon: '🌸',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'must_buy',
     sortOrder: 2,
-    description: '步末的角色記憶碎片',
-    recommendation: '優秀的治療角色，必練',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_003',
     name: '真步碎片',
     type: 'character',
     characterId: '真步',
-    icon: '🔮',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'must_buy',
     sortOrder: 3,
-    description: '真步的角色記憶碎片',
-    recommendation: '魔法輔助角色，必練',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_004',
     name: '凱留碎片',
     type: 'character',
     characterId: '凱留',
-    icon: '🌙',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'must_buy',
     sortOrder: 4,
-    description: '凱留的角色記憶碎片',
-    recommendation: '強力魔法輸出，必練',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
 
   // 推薦角色碎片 (優先級5-8)
@@ -72,81 +44,48 @@ export const dungeonShopItems: ShopItem[] = [
     id: 'dun_char_005',
     name: '杏奈(海盜)碎片',
     type: 'character',
-    characterId: '杏奈(海盜)',
-    icon: '🏴‍☠️',
-    cost: 20,
-    currency: 'dungeon_coin',
+    characterId: '杏奈 (海盜)',
     priority: 'recommended',
     sortOrder: 5,
-    description: '杏奈(海盜版)的角色記憶碎片',
-    recommendation: '實用的輸出角色',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_006',
     name: '茉莉碎片',
     type: 'character',
     characterId: '茉莉',
-    icon: '🌺',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'recommended',
     sortOrder: 6,
-    description: '茉莉的角色記憶碎片',
-    recommendation: '治癒角色，值得培養',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_007',
     name: '望碎片',
     type: 'character',
     characterId: '望',
-    icon: '🛡️',
-    cost: 20,
-    currency: 'dungeon_coin',
-    priority: 'recommended',
+    priority: 'optional',
     sortOrder: 7,
-    description: '望的角色記憶碎片',
-    recommendation: '坦克角色，團隊核心',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_008',
     name: '空花碎片',
     type: 'character',
     characterId: '空花',
-    icon: '🌸',
-    cost: 20,
-    currency: 'dungeon_coin',
-    priority: 'recommended',
+    priority: 'optional',
     sortOrder: 8,
-    description: '空花的角色記憶碎片',
-    recommendation: '前排坦克，值得培養',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
 
-  // 可選項目
+  // 可選 - 裝備
   {
     id: 'dun_equip_001',
-    name: '騎士之盾',
+    name: '裝備',
     type: 'equipment',
-    icon: '🛡️',
-    cost: 150,
-    currency: 'dungeon_coin',
     priority: 'optional',
-    description: '提升防禦力的盾牌裝備',
-    recommendation: '坦克角色可考慮，非必需',
+    sortOrder: 9,
     shopType: 'dungeon',
-    maxQuantity: 1,
-    resetPeriod: 'weekly'
+    hasImage: true
   },
 
   // 跳過角色碎片
@@ -154,90 +93,48 @@ export const dungeonShopItems: ShopItem[] = [
     id: 'dun_char_009',
     name: '鈴奈(萬聖節)碎片',
     type: 'character',
-    characterId: '鈴奈(萬聖節)',
-    icon: '🎃',
-    cost: 20,
-    currency: 'dungeon_coin',
+    characterId: '鈴奈 (萬聖節)',
     priority: 'skip',
-    description: '鈴奈(萬聖節版)的角色記憶碎片',
-    recommendation: '性價比不高，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_010',
-    name: '克羅依(聖學祭)碎片',
+    name: '克蘿依(聖學祭)碎片',
     type: 'character',
-    characterId: '克羅依(聖學祭)',
-    icon: '🎓',
-    cost: 20,
-    currency: 'dungeon_coin',
+    characterId: '克蘿依 (聖學祭)',
     priority: 'skip',
-    description: '克羅依(聖學祭版)的角色記憶碎片',
-    recommendation: '用途有限，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_011',
     name: '美里碎片',
     type: 'character',
     characterId: '美里',
-    icon: '💖',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'skip',
-    description: '美里的角色記憶碎片',
-    recommendation: '效果一般，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_012',
     name: '鈴碎片',
     type: 'character',
     characterId: '鈴',
-    icon: '🔔',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'skip',
-    description: '鈴的角色記憶碎片',
-    recommendation: '實用性不高，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_013',
     name: '茜里碎片',
     type: 'character',
     characterId: '茜里',
-    icon: '🌺',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'skip',
-    description: '茜里的角色記憶碎片',
-    recommendation: '輔助效果有限，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   },
   {
     id: 'dun_char_014',
     name: '深月碎片',
     type: 'character',
     characterId: '深月',
-    icon: '🌙',
-    cost: 20,
-    currency: 'dungeon_coin',
     priority: 'skip',
-    description: '深月的角色記憶碎片',
-    recommendation: '特定場合才有用，建議跳過',
-    shopType: 'dungeon',
-    maxQuantity: 3,
-    resetPeriod: 'daily'
+    shopType: 'dungeon'
   }
 ];

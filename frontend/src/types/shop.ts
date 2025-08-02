@@ -8,9 +8,10 @@ export type ShopType =
   | 'master' 
   | 'ex_equipment' 
   | 'link' 
-  | 'goddess_stone';
+  | 'goddess_stone'
+  | 'tour';
 
-export type ItemType = 'character' | 'equipment' | 'material' | 'misc';
+export type ItemType = 'character' | 'equipment' | 'material' | 'misc' | 'item';
 
 export type Currency = 
   | 'dungeon_coin'
@@ -29,14 +30,16 @@ export interface ShopItem {
   name: string;
   type: ItemType;
   characterId?: string; // 如果是角色碎片，關聯角色ID
-  icon: string;
-  cost: number;
-  currency: Currency;
   priority: Priority;
   sortOrder?: number; // 排序順序，數字越小優先級越高
-  description: string;
-  recommendation: string;
   shopType: ShopType;
+  // 以下欄位為可選，用於其他商店或特殊商品
+  icon?: string;
+  hasImage?: boolean; // 是否有對應的圖片檔案
+  cost?: number;
+  currency?: Currency;
+  description?: string;
+  recommendation?: string;
   maxQuantity?: number; // 最大購買數量
   resetPeriod?: 'daily' | 'weekly' | 'monthly' | 'permanent'; // 重置週期
 }
@@ -47,4 +50,5 @@ export interface ShopConfig {
   currency: Currency;
   currencyIcon: string;
   currencyName: string;
+  currencySource?: string; // 貨幣獲取方式
 }

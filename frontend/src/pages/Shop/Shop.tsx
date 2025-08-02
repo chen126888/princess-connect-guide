@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import PageContainer from '../../components/Common/PageContainer';
 import Card from '../../components/Common/Card';
+import MarkdownText from '../../components/Common/MarkdownText';
 import ShopNavigation from '../../components/Shop/ShopNavigation';
 import ShopItemCard from '../../components/Shop/ShopItemCard';
+import ManualResetButton from '../../components/Shop/ManualResetButton';
+import ShopTitleTooltip from '../../components/Shop/ShopTitleTooltip';
 import { useCharacters } from '../../hooks/useCharacters';
 import type { ShopType } from '../../types/shop';
 import { getShopItems, getShopTitle, getShopDescription, getShopResetTime } from '../../shopData';
@@ -28,13 +31,30 @@ const Shop: React.FC = () => {
           <div className="lg:col-span-3">
             <Card>
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {getShopTitle(activeShop)}
-                </h2>
-                <div className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
-                  {getShopResetTime(activeShop)}
+                <ShopTitleTooltip shopType={activeShop}>
+                  <h2 className="text-xl font-semibold text-gray-800 cursor-help">
+                    {getShopTitle(activeShop)}
+                  </h2>
+                </ShopTitleTooltip>
+                <div className="flex items-center gap-3">
+                  {/* 手動重置按鈕 (僅部分商店顯示) */}
+                  {['dungeon', 'arena', 'p_arena', 'clan'].includes(activeShop) && (
+                    <ManualResetButton shopType={activeShop} />
+                  )}
+                  <div className="text-sm text-gray-500 bg-gray-50 px-3 py-1 rounded-full">
+                    {getShopResetTime(activeShop)}
+                  </div>
                 </div>
               </div>
+
+              {/* EX裝備商店專用說明 */}
+              {activeShop === 'ex_equipment' && (
+                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700 font-medium">
+                    購買順序：1杖=1書=1單手劍 &gt; 2杖 &gt; 1雙手劍 &gt; 自由發揮
+                  </p>
+                </div>
+              )}
               
               {shopItems.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -67,21 +87,10 @@ const Shop: React.FC = () => {
                 說明
               </h3>
               <div className="text-sm text-gray-600 space-y-3">
-                <p className="text-gray-700">{getShopDescription(activeShop)}</p>
-                
-                <div className="border-t pt-3">
-                  <h4 className="font-medium text-gray-700 mb-2">優先級說明：</h4>
-                  <div className="space-y-1">
-                    <p>• <span className="text-red-600 font-medium">必買</span>：最高優先級，強烈建議購買</p>
-                    <p>• <span className="text-orange-500 font-medium">推薦</span>：建議購買，性價比高</p>
-                    <p>• <span className="text-blue-500 font-medium">可選</span>：根據需求選擇</p>
-                    <p>• <span className="text-gray-500 font-medium">跳過</span>：不建議購買</p>
-                  </div>
-                </div>
-                
-                <div className="border-t pt-3">
-                  <p className="text-xs text-gray-500">💡 將滑鼠懸停在角色碎片上可查看詳細資訊</p>
-                </div>
+                <MarkdownText 
+                  text={getShopDescription(activeShop)} 
+                  className="text-gray-700 whitespace-pre-line" 
+                />
               </div>
             </Card>
           </div>

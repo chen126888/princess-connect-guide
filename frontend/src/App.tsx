@@ -39,6 +39,7 @@ function App() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [hoveredItem, setHoveredItem] = useState<PageType | null>(null);
+  const [imageErrors, setImageErrors] = useState<Set<PageType>>(new Set());
 
   // 管理員登入處理
   const handleAdminLogin = async () => {
@@ -73,6 +74,26 @@ function App() {
     setCurrentPage('characters');
   };
 
+  // 處理圖片載入錯誤
+  const handleImageError = (pageKey: PageType) => {
+    setImageErrors(prev => new Set(prev).add(pageKey));
+  };
+
+  // 取得按鈕圖標
+  const getNavIcon = (item: any) => {
+    if (item.useImage && !imageErrors.has(item.key)) {
+      return (
+        <img 
+          src="http://localhost:3000/images/shop_icon/商店.png"
+          alt={item.label}
+          className="w-5 h-5 object-contain"
+          onError={() => handleImageError(item.key)}
+        />
+      );
+    }
+    return <span className="text-lg">{item.icon}</span>;
+  };
+
   // 導航項目的詳細資訊
   const getItemDetails = (key: PageType) => {
     const details = {
@@ -95,7 +116,7 @@ function App() {
       { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
       { key: 'returnPlayer' as PageType, label: '回鍋建議', icon: '🔄' },
       { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
-      { key: 'shop' as PageType, label: '商店', icon: '🛒' },
+      { key: 'shop' as PageType, label: '商店', icon: '🛒', useImage: true },
       { key: 'arena' as PageType, label: '競技/試煉/追憶', icon: '🏟️' },
       { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
       { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
@@ -171,21 +192,21 @@ function App() {
           </div>
           
           {/* 導航按鈕 */}
-          <nav className="flex flex-wrap justify-center gap-2 relative">
+          <nav className="flex justify-center gap-1 relative overflow-x-auto">
             {getNavItems().map((item) => (
               <div key={item.key} className="relative">
                 <button
                   onClick={() => setCurrentPage(item.key)}
                   onMouseEnter={() => setHoveredItem(item.key)}
                   onMouseLeave={() => setHoveredItem(null)}
-                  className={`px-4 py-2 font-medium transition-all duration-200 flex items-center gap-2 relative ${
+                  className={`px-2 py-2 font-medium transition-all duration-200 flex items-center gap-1 relative whitespace-nowrap ${
                     currentPage === item.key
                       ? 'bg-blue-500 text-white shadow-md transform scale-105'
                       : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:transform hover:scale-105'
                   } ${item.key === 'characterEditor' ? 'border-2 border-orange-400' : ''}`}
                   style={{ borderRadius: '8px' }}
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  {getNavIcon(item)}
                   <span className="text-sm md:text-base">{item.label}</span>
                 </button>
                 
