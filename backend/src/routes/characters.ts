@@ -108,7 +108,7 @@ router.put('/:id', async (req, res) => {
     const params: any[] = [];
     
     // 支援的更新欄位 (使用中文欄位名)
-    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰等抄作業場合', '說明'];
+    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰等抄作業場合', '說明', '頭像檔名'];
     
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {

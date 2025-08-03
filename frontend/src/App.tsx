@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Characters from './pages/Characters/Characters';
 import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
 import Shop from './pages/Shop/Shop';
+import Arena from './pages/Arena/Arena';
 
 // 頁面類型定義
 type PageType = 
@@ -144,7 +145,7 @@ function App() {
       case 'shop':
         return <Shop />;
       case 'arena':
-        return <UnderDevelopment title="競技/試煉/追憶攻略" />;
+        return <Arena />;
       case 'clanBattle':
         return <UnderDevelopment title="戰隊戰攻略" />;
       case 'dungeon':
