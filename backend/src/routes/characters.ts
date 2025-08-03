@@ -6,7 +6,7 @@ const router = express.Router();
 // 取得所有角色
 router.get('/', async (req, res) => {
   try {
-    const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰等抄作業場合, page = 1, limit = 100 } = req.query;
+    const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰, 深域及抄作業, page = 1, limit = 100 } = req.query;
     
     // 建立篩選條件
     const conditions: string[] = [];
@@ -28,9 +28,13 @@ router.get('/', async (req, res) => {
       conditions.push('競技場防守 = ?');
       params.push(競技場防守);
     }
-    if (戰隊戰等抄作業場合) {
-      conditions.push('戰隊戰等抄作業場合 = ?');
-      params.push(戰隊戰等抄作業場合);
+    if (戰隊戰) {
+      conditions.push('戰隊戰 = ?');
+      params.push(戰隊戰);
+    }
+    if (深域及抄作業) {
+      conditions.push('深域及抄作業 = ?');
+      params.push(深域及抄作業);
     }
     
     const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
@@ -73,6 +77,83 @@ router.get('/', async (req, res) => {
   }
 });
 
+// 批次更新角色評級 - 必須在 /:id 路由之前
+router.patch('/batch-ratings', async (req, res) => {
+  try {
+    const { updates } = req.body;
+    
+    console.log('Batch rating updates:', updates);
+    
+    if (!Array.isArray(updates) || updates.length === 0) {
+      return res.status(400).json({ error: 'Updates array is required and cannot be empty' });
+    }
+    
+    // 驗證更新資料格式
+    const allowedCategories = ['競技場進攻', '競技場防守', '戰隊戰', '深域及抄作業'];
+    const allowedValues = ['T0', 'T1', 'T2', 'T3', 'T4', '倉管', '']; // 添加空字符串作為有效值
+    
+    for (const update of updates) {
+      if (!update.characterId || !update.category || update.value === undefined) {
+        return res.status(400).json({ error: 'Each update must have characterId, category, and value' });
+      }
+      
+      if (!allowedCategories.includes(update.category)) {
+        return res.status(400).json({ error: `Invalid category: ${update.category}` });
+      }
+      
+      if (update.value !== '' && !allowedValues.includes(update.value)) {
+        return res.status(400).json({ error: `Invalid rating value: ${update.value}` });
+      }
+    }
+    
+    // 執行批次更新
+    const results = [];
+    for (const update of updates) {
+      try {
+        const updateQuery = `
+          UPDATE characters 
+          SET [${update.category}] = ?, updatedAt = CURRENT_TIMESTAMP
+          WHERE id = ?
+        `;
+        
+        const result = await dbRun(updateQuery, [update.value || null, update.characterId]);
+        results.push({
+          characterId: update.characterId,
+          category: update.category,
+          success: true,
+          changes: result.changes
+        });
+      } catch (error: any) {
+        console.error(`Error updating character ${update.characterId}:`, error);
+        results.push({
+          characterId: update.characterId,
+          category: update.category,
+          success: false,
+          error: error.message
+        });
+      }
+    }
+    
+    // 檢查是否有失敗的更新
+    const failures = results.filter(r => !r.success);
+    if (failures.length > 0) {
+      console.warn('Some updates failed:', failures);
+    }
+    
+    res.json({
+      message: 'Batch update completed',
+      totalUpdates: updates.length,
+      successful: results.filter(r => r.success).length,
+      failed: failures.length,
+      results
+    });
+    
+  } catch (error: any) {
+    console.error('Error in batch rating update:', error);
+    res.status(500).json({ error: 'Failed to perform batch update', details: error.message });
+  }
+});
+
 // 取得單一角色
 router.get('/:id', async (req, res) => {
   try {
@@ -108,7 +189,7 @@ router.put('/:id', async (req, res) => {
     const params: any[] = [];
     
     // 支援的更新欄位 (使用中文欄位名)
-    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰等抄作業場合', '說明', '頭像檔名'];
+    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰', '深域及抄作業', '說明', '頭像檔名'];
     
     for (const field of allowedFields) {
       if (updateData[field] !== undefined) {
@@ -176,9 +257,9 @@ router.post('/', async (req, res) => {
     const insertQuery = `
       INSERT INTO characters (
         id, [角色名稱], [暱稱], [位置], [角色定位], [常駐/限定], 
-        [屬性], [能力偏向], [競技場進攻], [競技場防守], [戰隊戰等抄作業場合], 
-        [說明], createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        [屬性], [能力偏向], [競技場進攻], [競技場防守], [戰隊戰], 
+        [深域及抄作業], [說明], createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `;
     
     const params = [
@@ -192,7 +273,8 @@ router.post('/', async (req, res) => {
       characterData.能力偏向 || null,
       characterData.競技場進攻 || null,
       characterData.競技場防守 || null,
-      characterData.戰隊戰等抄作業場合 || null,
+      characterData.戰隊戰 || null,
+      characterData.深域及抄作業 || null,
       characterData.說明 || null
     ];
     

@@ -32,7 +32,8 @@ const CharacterTooltip: React.FC<CharacterTooltipProps> = ({
         <p className="text-gray-700">能力偏向：{character.能力偏向 || '(無資料)'}</p>
         <p className="text-gray-700">競技場進攻：{character.競技場進攻 || '(無資料)'}</p>
         <p className="text-gray-700">競技場防守：{character.競技場防守 || '(無資料)'}</p>
-        <p className="text-gray-700">戰隊戰等抄作業場合：{character.戰隊戰等抄作業場合 || '(無資料)'}</p>
+        <p className="text-gray-700">戰隊戰：{character.戰隊戰 || '(無資料)'}</p>
+        <p className="text-gray-700">深域及抄作業：{character.深域及抄作業 || '(無資料)'}</p>
       </div>
       <p className="text-gray-600 text-xs mt-2 leading-relaxed border-t border-gray-200 pt-2">
         說明：{character.說明 || '(無資料)'}

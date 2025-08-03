@@ -156,10 +156,27 @@ const AddCharacterModal: React.FC<AddCharacterModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">戰隊戰等抄作業場合</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">戰隊戰</label>
             <select
-              value={character.戰隊戰等抄作業場合}
-              onChange={(e) => onChange({...character, 戰隊戰等抄作業場合: e.target.value})}
+              value={character.戰隊戰}
+              onChange={(e) => onChange({...character, 戰隊戰: e.target.value})}
+              className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">請選擇</option>
+              <option value="T0">T0</option>
+              <option value="T1">T1</option>
+              <option value="T2">T2</option>
+              <option value="T3">T3</option>
+              <option value="T4">T4</option>
+              <option value="倉管">倉管</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">深域及抄作業</label>
+            <select
+              value={character.深域及抄作業}
+              onChange={(e) => onChange({...character, 深域及抄作業: e.target.value})}
               className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
             >
               <option value="">請選擇</option>

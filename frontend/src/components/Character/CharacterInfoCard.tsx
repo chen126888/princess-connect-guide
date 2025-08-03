@@ -23,9 +23,10 @@ const CharacterInfoCard: React.FC<CharacterInfoCardProps> = ({ character, onEdit
           <span><span className="font-medium">取得:</span> {character['常駐/限定'] || '未設定'}</span>
         </div>
         
-        {/* 第三行：戰隊戰 */}
-        <div>
-          <span className="font-medium">戰隊戰:</span> {character.戰隊戰等抄作業場合 || '未設定'}
+        {/* 第三行：戰隊戰和深域及抄作業 */}
+        <div className="grid grid-cols-2">
+          <span><span className="font-medium">戰隊戰:</span> {character.戰隊戰 || '未設定'}</span>
+          <span><span className="font-medium">深域/抄作業:</span> {character.深域及抄作業 || '未設定'}</span>
         </div>
         
         {/* 第四行：競技場進攻/防守 */}

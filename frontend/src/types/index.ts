@@ -10,7 +10,8 @@ export interface Character {
   能力偏向?: string;
   競技場進攻?: string; // T0、T1、T2、T3、T4、倉管等
   競技場防守?: string;
-  戰隊戰等抄作業場合?: string;
+  戰隊戰?: string; // T0、T1、T2、T3、T4、倉管等
+  深域及抄作業?: string; // T0、T1、T2、T3、T4、倉管等
   說明?: string;
   // 圖片欄位
   頭像檔名?: string; // 普通頭像檔名

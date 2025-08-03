@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import type { Character } from '../../types';
 import api from '../../services/api';
 
-export type EditMode = 'complete' | 'rating' | 'missing';
+export type EditMode = 'complete' | 'rating' | 'missing' | 'drag-rating';
 
 export const useCharacterEditor = (characters: Character[]) => {
   // State
@@ -25,7 +25,8 @@ export const useCharacterEditor = (characters: Character[]) => {
     能力偏向: '',
     競技場進攻: '',
     競技場防守: '',
-    戰隊戰等抄作業場合: '',
+    戰隊戰: '',
+    深域及抄作業: '',
     說明: ''
   });
 
@@ -43,7 +44,8 @@ export const useCharacterEditor = (characters: Character[]) => {
         !character.能力偏向 || 
         !character.競技場進攻 || 
         !character.競技場防守 || 
-        !character.戰隊戰等抄作業場合 || 
+        !character.戰隊戰 || 
+        !character.深域及抄作業 || 
         !character.說明
       );
     } else if (editMode === 'rating') {
@@ -86,7 +88,8 @@ export const useCharacterEditor = (characters: Character[]) => {
         能力偏向: '',
         競技場進攻: '',
         競技場防守: '',
-        戰隊戰等抄作業場合: '',
+        戰隊戰: '',
+        深域及抄作業: '',
         說明: ''
       });
       setSelectedPhoto(null);

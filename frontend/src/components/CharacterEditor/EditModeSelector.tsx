@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type EditMode = 'complete' | 'rating' | 'missing';
+export type EditMode = 'complete' | 'rating' | 'missing' | 'drag-rating';
 
 interface EditModeSelectorProps {
   editMode: EditMode;
@@ -48,6 +48,16 @@ const EditModeSelector: React.FC<EditModeSelectorProps> = ({
           }`}
         >
           ⭐ 更改評價
+        </button>
+        <button
+          onClick={() => onModeChange('drag-rating')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            editMode === 'drag-rating'
+              ? 'bg-indigo-500 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          🎯 拖拽評級
         </button>
         <button
           onClick={onAddCharacter}

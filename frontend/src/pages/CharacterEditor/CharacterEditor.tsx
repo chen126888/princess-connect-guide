@@ -2,6 +2,7 @@ import React from 'react';
 import CharacterSearch from '../../components/Character/CharacterSearch';
 import CharacterInfoCard from '../../components/Character/CharacterInfoCard';
 import EditModeSelector from '../../components/CharacterEditor/EditModeSelector';
+import DragRatingManager from '../../components/CharacterEditor/DragRatingManager';
 import EditCharacterModal from '../../components/CharacterEditor/modals/EditCharacterModal';
 import AddCharacterModal from '../../components/CharacterEditor/modals/AddCharacterModal';
 import DeleteSearchModal from '../../components/CharacterEditor/modals/DeleteSearchModal';
@@ -9,6 +10,7 @@ import CharacterInfoModal from '../../components/CharacterEditor/modals/Characte
 import DeleteConfirmModal from '../../components/CharacterEditor/modals/DeleteConfirmModal';
 import { useCharacters } from '../../hooks/useCharacters';
 import { useCharacterEditor } from './useCharacterEditor';
+import { characterApi } from '../../services/api';
 
 const CharacterEditor: React.FC = () => {
   const { characters, loading, error, fetchCharacters } = useCharacters();
@@ -72,6 +74,28 @@ const CharacterEditor: React.FC = () => {
     }
   };
 
+  // 處理拖拽評級批次更新
+  const handleBatchRatingUpdate = async (category: string, changes: any[]) => {
+    try {
+      // 轉換格式以符合 API 要求
+      const updates = changes.map(change => ({
+        characterId: change.characterId,
+        category: category,
+        value: change.newValue
+      }));
+      
+      // 使用批次更新 API
+      const response = await characterApi.batchUpdateRatings(updates);
+      
+      console.log('Batch update result:', response);
+      
+      // 重新獲取資料
+      await fetchCharacters();
+    } catch (error: any) {
+      throw new Error(`批次更新失敗: ${error.response?.data?.error || error.message}`);
+    }
+  };
+
   if (loading) {
     return <div className="p-8 text-center">載入中...</div>;
   }
@@ -93,26 +117,36 @@ const CharacterEditor: React.FC = () => {
           onDeleteCharacter={() => setShowDeleteForm(true)}
         />
         
-        {/* 搜索框 */}
-        <div className="mb-6">
-          <CharacterSearch
-            value={searchTerm}
-            onChange={setSearchTerm}
-            placeholder="搜索角色名稱或暱稱..."
-            showButton={false}
+        {/* 根據編輯模式顯示不同內容 */}
+        {editMode === 'drag-rating' ? (
+          <DragRatingManager
+            characters={characters}
+            onSaveChanges={handleBatchRatingUpdate}
           />
-        </div>
+        ) : (
+          <>
+            {/* 搜索框 */}
+            <div className="mb-6">
+              <CharacterSearch
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="搜索角色名稱或暱稱..."
+                showButton={false}
+              />
+            </div>
 
-        {/* 角色列表 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredCharacters.map((character) => (
-            <CharacterInfoCard
-              key={character.id}
-              character={character}
-              onEdit={() => setEditingCharacter(character)}
-            />
-          ))}
-        </div>
+            {/* 角色列表 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {filteredCharacters.map((character) => (
+                <CharacterInfoCard
+                  key={character.id}
+                  character={character}
+                  onEdit={() => setEditingCharacter(character)}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
         {/* 編輯角色彈窗 */}
         {editingCharacter && (

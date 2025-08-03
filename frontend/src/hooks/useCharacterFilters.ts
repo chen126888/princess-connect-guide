@@ -16,7 +16,7 @@ export interface FilterState {
 export const filterOptions = {
   positions: ['前衛', '中衛', '後衛'],
   elements: ['火屬', '水屬', '風屬', '光屬', '闇屬'],
-  arenaTypes: ['競技場進攻', '競技場防守', '戰隊戰'],
+  arenaTypes: ['競技場進攻', '競技場防守', '戰隊戰', '深域及抄作業'],
   characterRoles: ['輸出', '破防', '補師', '增益', '妨礙', '補TP'],
   availability: ['常駐', '限定']
 };
@@ -70,7 +70,9 @@ export const useCharacterFilters = (characters: Character[]) => {
             case '競技場防守':
               return character.競技場防守 && character.競技場防守 !== '倉管';
             case '戰隊戰':
-              return character.戰隊戰等抄作業場合 && character.戰隊戰等抄作業場合 !== '倉管';
+              return character.戰隊戰 && character.戰隊戰 !== '倉管';
+            case '深域及抄作業':
+              return character.深域及抄作業 && character.深域及抄作業 !== '倉管';
             default:
               return false;
           }
@@ -106,7 +108,10 @@ export const useCharacterFilters = (characters: Character[]) => {
               if (character.競技場防守) selectedRatings.push(character.競技場防守);
               break;
             case '戰隊戰':
-              if (character.戰隊戰等抄作業場合) selectedRatings.push(character.戰隊戰等抄作業場合);
+              if (character.戰隊戰) selectedRatings.push(character.戰隊戰);
+              break;
+            case '深域及抄作業':
+              if (character.深域及抄作業) selectedRatings.push(character.深域及抄作業);
               break;
           }
         });
@@ -127,7 +132,8 @@ export const useCharacterFilters = (characters: Character[]) => {
       const ratings = [
         character.競技場進攻,
         character.競技場防守,
-        character.戰隊戰等抄作業場合
+        character.戰隊戰,
+        character.深域及抄作業
       ].filter(rating => rating && rating !== '倉管');
       
       if (ratings.length === 0) return '倉管';
@@ -175,7 +181,10 @@ export const useCharacterFilters = (characters: Character[]) => {
               if (character.競技場防守) selectedRatings.push(character.競技場防守);
               break;
             case '戰隊戰':
-              if (character.戰隊戰等抄作業場合) selectedRatings.push(character.戰隊戰等抄作業場合);
+              if (character.戰隊戰) selectedRatings.push(character.戰隊戰);
+              break;
+            case '深域及抄作業':
+              if (character.深域及抄作業) selectedRatings.push(character.深域及抄作業);
               break;
           }
         });
@@ -196,7 +205,8 @@ export const useCharacterFilters = (characters: Character[]) => {
       const ratings = [
         character.競技場進攻,
         character.競技場防守,
-        character.戰隊戰等抄作業場合
+        character.戰隊戰,
+        character.深域及抄作業
       ].filter(rating => rating && rating !== '倉管');
       
       if (ratings.length === 0) return '倉管';

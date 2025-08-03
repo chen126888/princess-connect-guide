@@ -15,7 +15,8 @@ export const characterApi = {
     屬性?: string; // 火屬、水屬、土屬、光屬、闇屬
     競技場進攻?: string; // T0、T1、T2、T3、T4、倉管
     競技場防守?: string;
-    戰隊戰等抄作業場合?: string;
+    戰隊戰?: string;
+    深域及抄作業?: string;
     page?: number;
     limit?: number;
   }) => {
@@ -26,6 +27,18 @@ export const characterApi = {
   // 獲取單一角色
   getById: async (id: string) => {
     const response = await api.get(`/characters/${id}`);
+    return response.data;
+  },
+
+  // 更新單一角色
+  update: async (id: string, data: any) => {
+    const response = await api.put(`/characters/${id}`, data);
+    return response.data;
+  },
+
+  // 批次更新角色評級
+  batchUpdateRatings: async (updates: Array<{characterId: string, category: string, value: string}>) => {
+    const response = await api.patch('/characters/batch-ratings', { updates });
     return response.data;
   },
 };

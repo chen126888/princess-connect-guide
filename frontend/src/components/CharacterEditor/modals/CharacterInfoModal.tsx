@@ -43,7 +43,8 @@ const CharacterInfoModal: React.FC<CharacterInfoModalProps> = ({
           <div><span className="font-medium">常駐/限定:</span> {character['常駐/限定'] || '未設定'}</div>
           <div><span className="font-medium">競技場進攻:</span> {character.競技場進攻 || '未設定'}</div>
           <div><span className="font-medium">競技場防守:</span> {character.競技場防守 || '未設定'}</div>
-          <div><span className="font-medium">戰隊戰:</span> {character.戰隊戰等抄作業場合 || '未設定'}</div>
+          <div><span className="font-medium">戰隊戰:</span> {character.戰隊戰 || '未設定'}</div>
+          <div><span className="font-medium">深域及抄作業:</span> {character.深域及抄作業 || '未設定'}</div>
           {character.說明 && (
             <div><span className="font-medium">說明:</span> {character.說明}</div>
           )}
