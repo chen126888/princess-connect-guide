@@ -17,12 +17,14 @@ export interface ArenaSection {
   description: string;
   items?: ArenaItem[];
   subsections?: ArenaSubsection[];
+  recommendedCharacters?: (string | string[])[];
 }
 
 export interface ArenaSubsection {
   title: string;
   description: string;
   items?: ArenaItem[];
+  recommendedCharacters?: (string | string[])[];
 }
 
 export interface ArenaItem {

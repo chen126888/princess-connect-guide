@@ -1,10 +1,14 @@
 import React from 'react';
 import Card from '../Common/Card';
-import type { ArenaType, ArenaSection, ArenaItem } from '../../types/arena';
-import { arenaConfigs } from '../../arenaData/arenaConfigs';
+import type { Character } from '../../types';
+import type { ArenaType, ArenaSection as ArenaSectionType, ArenaItem as ArenaItemType, ArenaSubsection } from '../../types/arena';
+import { arenaConfigs } from '../../arenaData';
+import CharacterImageCard from '../Character/CharacterImageCard';
 
 interface ArenaContentProps {
   activeType: ArenaType;
+  characters: Character[];
+  loading: boolean;
 }
 
 const PriorityBadge: React.FC<{ priority?: 'high' | 'medium' | 'low' }> = ({ priority }) => {
@@ -25,7 +29,7 @@ const PriorityBadge: React.FC<{ priority?: 'high' | 'medium' | 'low' }> = ({ pri
   );
 };
 
-const ArenaItem: React.FC<{ item: ArenaItem }> = ({ item }) => (
+const ArenaItem: React.FC<{ item: ArenaItemType }> = ({ item }) => (
   <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
     <div className="flex items-start justify-between mb-2">
       <h5 className="font-medium text-gray-800">{item.name}</h5>
@@ -35,13 +39,51 @@ const ArenaItem: React.FC<{ item: ArenaItem }> = ({ item }) => (
   </div>
 );
 
-const ArenaSection: React.FC<{ section: ArenaSection }> = ({ section }) => (
+const renderNewlines = (text: string) => {
+  return { __html: text.replace(/\n/g, '<br />') };
+};
+
+const RecommendedCharacters: React.FC<{ characters: Character[], names: (string | string[])[] }> = ({ characters, names }) => {
+  if (names.length === 0) return null;
+
+  return (
+    <div className="mt-4">
+      <div className="flex flex-wrap gap-2 items-center"> {/* Added items-center for vertical alignment */}
+        {names.map((nameOrChoice, index) => {
+          if (typeof nameOrChoice === 'string') {
+            const char = characters.find(c => c.角色名稱 === nameOrChoice || (c.暱稱 && c.暱稱.includes(nameOrChoice)));
+            return char ? <CharacterImageCard key={char.id} character={char} /> : null;
+          } else { // It's a string[] representing a choice
+            const char1 = characters.find(c => c.角色名稱 === nameOrChoice[0] || (c.暱稱 && c.暱稱.includes(nameOrChoice[0])));
+            const char2 = characters.find(c => c.角色名稱 === nameOrChoice[1] || (c.暱稱 && c.暱稱.includes(nameOrChoice[1])));
+            
+            if (!char1 && !char2) return null; // Neither found
+
+            return (
+              <div key={`choice-${index}`} className="flex items-center gap-1">
+                {char1 && <CharacterImageCard character={char1} />}
+                {char1 && char2 && <span className="text-gray-600 text-sm font-bold mx-1">或</span>} {/* Separator */}
+                {char2 && <CharacterImageCard character={char2} />}
+              </div>
+            );
+          }
+        })}
+      </div>
+    </div>
+  );
+};
+
+const ArenaSection: React.FC<{ section: ArenaSectionType, allCharacters: Character[] }> = ({ section, allCharacters }) => (
   <Card className="mb-6">
     <h3 className="text-xl font-bold text-gray-800 mb-3">{section.title}</h3>
-    <p className="text-gray-600 mb-4">{section.description}</p>
+    <p className="text-gray-600 mb-4" dangerouslySetInnerHTML={renderNewlines(section.description)}></p>
+
+    {section.recommendedCharacters && (
+      <RecommendedCharacters characters={allCharacters} names={section.recommendedCharacters} />
+    )}
     
     {section.items && section.items.length > 0 && (
-      <div className="space-y-3 mb-4">
+      <div className="space-y-3 mb-4 pt-4 border-t border-gray-200 mt-4">
         {section.items.map((item, index) => (
           <ArenaItem key={index} item={item} />
         ))}
@@ -49,13 +91,16 @@ const ArenaSection: React.FC<{ section: ArenaSection }> = ({ section }) => (
     )}
     
     {section.subsections && section.subsections.length > 0 && (
-      <div className="space-y-4">
+      <div className="space-y-4 pt-4 border-t border-gray-200 mt-4">
         {section.subsections.map((subsection, index) => (
           <div key={index} className="border-l-4 border-blue-200 pl-4">
             <h4 className="text-lg font-semibold text-gray-800 mb-2">{subsection.title}</h4>
-            <p className="text-gray-600 mb-3">{subsection.description}</p>
+            <p className="text-gray-600 mb-3" dangerouslySetInnerHTML={renderNewlines(subsection.description)}></p>
+            {subsection.recommendedCharacters && (
+              <RecommendedCharacters characters={allCharacters} names={subsection.recommendedCharacters} />
+            )}
             {subsection.items && subsection.items.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 mt-3">
                 {subsection.items.map((item, itemIndex) => (
                   <ArenaItem key={itemIndex} item={item} />
                 ))}
@@ -68,7 +113,7 @@ const ArenaSection: React.FC<{ section: ArenaSection }> = ({ section }) => (
   </Card>
 );
 
-const ArenaContent: React.FC<ArenaContentProps> = ({ activeType }) => {
+const ArenaContent: React.FC<ArenaContentProps> = ({ activeType, characters, loading }) => {
   const config = arenaConfigs[activeType];
   
   if (!config) {
@@ -83,23 +128,31 @@ const ArenaContent: React.FC<ArenaContentProps> = ({ activeType }) => {
     );
   }
 
+  if (loading) {
+    return <Card><div className="text-center p-8">正在載入角色資料...</div></Card>;
+  }
+
   return (
     <div className="space-y-6">
       {/* 標題區域 */}
-      <Card>
-        <div className="text-center">
-          <div className="text-4xl mb-4">{config.icon}</div>
-          <h1 className="text-3xl font-bold text-gray-800 mb-3">{config.content.title}</h1>
-          <p className="text-lg text-gray-600">{config.description}</p>
-        </div>
-      </Card>
+      { (config.content.title || config.description) && (
+        <Card>
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-800 mb-3">{config.content.title}</h1>
+            <p className="text-lg text-gray-600">{config.description}</p>
+          </div>
+        </Card>
+      )}
       
       {/* 內容區域 */}
       {config.content.sections.map((section, index) => (
-        <ArenaSection key={index} section={section} />
+        <ArenaSection key={index} section={section} allCharacters={characters} />
       ))}
     </div>
   );
 };
 
 export default ArenaContent;
+
+
+

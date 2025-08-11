@@ -20,10 +20,8 @@ const ArenaNavigation: React.FC<ArenaNavigationProps> = ({
     <div className="mb-6 bg-white rounded-lg shadow-md p-4">
       <h3 className="text-lg font-semibold text-gray-800 mb-3">功能選擇</h3>
       <div className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-        <div className="text-xs text-blue-700 space-y-1">
-          <p>⚔️ 競技場：PvP 對戰攻略與陣容推薦</p>
-          <p>🏆 戰鬥試煉場：挑戰試煉關卡獲得獎勵</p>
-          <p>📖 追憶：重溫角色劇情與經典時刻</p>
+        <div className="text-xs text-blue-700">
+          <p>📝 僅介紹常用角色(開專)，或基礎通關隊伍</p>
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
