@@ -13,15 +13,35 @@ interface LocalChange {
 
 interface SingleCategoryRatingProps {
   category: RatingCategory;
+  attribute: string; // New prop for active attribute
   characters: Character[];
   onSaveChanges: (category: RatingCategory, changes: LocalChange[]) => Promise<void>;
 }
 
 const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
   category,
+  attribute, // Destructure new prop
   characters,
   onSaveChanges
 }) => {
+  // Filter characters by attribute
+  const filteredCharacters = React.useMemo(() => {
+    // Assuming 'all' is an option for no attribute filter, though current AttributeSelector doesn't provide it
+    // If attribute is 'all', return all characters. Otherwise, filter by character.屬性
+    if (attribute === 'all') return characters;
+    return characters.filter(char => {
+      // Map English attribute key to Chinese attribute name for comparison
+      const chineseAttributeNameMap: Record<string, string> = {
+        'fire': '火屬',
+        'water': '水屬',
+        'wind': '風屬',
+        'light': '光屬',
+        'dark': '闇屬',
+      };
+      return char.屬性 === chineseAttributeNameMap[attribute];
+    });
+  }, [characters, attribute]);
+
   // 本地狀態管理
   const [localRatings, setLocalRatings] = useState<Record<string, string>>({});
   const [pendingChanges, setPendingChanges] = useState<LocalChange[]>([]);
@@ -32,15 +52,15 @@ const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
   const getVisibleTiers = useCallback((): RatingTier[] => {
     const baseTiers: RatingTier[] = ['T0', 'T1', 'T2', 'T3', 'T4', '倉管'];
     
-    // 檢查是否有無資料的角色
-    const hasUnratedCharacters = characters.some(character => {
+    // 檢查是否有無資料的角色 (使用 filteredCharacters)
+    const hasUnratedCharacters = filteredCharacters.some(character => {
       const rating = character[category];
       return !rating || rating.trim() === '';
     });
     
     // 如果有無資料的角色，則顯示「無資料」區塊
     return hasUnratedCharacters ? [...baseTiers, '無資料'] : baseTiers;
-  }, [characters, category]);
+  }, [filteredCharacters, category]);
 
   const ratingTiers = getVisibleTiers();
 
@@ -54,13 +74,13 @@ const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
     return rating && rating.trim() !== '' ? rating : '無資料';
   }, [localRatings, category]);
 
-  // 獲取特定評級區塊的角色列表
+  // 獲取特定評級區塊的角色列表 (使用 filteredCharacters)
   const getCharactersInTier = useCallback((tier: RatingTier): Character[] => {
-    return characters.filter(character => {
+    return filteredCharacters.filter(character => { // Changed from characters to filteredCharacters
       const rating = getCharacterRating(character);
       return rating === tier;
     });
-  }, [characters, getCharacterRating]);
+  }, [filteredCharacters, getCharacterRating]);
 
   // 處理拖拽開始
   const handleDragStart = useCallback((e: React.DragEvent, character: Character) => {
@@ -260,10 +280,10 @@ const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
 
       {/* 變更摘要 */}
       {pendingChanges.length > 0 && (
-        <div className="mt-6 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <h5 className="text-sm font-medium text-yellow-800 mb-2">待保存的變更 ({pendingChanges.length})：</h5>
+        <div className="mt-6 p-3 bg-white border border-gray-200 rounded-lg">
+          <h5 className="text-sm font-medium text-gray-800 mb-2">待保存的變更 ({pendingChanges.length})：</h5>
           <div className="max-h-24 overflow-y-auto">
-            <ul className="text-xs text-yellow-700 space-y-1">
+            <ul className="text-xs text-gray-700 space-y-1">
               {pendingChanges.slice(0, 5).map((change, index) => {
                 const character = characters.find(c => c.id === change.characterId);
                 const oldDisplay = change.oldValue || '無資料';
@@ -275,7 +295,7 @@ const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
                 );
               })}
               {pendingChanges.length > 5 && (
-                <li className="text-yellow-600">... 還有 {pendingChanges.length - 5} 個變更</li>
+                <li className="text-gray-600">... 還有 {pendingChanges.length - 5} 個變更</li>
               )}
             </ul>
           </div>

@@ -26,7 +26,7 @@ const attributeIconNames: Record<string, string> = {
 
 const AttributeSelector: React.FC<AttributeSelectorProps> = ({ attributes, activeAttribute, onAttributeChange }) => {
   return (
-    <Card className="mb-6">
+    <Card className="mb-6 bg-white">
       <div className="flex flex-wrap justify-center gap-4">
         {attributes.map((attr) => (
           <button
