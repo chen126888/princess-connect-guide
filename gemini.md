@@ -37,7 +37,7 @@
 ### 4. 導航系統
 *   主導航包含 8 個功能按鈕（新人、回鍋玩家、角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成）。
 *   採用單頁應用（SPA）模式，頁面切換無需重新載入。
-*   目前已實現「角色圖鑑」、「商店攻略」、「競技場」頁面。
+*   **已實現頁面**: 角色圖鑑、商店攻略、競技場、**戰隊戰、深域**。
 
 ### 5. 角色編輯系統 (管理員功能)
 *   **CRUD 操作**: 提供完整的角色新增、查看、編輯、刪除功能。
@@ -54,66 +54,13 @@
 *   **API 支援**: 已新增批次更新 API (`PUT /api/characters/batch`) 以優化效能。
 *   **UI/UX 優化**: 包含視覺設計、拖拽反饋、變更提示、響應式設計等。
 
-## 開發中功能
+### 7. 戰隊戰攻略頁面
+*   **頁面內容**: 包含戰隊戰簡介、推薦 YouTube 頻道（附帶查詢提示）、以及按屬性（火、水、風、光、闇）和物理/法術類型分類的常用角色列表。
+*   **角色推薦**: 常用角色依「核心」、「重要」、「普通」分級顯示，並整合角色頭像圖示。
+*   **屬性選擇**: 屬性按鈕結合文字與對應屬性圖示。
+*   **補償刀常用角色**: 獨立區塊顯示補償刀機制下推薦的常用角色。
 
-目前沒有正在開發中的功能。
-
-## 資料庫 Schema (`characters` 表)
-```sql
-CREATE TABLE characters (
-  id TEXT PRIMARY KEY,
-  [角色名稱] TEXT UNIQUE NOT NULL,
-  [暱稱] TEXT,
-  [位置] TEXT NOT NULL,
-  [角色定位] TEXT,
-  [常駐/限定] TEXT,
-  [屬性] TEXT,
-  [能力偏向] TEXT,
-  [競技場進攻] TEXT,
-  [競技場防守] TEXT,
-  [戰隊戰] TEXT,
-  [深域及抄作業] TEXT,
-  [說明] TEXT,
-  [頭像檔名] TEXT,
-  [六星頭像檔名] TEXT,
-  createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-## API 端點 (部分)
-*   `GET /api/health`
-*   `GET /api/characters` (支援篩選參數)
-*   `GET /api/characters/:id`
-*   `POST /api/characters`
-*   `PUT /api/characters/:id`
-*   `PUT /api/characters/batch` (開發中)
-*   `DELETE /api/characters/:id`
-*   `POST /api/auth/login`
-*   `POST /api/auth/create-admin`
-*   `POST /api/upload/character-photo`
-
-## 資料來源
-*   Excel 檔案: `2025公主連結角色簡略介紹表_converted.xlsx` (用於匯入角色資料)
-*   圖片資料夾: `data/images/characters/`, `data/images/shop_icon/`, `data/images/data_icon/`
-
-## 未來開發計畫
-*   重新設計並開發其他頁面功能，包括新人指南、回鍋玩家建議、戰隊戰攻略、深域攻略、角色養成指南等。
-
-## 如何啟動專案
-1.  **啟動後端服務 (port 3000)**:
-    ```bash
-    cd backend
-    npm install
-    npx ts-node src/simple-server.ts
-    ```
-2.  **啟動前端服務 (port 5173)**:
-    ```bash
-    cd frontend
-    npm install
-    npm run dev
-    ```
-3.  **訪問網站**: 在瀏覽器中訪問 `http://localhost:5173`。
-
----
-**備註**: 本文件內容主要基於專案中提供的 `CLAUDE.md` 文件整理而成。
+### 8. 深域攻略頁面
+*   **頁面內容**: 包含深域簡介、強化介紹、以及外部 Excel 攻略連結。
+*   **強化介紹**: 詳細說明強化系統的四個部分（屬性等級、屬性等級節點、大師技能、職階專精）及各道具獲取來源，並整合相關道具圖示。
+*   **外部連結**: 提供多個外部 Excel 攻略連結，方便玩家查閱詳細資料。
