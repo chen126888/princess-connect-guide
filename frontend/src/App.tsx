@@ -3,6 +3,8 @@ import Characters from './pages/Characters/Characters';
 import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
 import Shop from './pages/Shop/Shop';
 import Arena from './pages/Arena/Arena';
+import ClanBattle from './pages/ClanBattle/ClanBattle';
+import Dungeon from './pages/Dungeon/Dungeon';
 
 // 頁面類型定義
 type PageType = 
@@ -147,9 +149,9 @@ function App() {
       case 'arena':
         return <Arena />;
       case 'clanBattle':
-        return <UnderDevelopment title="戰隊戰攻略" />;
+        return <ClanBattle />;
       case 'dungeon':
-        return <UnderDevelopment title="深域攻略" />;
+        return <Dungeon />;
       case 'characterDevelopment':
         return <UnderDevelopment title="角色養成指南" />;
       default:
