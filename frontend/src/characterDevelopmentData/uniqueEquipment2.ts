@@ -22,6 +22,8 @@ export const uniqueEquipment2Tiers: PriorityTier[] = [
       { name: '情姐' },
       { name: '可可蘿' },
       { name: '插班碧' },
+      { name: '真步(夏日)' },
+      { name: '真陽' },
     ],
   },
   {
@@ -33,6 +35,7 @@ export const uniqueEquipment2Tiers: PriorityTier[] = [
       { name: '聖誕熊槌' },
       { name: '鈴奈' },
       { name: '泳七' },
+      { name: '綾音(聖誕節)' },
       { name: '貪吃(佩可夏日)' },
     ],
   },
