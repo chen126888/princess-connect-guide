@@ -8,16 +8,7 @@ export const dungeonShopItems: ShopItem[] = [
     type: 'character',
     characterId: '優花梨',
     priority: 'must_buy',
-    sortOrder: 1,
-    shopType: 'dungeon'
-  },
-  {
-    id: 'dun_char_002',
-    name: '步未碎片',
-    type: 'character',
-    characterId: '步未',
-    priority: 'must_buy',
-    sortOrder: 2,
+    
     shopType: 'dungeon'
   },
   {
@@ -26,7 +17,16 @@ export const dungeonShopItems: ShopItem[] = [
     type: 'character',
     characterId: '真步',
     priority: 'must_buy',
-    sortOrder: 3,
+    
+    shopType: 'dungeon'
+  },
+  {
+    id: 'dun_char_002',
+    name: '步未碎片',
+    type: 'character',
+    characterId: '步未',
+    priority: 'must_buy',
+    
     shopType: 'dungeon'
   },
   {
@@ -35,27 +35,18 @@ export const dungeonShopItems: ShopItem[] = [
     type: 'character',
     characterId: '凱留',
     priority: 'must_buy',
-    sortOrder: 4,
+    
     shopType: 'dungeon'
   },
 
   // 推薦角色碎片 (優先級5-8)
-  {
-    id: 'dun_char_005',
-    name: '杏奈(海盜)碎片',
-    type: 'character',
-    characterId: '杏奈 (海盜)',
-    priority: 'recommended',
-    sortOrder: 5,
-    shopType: 'dungeon'
-  },
   {
     id: 'dun_char_006',
     name: '茉莉碎片',
     type: 'character',
     characterId: '茉莉',
     priority: 'recommended',
-    sortOrder: 6,
+    
     shopType: 'dungeon'
   },
   {
@@ -63,8 +54,17 @@ export const dungeonShopItems: ShopItem[] = [
     name: '望碎片',
     type: 'character',
     characterId: '望',
-    priority: 'optional',
-    sortOrder: 7,
+    priority: 'recommended',
+    
+    shopType: 'dungeon'
+  },
+  {
+    id: 'dun_char_005',
+    name: '杏奈(海盜)碎片',
+    type: 'character',
+    characterId: '杏奈 (海盜)',
+    priority: 'recommended',
+    
     shopType: 'dungeon'
   },
   {
@@ -73,7 +73,7 @@ export const dungeonShopItems: ShopItem[] = [
     type: 'character',
     characterId: '空花',
     priority: 'optional',
-    sortOrder: 8,
+    
     shopType: 'dungeon'
   },
 
@@ -83,7 +83,7 @@ export const dungeonShopItems: ShopItem[] = [
     name: '裝備',
     type: 'equipment',
     priority: 'optional',
-    sortOrder: 9,
+    
     shopType: 'dungeon',
     hasImage: true
   },

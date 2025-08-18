@@ -14,7 +14,7 @@ export const arenaConfigTrial: ArenaConfig = {
       {
         title: '推薦練',
         description: '建議優先培養的角色，先後順序不代表優先順序。',
-        recommendedCharacters: ['新年怜', '魔霞', '杏奈', '酒鬼', '泳媽', '妹弓', '小雪', '凱留', '祈梨', '吉塔', '公凱', '新年帆希', '步未', '厄', '姬騎士']
+        recommendedCharacters: ['新年怜', '魔霞', '杏奈', '酒鬼', '咲戀 (夏日)', '妹弓', '雪', '凱留', '祈梨', '吉塔', '公凱', '新年帆希', '步未', '厄', '姬騎士']
       },
       {
         title: '後期資源夠再練',
@@ -33,7 +33,7 @@ export const arenaConfigTrial: ArenaConfig = {
           {
             title: '第二隊',
             description:'',
-            recommendedCharacters: ['優妮', '小雪', '凱留', '妹弓', '酒鬼']
+            recommendedCharacters: ['優妮', '雪', '凱留', '妹弓', '酒鬼']
           }
         ]
       }

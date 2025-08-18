@@ -1,12 +1,32 @@
 import type { Character } from '../types';
 
+// 生成檔案名稱的輔助函數
+const generateFileName = (characterName: string): string => {
+  // 去除括號並替換為對應格式，處理常見的角色名稱模式
+  return characterName
+    .replace(/[()（）]/g, '') // 移除所有括號
+    .replace(/\s+/g, '') // 移除空格
+    + '.png';
+};
+
 // 共用的圖片路徑生成函數
 export const getCharacterImagePath = (character: Character): { sixStar: string | null; normal: string | null } => {
   const API_BASE_URL = 'http://localhost:3000';
   
+  // 如果有明確的檔名，優先使用
+  let normalImagePath: string | null = null;
+  
+  if (character.頭像檔名) {
+    normalImagePath = `${API_BASE_URL}/images/characters/${character.頭像檔名}`;
+  } else if (character.角色名稱) {
+    // 如果沒有檔名，嘗試根據角色名稱生成
+    const generatedFileName = generateFileName(character.角色名稱);
+    normalImagePath = `${API_BASE_URL}/images/characters/${generatedFileName}`;
+  }
+  
   return {
     sixStar: character.六星頭像檔名 ? `${API_BASE_URL}/images/characters/${character.六星頭像檔名}` : null,
-    normal: character.頭像檔名 ? `${API_BASE_URL}/images/characters/${character.頭像檔名}` : null
+    normal: normalImagePath
   };
 };
 

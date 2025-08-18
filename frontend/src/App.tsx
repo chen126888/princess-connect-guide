@@ -1,13 +1,18 @@
 import { useState } from 'react';
+import Home from './pages/Home/Home';
 import Characters from './pages/Characters/Characters';
 import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
 import Shop from './pages/Shop/Shop';
 import Arena from './pages/Arena/Arena';
 import ClanBattle from './pages/ClanBattle/ClanBattle';
 import Dungeon from './pages/Dungeon/Dungeon';
+import CharacterDevelopmentPage from './pages/CharacterDevelopment/CharacterDevelopment';
+import Newbie from './pages/Newbie/Newbie';
+import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
 
 // 頁面類型定義
 type PageType = 
+  | 'home'
   | 'newbie' 
   | 'returnPlayer' 
   | 'characters' 
@@ -19,25 +24,9 @@ type PageType =
   | 'characterDevelopment';
 
 
-// 開發中佔位組件
-const UnderDevelopment = ({ title }: { title: string }) => (
-  <div className="min-h-screen flex items-center justify-center bg-white py-8">
-    <div className="text-center">
-      <div className="text-8xl mb-8">🚧</div>
-      <h1 className="text-4xl font-bold text-gray-800 mb-4">{title}</h1>
-      <p className="text-xl text-gray-600 mb-8">此功能正在開發中，敬請期待！</p>
-      <div className="bg-white border border-gray-200 rounded-xl p-6 max-w-md mx-auto" style={{ boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-        <p className="text-gray-700 leading-relaxed">
-          我們正在努力為您準備最好的遊戲攻略內容，
-          請關注更新資訊，謝謝您的耐心等候！
-        </p>
-      </div>
-    </div>
-  </div>
-);
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<PageType>('characters');
+  const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
@@ -74,7 +63,7 @@ function App() {
   // 管理員登出
   const handleAdminLogout = () => {
     setIsAdminMode(false);
-    setCurrentPage('characters');
+    setCurrentPage('home');
   };
 
   // 處理圖片載入錯誤
@@ -87,7 +76,7 @@ function App() {
     if (item.useImage && !imageErrors.has(item.key)) {
       return (
         <img 
-          src="http://localhost:3000/images/shop_icon/商店.png"
+          src="http://localhost:3000/images/icons/商店.png"
           alt={item.label}
           className="w-5 h-5 object-contain"
           onError={() => handleImageError(item.key)}
@@ -100,6 +89,7 @@ function App() {
   // 導航項目的詳細資訊
   const getItemDetails = (key: PageType) => {
     const details = {
+      home: { description: '網站首頁、功能總覽' },
       newbie: { description: '新手入門指南、基礎玩法教學' },
       returnPlayer: { description: '回歸玩家快速上手指南' },
       characters: { description: '完整角色圖鑑、能力查詢' },
@@ -116,6 +106,7 @@ function App() {
   // 取得導航項目 (根據管理員模式動態調整)
   const getNavItems = () => {
     const baseItems = [
+      { key: 'home' as PageType, label: '首頁', icon: '🏠' },
       { key: 'newbie' as PageType, label: '新人', icon: '🌟' },
       { key: 'returnPlayer' as PageType, label: '回鍋建議', icon: '🔄' },
       { key: 'characters' as PageType, label: '角色圖鑑', icon: '⚔️' },
@@ -136,14 +127,16 @@ function App() {
   // 渲染當前頁面內容
   const renderCurrentPage = () => {
     switch (currentPage) {
+      case 'home':
+        return <Home isAdminMode={isAdminMode} />;
       case 'characters':
         return <Characters />;
       case 'characterEditor':
         return isAdminMode ? <CharacterEditor /> : <Characters />;
       case 'newbie':
-        return <UnderDevelopment title="新人指南" />;
+        return <Newbie />;
       case 'returnPlayer':
-        return <UnderDevelopment title="回鍋建議" />;
+        return <ReturnPlayer onNavigateToPage={(page) => setCurrentPage(page as PageType)} />;
       case 'shop':
         return <Shop />;
       case 'arena':
@@ -153,9 +146,9 @@ function App() {
       case 'dungeon':
         return <Dungeon />;
       case 'characterDevelopment':
-        return <UnderDevelopment title="角色養成指南" />;
+        return <CharacterDevelopmentPage />;
       default:
-        return <Characters />;
+        return <Home />;
     }
   };
 

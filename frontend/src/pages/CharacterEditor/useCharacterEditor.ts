@@ -75,7 +75,28 @@ export const useCharacterEditor = (characters: Character[]) => {
         throw new Error('角色名稱和位置為必填欄位');
       }
 
-      await api.post('/characters', newCharacter);
+      // 先新增角色資料
+      const response = await api.post('/characters', newCharacter);
+      
+      // 如果有選擇照片，則上傳照片
+      if (selectedPhoto && newCharacter.角色名稱) {
+        try {
+          const formData = new FormData();
+          formData.append('photo', selectedPhoto);
+          formData.append('characterName', newCharacter.角色名稱);
+          
+          await api.post('/upload/character-photo', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+          
+          console.log('照片上傳成功');
+        } catch (photoError: any) {
+          console.error('照片上傳失敗:', photoError);
+          // 照片上傳失敗不影響角色新增成功，只記錄錯誤
+        }
+      }
       
       // 重置表單
       setNewCharacter({

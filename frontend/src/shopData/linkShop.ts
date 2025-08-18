@@ -8,7 +8,7 @@ export const linkShopItems: ShopItem[] = [
     type: 'character',
     characterId: '大師',
     priority: 'must_buy',
-    sortOrder: 1,
+    
     shopType: 'link',
     hasImage: true
   }

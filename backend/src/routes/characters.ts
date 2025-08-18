@@ -258,8 +258,8 @@ router.post('/', async (req, res) => {
       INSERT INTO characters (
         id, [角色名稱], [暱稱], [位置], [角色定位], [常駐/限定], 
         [屬性], [能力偏向], [競技場進攻], [競技場防守], [戰隊戰], 
-        [深域及抄作業], [說明], createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        [深域及抄作業], [說明], [頭像檔名], createdAt, updatedAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
     `;
     
     const params = [
@@ -275,7 +275,8 @@ router.post('/', async (req, res) => {
       characterData.競技場防守 || null,
       characterData.戰隊戰 || null,
       characterData.深域及抄作業 || null,
-      characterData.說明 || null
+      characterData.說明 || null,
+      characterData.頭像檔名 || null
     ];
     
     await dbRun(insertQuery, params);

@@ -2,6 +2,7 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { dbRun } from '../utils/database';
 
 const router = express.Router();
 
@@ -18,12 +19,12 @@ const storage = multer.diskStorage({
     cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    // 使用角色名稱作為檔案名稱
-    const characterName = req.body.characterName;
+    // 先使用臨時檔名，稍後在處理時重新命名
+    const timestamp = Date.now();
     const ext = path.extname(file.originalname);
-    const filename = `${characterName}${ext}`;
+    const tempFilename = `temp_${timestamp}${ext}`;
     
-    cb(null, filename);
+    cb(null, tempFilename);
   }
 });
 
@@ -43,7 +44,7 @@ const upload = multer({
 });
 
 // 上傳角色照片
-router.post('/character-photo', upload.single('photo'), (req, res) => {
+router.post('/character-photo', upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: '沒有上傳檔案' });
@@ -55,16 +56,45 @@ router.post('/character-photo', upload.single('photo'), (req, res) => {
       return res.status(400).json({ error: '缺少角色名稱' });
     }
 
+    // 重新命名檔案為角色名稱，只保留中文字符
+    const ext = path.extname(req.file.originalname);
+    // 移除括號、&等符號，只保留中文字符和數字
+    const cleanCharacterName = characterName.replace(/[()（）&\s]/g, '');
+    const finalFilename = `${cleanCharacterName}${ext}`;
+    const oldPath = req.file.path;
+    const newPath = path.join(path.dirname(oldPath), finalFilename);
+
+    // 重新命名檔案
+    try {
+      fs.renameSync(oldPath, newPath);
+    } catch (renameError: any) {
+      console.error('Failed to rename file:', renameError);
+      return res.status(500).json({ error: '檔案重新命名失敗' });
+    }
+
     console.log('Photo uploaded successfully:', {
-      filename: req.file.filename,
-      path: req.file.path,
-      characterName
+      originalName: characterName,
+      cleanedName: cleanCharacterName,
+      filename: finalFilename,
+      path: newPath
     });
+
+    // 更新角色的頭像檔名
+    try {
+      await dbRun(
+        'UPDATE characters SET [頭像檔名] = ? WHERE [角色名稱] = ?',
+        [finalFilename, characterName]
+      );
+      console.log('Updated character avatar filename in database');
+    } catch (dbError: any) {
+      console.error('Failed to update avatar filename in database:', dbError);
+      // 不要因為資料庫更新失敗而導致整個上傳失敗
+    }
 
     res.json({
       message: '照片上傳成功',
-      filename: req.file.filename,
-      path: req.file.path,
+      filename: finalFilename,
+      path: newPath,
       characterName
     });
   } catch (error: any) {

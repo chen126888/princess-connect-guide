@@ -3,7 +3,7 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export const IMAGE_PATHS = {
-  SHOP_ICONS: `${API_BASE_URL}/images/shop_icon`,
+  SHOP_ICONS: `${API_BASE_URL}/images/icons`,
   CHARACTERS: `${API_BASE_URL}/images/characters`,
 } as const;
 

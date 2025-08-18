@@ -78,7 +78,7 @@ export const clanBattleConfigs: ClanBattleConfig = {
         { name: '泳切嚕', tier: '核心' },
         { name: '泳優妮', tier: '重要' },
         { name: '流夏', tier: '重要' },
-        { name: '聖誕熊槌', tier: '重要' },
+        { name: '聖誕熊槌', tier: '普通' },
         { name: '泳裝美美', tier: '普通' },
         { name: '泳佩', tier: '普通' },
         { name: '泳流夏', tier: '普通' },
@@ -111,7 +111,7 @@ export const clanBattleConfigs: ClanBattleConfig = {
       ],
       magic: [
         { name: '菲歐', tier: '核心' },
-        { name: '泳裝厄莉絲', tier: '核心' },
+        { name: '泳厄', tier: '核心' },
         { name: '蘭法(祭服)', tier: '核心' },
         { name: '千歌(祭服)', tier: '重要' },
         { name: '默涅', tier: '重要' },

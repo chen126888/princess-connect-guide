@@ -36,10 +36,8 @@ export const getShopItems = (shopType: ShopType): ShopItem[] => {
       return priorityDiff;
     }
     
-    // 相同優先級內按 sortOrder 排序
-    const aSort = a.sortOrder || 999;
-    const bSort = b.sortOrder || 999;
-    return aSort - bSort;
+    // 相同優先級內維持原始順序 (或根據資料定義的順序)
+    return 0;
   });
 };
 

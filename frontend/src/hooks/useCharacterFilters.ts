@@ -66,13 +66,13 @@ export const useCharacterFilters = (characters: Character[]) => {
         const hasMatchingArenaType = filters.arenaTypes.some(type => {
           switch (type) {
             case '競技場進攻':
-              return character.競技場進攻 && character.競技場進攻 !== '倉管';
+              return character.競技場進攻 && character.競技場進攻.trim() !== '';
             case '競技場防守':
-              return character.競技場防守 && character.競技場防守 !== '倉管';
+              return character.競技場防守 && character.競技場防守.trim() !== '';
             case '戰隊戰':
-              return character.戰隊戰 && character.戰隊戰 !== '倉管';
+              return character.戰隊戰 && character.戰隊戰.trim() !== '';
             case '深域及抄作業':
-              return character.深域及抄作業 && character.深域及抄作業 !== '倉管';
+              return character.深域及抄作業 && character.深域及抄作業.trim() !== '';
             default:
               return false;
           }
@@ -95,8 +95,23 @@ export const useCharacterFilters = (characters: Character[]) => {
     const tierOrder = ['T0', 'T1', 'T2', 'T3', 'T4', '倉管'];
     
     const getHighestRating = (character: Character) => {
-      // 如果有選擇特定用途，只考慮選中的用途評級
-      if (filters.arenaTypes.length > 0) {
+      // 如果只選擇了一個特定用途，直接返回該用途的評級
+      if (filters.arenaTypes.length === 1) {
+        const selectedType = filters.arenaTypes[0];
+        switch (selectedType) {
+          case '競技場進攻':
+            return character.競技場進攻 || '倉管';
+          case '競技場防守':
+            return character.競技場防守 || '倉管';
+          case '戰隊戰':
+            return character.戰隊戰 || '倉管';
+          case '深域及抄作業':
+            return character.深域及抄作業 || '倉管';
+        }
+      }
+      
+      // 如果選擇了多個用途，取最高評級
+      if (filters.arenaTypes.length > 1) {
         const selectedRatings: string[] = [];
         
         filters.arenaTypes.forEach(type => {
@@ -116,7 +131,7 @@ export const useCharacterFilters = (characters: Character[]) => {
           }
         });
         
-        const validRatings = selectedRatings.filter(rating => rating && rating !== '倉管');
+        const validRatings = selectedRatings.filter(rating => rating && rating.trim() !== '');
         if (validRatings.length === 0) return '倉管';
         
         // 找出最高評級
@@ -134,7 +149,7 @@ export const useCharacterFilters = (characters: Character[]) => {
         character.競技場防守,
         character.戰隊戰,
         character.深域及抄作業
-      ].filter(rating => rating && rating !== '倉管');
+      ].filter(rating => rating && rating.trim() !== '');
       
       if (ratings.length === 0) return '倉管';
       
@@ -168,8 +183,23 @@ export const useCharacterFilters = (characters: Character[]) => {
     const tierOrder = ['T0', 'T1', 'T2', 'T3', 'T4', '倉管'];
     
     const getHighestRatingForGrouping = (character: Character) => {
-      // 如果有選擇特定用途，只考慮選中的用途評級
-      if (filters.arenaTypes.length > 0) {
+      // 如果只選擇了一個特定用途，直接返回該用途的評級
+      if (filters.arenaTypes.length === 1) {
+        const selectedType = filters.arenaTypes[0];
+        switch (selectedType) {
+          case '競技場進攻':
+            return character.競技場進攻 || '倉管';
+          case '競技場防守':
+            return character.競技場防守 || '倉管';
+          case '戰隊戰':
+            return character.戰隊戰 || '倉管';
+          case '深域及抄作業':
+            return character.深域及抄作業 || '倉管';
+        }
+      }
+      
+      // 如果選擇了多個用途，取最高評級
+      if (filters.arenaTypes.length > 1) {
         const selectedRatings: string[] = [];
         
         filters.arenaTypes.forEach(type => {
@@ -189,7 +219,7 @@ export const useCharacterFilters = (characters: Character[]) => {
           }
         });
         
-        const validRatings = selectedRatings.filter(rating => rating && rating !== '倉管');
+        const validRatings = selectedRatings.filter(rating => rating && rating.trim() !== '');
         if (validRatings.length === 0) return '倉管';
         
         // 找出最高評級
@@ -207,7 +237,7 @@ export const useCharacterFilters = (characters: Character[]) => {
         character.競技場防守,
         character.戰隊戰,
         character.深域及抄作業
-      ].filter(rating => rating && rating !== '倉管');
+      ].filter(rating => rating && rating.trim() !== '');
       
       if (ratings.length === 0) return '倉管';
       

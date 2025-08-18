@@ -6,7 +6,7 @@ export const goddessStoneShopItems: ShopItem[] = [
     name: '各式記憶碎片',
     type: 'item',
     priority: 'must_buy',
-    sortOrder: 1,
+    
     shopType: 'goddess_stone',
     hasImage: true
   },
@@ -15,7 +15,7 @@ export const goddessStoneShopItems: ShopItem[] = [
     name: '各式純淨記憶碎片',
     type: 'item',
     priority: 'must_buy',
-    sortOrder: 2,
+    
     shopType: 'goddess_stone',
     hasImage: true
   }

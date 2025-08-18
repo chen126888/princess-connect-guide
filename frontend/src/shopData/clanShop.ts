@@ -8,7 +8,7 @@ export const clanShopItems: ShopItem[] = [
     type: 'character',
     characterId: '鈴莓',
     priority: 'must_buy',
-    sortOrder: 1,
+    
     shopType: 'clan'
   },
   {
@@ -17,7 +17,7 @@ export const clanShopItems: ShopItem[] = [
     type: 'character',
     characterId: '真琴',
     priority: 'must_buy',
-    sortOrder: 2,
+    
     shopType: 'clan'
   },
 
@@ -28,7 +28,7 @@ export const clanShopItems: ShopItem[] = [
     type: 'character',
     characterId: '伊緒',
     priority: 'recommended',
-    sortOrder: 3,
+    
     shopType: 'clan'
   },
 

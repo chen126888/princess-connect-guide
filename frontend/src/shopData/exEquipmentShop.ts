@@ -6,7 +6,7 @@ export const exEquipmentShopItems: ShopItem[] = [
     name: '彩杖',
     type: 'equipment',
     priority: 'must_buy',
-    sortOrder: 1,
+    
     shopType: 'ex_equipment',
     hasImage: true
   },
@@ -15,7 +15,7 @@ export const exEquipmentShopItems: ShopItem[] = [
     name: '彩書',
     type: 'equipment',
     priority: 'must_buy',
-    sortOrder: 2,
+    
     shopType: 'ex_equipment',
     hasImage: true
   },
@@ -24,7 +24,7 @@ export const exEquipmentShopItems: ShopItem[] = [
     name: '彩單手劍',
     type: 'equipment',
     priority: 'must_buy',
-    sortOrder: 3,
+    
     shopType: 'ex_equipment',
     hasImage: true
   },
@@ -33,7 +33,7 @@ export const exEquipmentShopItems: ShopItem[] = [
     name: '彩雙手劍',
     type: 'equipment',
     priority: 'must_buy',
-    sortOrder: 4,
+    
     shopType: 'ex_equipment',
     hasImage: true
   },
@@ -42,7 +42,7 @@ export const exEquipmentShopItems: ShopItem[] = [
     name: '其他彩裝',
     type: 'equipment',
     priority: 'must_buy',
-    sortOrder: 5,
+    
     shopType: 'ex_equipment',
     hasImage: true
   }

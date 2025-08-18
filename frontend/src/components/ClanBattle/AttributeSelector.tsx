@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from '../../components/Common/Card';
+import TabNavigation, { type TabItem } from '../Common/TabNavigation';
 
 interface AttributeSelectorProps {
   attributes: string[];
@@ -25,31 +25,35 @@ const attributeIconNames: Record<string, string> = {
 };
 
 const AttributeSelector: React.FC<AttributeSelectorProps> = ({ attributes, activeAttribute, onAttributeChange }) => {
+  const attributeItems: TabItem<string>[] = attributes.map(attr => ({
+    key: attr,
+    label: attributeNames[attr] || attr,
+    hasImage: attr !== 'compensationKnife'
+  }));
+
+  const renderAttributeIcon = (item: TabItem<string>) => {
+    if (item.hasImage && attributeIconNames[item.key]) {
+      return (
+        <img
+          src={`http://localhost:3000/images/icons/${attributeIconNames[item.key]}.png`}
+          alt={item.label}
+          className="w-6 h-6 object-contain"
+        />
+      );
+    }
+    return null;
+  };
+
   return (
-    <Card className="mb-6 bg-white">
-      <div className="flex flex-wrap justify-center gap-4">
-        {attributes.map((attr) => (
-          <button
-            key={attr}
-            onClick={() => onAttributeChange(attr)}
-            className={`px-6 py-3 rounded-lg text-lg font-semibold transition-colors duration-200 flex items-center gap-2 justify-center
-              ${activeAttribute === attr
-                ? 'bg-blue-600 text-white shadow-lg'
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-          >
-            {attributeNames[attr] || attr}
-            {attr !== 'compensationKnife' && ( // Only show icon for attributes, not for compensationKnife
-              <img
-                src={`http://localhost:3000/images/shop_icon/${attributeIconNames[attr]}.png`}
-                alt={attributeNames[attr] || attr}
-                className="inline-block w-6 h-6 object-contain"
-              />
-            )}
-          </button>
-        ))}
-      </div>
-    </Card>
+    <TabNavigation
+      items={attributeItems}
+      activeItem={activeAttribute}
+      onItemChange={onAttributeChange}
+      buttonSize="lg"
+      layout="center"
+      renderIcon={renderAttributeIcon}
+      className=""
+    />
   );
 };
 

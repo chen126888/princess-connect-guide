@@ -4,20 +4,20 @@ export const pArenaShopItems: ShopItem[] = [
   // 必買角色碎片
   {
     id: 'p_arena_char_001',
-    name: '杏奈碎片',
-    type: 'character',
-    characterId: '杏奈',
-    priority: 'must_buy',
-    sortOrder: 1,
-    shopType: 'p_arena'
-  },
-  {
-    id: 'p_arena_char_002',
     name: '宮子碎片',
     type: 'character',
     characterId: '宮子',
     priority: 'must_buy',
-    sortOrder: 2,
+    
+    shopType: 'p_arena'
+  },
+  {
+    id: 'p_arena_char_002',
+    name: '杏奈碎片',
+    type: 'character',
+    characterId: '杏奈',
+    priority: 'must_buy',
+    
     shopType: 'p_arena'
   },
   {
@@ -26,7 +26,7 @@ export const pArenaShopItems: ShopItem[] = [
     type: 'character',
     characterId: '紡希',
     priority: 'must_buy',
-    sortOrder: 3,
+    
     shopType: 'p_arena'
   },
 
@@ -37,7 +37,7 @@ export const pArenaShopItems: ShopItem[] = [
     type: 'character',
     characterId: '鈴奈',
     priority: 'recommended',
-    sortOrder: 4,
+    
     shopType: 'p_arena'
   },
 

@@ -88,17 +88,22 @@
 *   **`frontend/src/App.tsx`**: 前端應用程式的根組件，負責設定主要路由、導航邏輯以及管理員模式的切換。
 *   **`frontend/src/main.tsx`**: 前端應用程式的入口點，負責將 React 應用程式掛載到 DOM 上。
 *   **`frontend/src/pages/`**: 存放各個主要頁面的組件。
+    *   **`frontend/src/pages/Home/Home.tsx`**: 首頁，提供網站簡介和導覽資訊。
     *   **`frontend/src/pages/Characters/Characters.tsx`**: 角色圖鑑頁面，顯示所有角色資料並提供篩選、排序功能。
     *   **`frontend/src/pages/Shop/Shop.tsx`**: 商店攻略頁面，提供各商店的購買建議。
     *   **`frontend/src/pages/Arena/Arena.tsx`**: 競技場/試煉/追憶頁面，顯示相關攻略內容。
-    *   **## 5. 模組結構與職責
+    *   **`frontend/src/pages/CharacterDevelopment/CharacterDevelopment.tsx`**: 角色養成頁面，提供六星、專一、專二、非六星角色的養成建議。
+    *   **`frontend/src/pages/Newbie/Newbie.tsx`**: 新人指南頁面，提供新手遊戲指導和建議。
+    *   **`frontend/src/pages/ReturnPlayer/ReturnPlayer.tsx`**: 回鍋玩家指南頁面，提供回歸玩家的專門建議。
+
+## 5. 模組結構與職責
 
 本專案的程式碼組織清晰，主要分為 `frontend/`、`backend/` 和 `data/` 三大模組，每個模組內部再細分為不同的職責區域。
 
 *   **`frontend/`**: React 應用程式的根目錄，負責所有使用者介面和前端邏輯。
     *   **`frontend/public/`**: 存放靜態資源，如 `index.html` 和應用程式圖標。
     *   **`frontend/src/`**: 包含前端應用程式的原始碼。
-        *   **`frontend/src/pages/`**: 存放各個主要頁面的 React 組件，每個子資料夾通常代表一個獨立的功能頁面（如角色圖鑑、商店攻略、戰隊戰、深域等）。
+        *   **`frontend/src/pages/`**: 存放各個主要頁面的 React 組件，每個子資料夾通常代表一個獨立的功能頁面（如首頁、角色圖鑑、商店攻略、戰隊戰、深域、角色養成、新人指南、回鍋玩家指南等）。
         *   **`frontend/src/components/`**: 存放可複用的 React UI 組件，這些組件可以在多個頁面或功能模組中共享。例如，通用的卡片組件、角色頭像顯示組件、屬性選擇器等。
         *   **`frontend/src/services/`**: 封裝了與後端 API 互動的邏輯，例如 `api.ts` 負責定義和發送 HTTP 請求。
         *   **`frontend/src/hooks/`**: 存放自定義 React Hooks，用於封裝可複用的狀態邏輯和副作用，例如 `useCharacters.ts` 用於獲取角色資料。
@@ -107,6 +112,11 @@
         *   **`frontend/src/clanBattleData/`**: 存放戰隊戰相關的靜態配置資料，如 YouTube 頻道推薦、常用角色列表等。
         *   **`frontend/src/dungeonData/`**: 存放深域相關的靜態配置資料，如深域簡介、強化介紹及外部 Excel 連結。
         *   **`frontend/src/shopData/`**: 存放商店相關的靜態配置資料。
+        *   **`frontend/src/characterDevelopmentData/`**: 存放角色養成相關的靜態配置資料，包含六星、專一、專二、非六星角色推薦。
+        *   **`frontend/src/newbieData/`**: 存放新人指南相關的靜態配置資料。
+        *   **`frontend/src/returnPlayerData/`**: 存放回鍋玩家指南相關的靜態配置資料。
+        *   **`frontend/src/config/`**: 存放通用配置和常數。
+        *   **`frontend/src/utils/`**: 存放通用工具函數，如角色圖片處理工具等。
         *   **`frontend/src/App.tsx`**: 前端應用程式的根組件，負責設定主要路由、導航邏輯以及管理員模式的切換。
         *   **`frontend/src/main.tsx`**: 前端應用程式的入口點，負責將 React 應用程式掛載到 DOM 上。
 *   **`backend/`**: Node.js Express 應用程式的根目錄，負責提供 API 服務、資料庫操作和靜態檔案服務。
@@ -117,21 +127,41 @@
     *   **`backend/prisma/`**: 存放 Prisma ORM 的相關配置和資料庫 schema (`schema.prisma`)，定義了資料庫中的表結構和關係。
 *   **`data/`**: 存放專案使用的原始資料和靜態資源。
     *   **`data/excel/`**: 存放原始 Excel 資料檔案，主要用於資料導入。
-    *   **`data/images/`**: 存放所有靜態圖片資源，如角色頭像、商店圖標、屬性圖標等，這些圖片透過後端伺服器提供給前端。**: 戰隊戰攻略頁面，包含戰隊戰簡介、YouTube 頻道推薦及常用角色列表。
-    *   **`frontend/src/pages/Dungeon/Dungeon.tsx`**: 深域攻略頁面，提供深域簡介、強化介紹及外部 Excel 連結。
-    *   **`frontend/src/pages/CharacterEditor/CharacterEditor.tsx`**: 角色編輯頁面，提供管理員對角色資料進行 CRUD 操作的介面。
+    *   **`data/images/`**: 存放所有靜態圖片資源，如角色頭像、商店圖標、屬性圖標等，這些圖片透過後端伺服器提供給前端。
 *   **`frontend/src/components/`**: 存放可複用的 UI 組件。
-    *   **`frontend/src/components/Common/Card.tsx`**: 通用卡片組件，用於內容的視覺化分組和呈現。
-    *   **`frontend/src/components/Character/CharacterImageCard.tsx`**: 顯示單個角色頭像和基本資訊的組件。
-    *   **`frontend/src/components/ClanBattle/AttributeSelector.tsx`**: 戰隊戰頁面中用於選擇屬性（或補償刀）的按鈕組件。
-    *   **`frontend/src/components/ClanBattle/CommonCharactersSection.tsx`**: 戰隊戰頁面中顯示常用角色列表的組件，按屬性、物理/法術及分級展示。
-    *   **`frontend/src/components/ClanBattle/YoutubeChannelsSection.tsx`**: 戰隊戰頁面中顯示推薦 YouTube 頻道列表的組件。
-    *   **`frontend/src/components/ClanBattle/CompensationKnifeContentSection.tsx`**: 戰隊戰頁面中顯示補償刀常用角色列表的組件。
+    *   **`frontend/src/components/Common/`**: 通用組件。
+        *   **`Card.tsx`**: 通用卡片組件，用於內容的視覺化分組和呈現。
+        *   **`UnifiedCharacterCard.tsx`**: 統一的角色卡片組件，支持多種顯示模式。
+        *   **`TabNavigation.tsx`**: 標籤頁導航組件，可複用於多個頁面。
+        *   **`TeamLineup.tsx`**: 隊伍編成顯示組件。
+        *   **`CharacterAvatar.tsx`**: 角色頭像顯示組件。
+    *   **`frontend/src/components/Character/`**: 角色相關組件。
+        *   **`CharacterImageCard.tsx`**: 顯示單個角色頭像和基本資訊的組件。
+        *   **`RatingGuideTooltip.tsx`**: 評級指南提示組件。
+    *   **`frontend/src/components/CharacterDevelopment/`**: 角色養成相關組件。
+        *   **`CharacterDevelopmentTabs.tsx`**: 角色養成標籤頁導航。
+        *   **`CharacterDevelopmentDescription.tsx`**: 角色養成描述說明。
+        *   **`PriorityTierSection.tsx`**: 優先度分級顯示組件。
+        *   **`CharacterCard.tsx`**: 角色養成專用卡片組件。
+    *   **`frontend/src/components/ClanBattle/`**: 戰隊戰相關組件。
+        *   **`AttributeSelector.tsx`**: 用於選擇屬性（或補償刀）的按鈕組件。
+        *   **`CommonCharactersSection.tsx`**: 顯示常用角色列表的組件。
+        *   **`YoutubeChannelsSection.tsx`**: 顯示推薦 YouTube 頻道列表的組件。
+        *   **`CompensationKnifeContentSection.tsx`**: 顯示補償刀常用角色列表的組件。
+    *   **`frontend/src/components/Newbie/`**: 新人指南相關組件。
+    *   **`frontend/src/components/ReturnPlayer/`**: 回鍋玩家指南相關組件。
+        *   **`CharacterPlanningSection.tsx`**: 角色與資源規劃組件。
+        *   **`DailyStrategySection.tsx`**: 日常與副本攻略組件。
+        *   **`NewbieBoostSection.tsx`**: 同步與屬性組件。
 *   **`frontend/src/services/api.ts`**: 封裝了與後端 API 互動的 Axios 實例和相關請求方法。
 *   **`frontend/src/hooks/useCharacters.ts`**: 自定義 React Hook，用於從後端獲取角色資料並管理其加載狀態。
 *   **`frontend/src/types/`**: 存放前端應用程式中使用的 TypeScript 類型定義。
-*   **`frontend/src/clanBattleData/clanBattleConfigs.ts`**: 戰隊戰頁面的靜態配置資料，包含 YouTube 頻道、常用角色列表等。
-*   **`frontend/src/dungeonData/dungeonConfigs.ts`**: 深域頁面的靜態配置資料，包含簡介、強化介紹及外部連結。
+*   **靜態配置資料檔案**:
+    *   **`frontend/src/clanBattleData/clanBattleConfigs.ts`**: 戰隊戰頁面的靜態配置資料，包含 YouTube 頻道、常用角色列表等。
+    *   **`frontend/src/dungeonData/dungeonConfigs.ts`**: 深域頁面的靜態配置資料，包含簡介、強化介紹及外部連結。
+    *   **`frontend/src/characterDevelopmentData/`**: 角色養成相關配置，包含六星、專一、專二、非六星角色推薦資料。
+    *   **`frontend/src/newbieData/`**: 新人指南相關配置資料。
+    *   **`frontend/src/returnPlayerData/`**: 回鍋玩家指南相關配置資料。
 *   **`backend/src/simple-server.ts`**: 後端 Express 伺服器的主入口檔案，負責啟動伺服器、設定路由和中間件。
 *   **`backend/src/routes/`**: 存放後端 API 的路由處理邏輯。
     *   **`backend/src/routes/auth.ts`**: 處理管理員認證相關的 API 端點。
@@ -144,7 +174,8 @@
 
 ## 6. 開發環境與啟動
 
-請參考 `README.md` 或 `gemini.md` 中的「如何啟動專案」部分。
+請參考 `README.md` 或 `CLAUDE.md` 中的「如何啟動專案」部分。
 
 ---
-**最後更新**: 2025年8月14日
+**最後更新**: 2025年8月18日  
+**主要更新**: 新增回鍋玩家指南系統、角色養成非六星角色推薦、完善組件架構文檔

@@ -1,4 +1,5 @@
 import React from 'react';
+import RatingGuideTooltip from './RatingGuideTooltip';
 
 type SortOrder = 'T0_to_倉管' | '倉管_to_T0';
 
@@ -13,7 +14,10 @@ const CharacterSortControls: React.FC<CharacterSortControlsProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="text-gray-700 font-medium mb-3 text-base">排序方式</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-gray-700 font-medium text-base">排序方式</h3>
+        <RatingGuideTooltip />
+      </div>
       <div className="flex gap-2">
         <button
           className={`flex-1 px-4 py-3 text-xs rounded-lg border-2 transition-colors font-medium ${

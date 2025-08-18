@@ -10,6 +10,7 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
 - 推薦：建議購買，性價比高  
 - 可選：根據需求選擇
 - 跳過：上述兌換完再考慮換
+同級左到右為兌換優先順序(可同時兌換多個)
 
 💡 將滑鼠懸停在角色碎片上可查看詳細資訊
 
@@ -34,6 +35,7 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
 - 推薦：建議購買，性價比高  
 - 可選：根據需求選擇
 - 跳過：上述兌換完再考慮換，裝備為全部換完才考慮的
+同級左到右為兌換優先順序(可同時兌換多個)
 
 💡 將滑鼠懸停在角色碎片上可查看詳細資訊`,
     currency: 'arena_coin',
@@ -50,6 +52,7 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
 - 推薦：建議購買，性價比高  
 - 可選：根據需求選擇
 - 跳過：上述兌換完再考慮換，裝備為全部換完才考慮的
+同級左到右為兌換優先順序(可同時兌換多個)
 
 💡 將滑鼠懸停在角色碎片上可查看詳細資訊`,
     currency: 'p_arena_coin',
@@ -66,6 +69,7 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
 - 推薦：建議購買，性價比高  
 - 可選：根據需求選擇
 - 跳過：上述兌換完再考慮換，裝備為全部換完才考慮的
+同級左到右為兌換優先順序(可同時兌換多個)
 
 💡 將滑鼠懸停在角色碎片上可查看詳細資訊`,
     currency: 'clan_coin',
@@ -76,6 +80,8 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
   master: {
     name: '大師商店',
     description: `使用大師幣兌換屬性強化素材和角色碎片
+
+購買單月所有新增大師碎片+星素碎片+星素水晶球，共消耗32500大師幣。一個月滿等無課約可賺，差不多32000(通過地下城ex6)。若因為活動多賺，可在確保下個月能購買所有屬性道具的前提下，購買角色記憶碎片。
 
 優先級說明：
 - 必買：最高優先級，強烈建議購買

@@ -8,7 +8,7 @@ export const arenaShopItems: ShopItem[] = [
     type: 'character',
     characterId: '璃乃',
     priority: 'must_buy',
-    sortOrder: 1,
+    
     shopType: 'arena'
   },
   {
@@ -17,7 +17,7 @@ export const arenaShopItems: ShopItem[] = [
     type: 'character',
     characterId: '碧 (工作服)',
     priority: 'must_buy',
-    sortOrder: 2,
+    
     shopType: 'arena'
   },
   {
@@ -26,10 +26,19 @@ export const arenaShopItems: ShopItem[] = [
     type: 'character',
     characterId: '莫妮卡',
     priority: 'must_buy',
-    sortOrder: 3,
+    
     shopType: 'arena'
   },
 
+  // 推薦角色碎片
+  {
+    id: 'arena_char_008',
+    name: '優衣(夏日)碎片',
+    type: 'character',
+    characterId: '優衣(夏日)',
+    priority: 'recommended',
+    shopType: 'arena'
+  },
   // 可選角色碎片
   {
     id: 'arena_char_004',
@@ -62,14 +71,6 @@ export const arenaShopItems: ShopItem[] = [
     name: '七七香碎片',
     type: 'character',
     characterId: '七七香',
-    priority: 'skip',
-    shopType: 'arena'
-  },
-  {
-    id: 'arena_char_008',
-    name: '優衣(夏日)碎片',
-    type: 'character',
-    characterId: '優衣(夏日)',
     priority: 'skip',
     shopType: 'arena'
   },

@@ -3,7 +3,7 @@
 ## 專案概述
 - **目標**: 建立公主連結遊戲攻略網站
 - **技術棧**: React + TypeScript + Tailwind CSS (前端), Node.js + Express + SQLite (後端)
-- **目前階段**: 角色圖鑑、商店系統、競技場頁面已完成，正在開發拖拽評級系統
+- **目前階段**: 所有主要頁面已完成，包含拖拽評級系統、新人指南、戰隊戰、深域、角色養成、回鍋玩家指南等功能
 - **開發環境**: Ubuntu 22.04 LTS, VS Code, Claude Code
 
 ## 專案結構
@@ -21,14 +21,9 @@ princess-connect-guide/
 │   │   │   │   └── CharacterTierGroup.tsx
 │   │   │   ├── CharacterEditor/ # 角色編輯相關元件
 │   │   │   │   ├── EditModeSelector.tsx
-│   │   │   │   ├── DragRatingSystem/ # 🚧 開發中
-│   │   │   │   │   ├── DragRatingSystem.tsx
-│   │   │   │   │   ├── RatingCategory.tsx
-│   │   │   │   │   ├── RatingTierBlock.tsx
-│   │   │   │   │   ├── CharacterAvatar.tsx
-│   │   │   │   │   └── hooks/
-│   │   │   │   │       ├── useDragAndDrop.ts
-│   │   │   │   │       └── useRatingData.ts
+│   │   │   │   ├── DragRatingManager.tsx      # ✅ 拖拽評級主管理器
+│   │   │   │   ├── DragRatingNavigation.tsx   # ✅ 分類導航
+│   │   │   │   ├── SingleCategoryRating.tsx   # ✅ 單分類評級管理
 │   │   │   │   └── modals/     # 編輯用對話框
 │   │   │   │       ├── AddCharacterModal.tsx
 │   │   │   │       ├── CharacterInfoModal.tsx
@@ -38,28 +33,74 @@ princess-connect-guide/
 │   │   │   ├── Arena/          # 競技場頁面元件
 │   │   │   │   ├── ArenaNavigation.tsx
 │   │   │   │   └── ArenaContent.tsx
+│   │   │   ├── ClanBattle/     # ✅ 戰隊戰元件
+│   │   │   │   ├── AttributeSelector.tsx
+│   │   │   │   ├── CommonCharactersSection.tsx
+│   │   │   │   ├── CompensationKnifeContentSection.tsx
+│   │   │   │   └── YoutubeChannelsSection.tsx
+│   │   │   ├── CharacterDevelopment/ # ✅ 角色養成元件
+│   │   │   │   ├── CharacterDevelopmentTabs.tsx     # 養成分類標籤頁
+│   │   │   │   ├── CharacterDevelopmentDescription.tsx # 養成描述說明
+│   │   │   │   ├── PriorityTierSection.tsx         # 優先度分級顯示
+│   │   │   │   └── CharacterCard.tsx               # 角色卡片元件
+│   │   │   ├── Newbie/         # ✅ 新人指南元件
+│   │   │   │   ├── MustRead.tsx
+│   │   │   │   ├── ItemOverview.tsx
+│   │   │   │   ├── CharacterSystem.tsx
+│   │   │   │   └── EventIntro.tsx
+│   │   │   ├── ReturnPlayer/   # ✅ 回鍋玩家指南元件
+│   │   │   │   ├── CharacterPlanningSection.tsx    # 角色與資源規劃
+│   │   │   │   ├── DailyStrategySection.tsx        # 日常與副本攻略
+│   │   │   │   └── NewbieBoostSection.tsx          # 同步與屬性
 │   │   │   ├── Shop/           # 商店頁面元件
+│   │   │   │   ├── ShopNavigation.tsx
+│   │   │   │   ├── ShopItemCard.tsx
+│   │   │   │   ├── CurrencyIcon.tsx
+│   │   │   │   ├── PriorityBadge.tsx
+│   │   │   │   ├── ShopTitleTooltip.tsx
+│   │   │   │   └── ManualResetButton.tsx
 │   │   │   └── Common/         # 通用元件
 │   │   │       ├── Button.tsx
 │   │   │       ├── Card.tsx
 │   │   │       ├── FilterButton.tsx
 │   │   │       ├── PageContainer.tsx
-│   │   │       └── CharacterTooltip.tsx
+│   │   │       ├── CharacterTooltip.tsx
+│   │   │       ├── MarkdownText.tsx
+│   │   │       ├── UnifiedCharacterCard.tsx     # ✅ 統一角色卡片元件
+│   │   │       ├── TabNavigation.tsx            # ✅ 標籤頁導航元件
+│   │   │       ├── TeamLineup.tsx               # ✅ 隊伍編成元件
+│   │   │       └── CharacterAvatar.tsx          # ✅ 角色頭像元件
 │   │   ├── hooks/              # 自定義 React Hooks
 │   │   │   ├── useCharacterFilters.ts
-│   │   │   └── useCharacters.ts
+│   │   │   ├── useCharacters.ts
+│   │   │   ├── useImageErrorHandler.ts
+│   │   │   └── useTooltip.ts
 │   │   ├── pages/              # 頁面元件
 │   │   │   ├── Characters/     # 角色圖鑑頁面
 │   │   │   ├── CharacterEditor/ # 角色編輯頁面
+│   │   │   ├── Home/           # ✅ 首頁
+│   │   │   ├── CharacterDevelopment/ # ✅ 角色養成頁面
 │   │   │   ├── Shop/           # 商店攻略頁面
-│   │   │   └── Arena/          # 競技場頁面
+│   │   │   ├── Arena/          # 競技場頁面
+│   │   │   ├── ClanBattle/     # ✅ 戰隊戰頁面
+│   │   │   ├── Dungeon/        # ✅ 深域頁面
+│   │   │   ├── Newbie/         # ✅ 新人指南頁面
+│   │   │   └── ReturnPlayer/   # ✅ 回鍋玩家指南頁面
 │   │   ├── services/           # API 服務
 │   │   │   └── api.ts
 │   │   ├── types/              # TypeScript 類型定義
 │   │   │   ├── index.ts
-│   │   │   └── arena.ts
+│   │   │   ├── arena.ts
+│   │   │   └── shop.ts
 │   │   ├── shopData/           # 商店資料配置
 │   │   ├── arenaData/          # 競技場資料配置
+│   │   ├── clanBattleData/     # ✅ 戰隊戰資料配置
+│   │   ├── dungeonData/        # ✅ 深域資料配置
+│   │   ├── characterDevelopmentData/ # ✅ 角色養成資料配置
+│   │   ├── newbieData/         # ✅ 新人指南資料配置
+│   │   ├── returnPlayerData/   # ✅ 回鍋玩家指南資料配置
+│   │   ├── config/             # ✅ 通用配置
+│   │   ├── utils/              # ✅ 工具函數
 │   │   ├── App.tsx             # 主應用 (含導航)
 │   │   └── main.tsx
 │   ├── tailwind.config.cjs     # Tailwind 配置
@@ -79,9 +120,12 @@ princess-connect-guide/
 │   └── package.json
 ├── data/
 │   ├── images/
-│   │   ├── characters/         # 角色圖片資料夾
-│   │   ├── shop_icon/          # 商店圖標
-│   │   └── data_icon/          # 資料圖標
+│   │   ├── characters/         # 角色圖片資料夾 (305+ 角色圖片)
+│   │   ├── icons/              # ✅ 各類圖標資源
+│   │   │   ├── 商店圖標/       # 商店相關圖標
+│   │   │   ├── 道具圖標/       # 各種遊戲道具圖標
+│   │   │   └── 屬性圖標/       # 角色屬性圖標
+│   │   └── ArenaAndRem/        # ✅ 競技場和追憶相關圖片
 └── CLAUDE.md                   # 本檔案
 ```
 
@@ -119,115 +163,108 @@ princess-connect-guide/
 ### ✅ 導航系統
 - **主導航**: 8 個功能按鈕（新人、回鍋玩家、角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成）
 - **單頁應用**: 切換頁面無需重新載入
-- **已實現頁面**: 角色圖鑑、商店攻略、競技場
+- **已實現頁面**: 角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成、新人指南、回鍋玩家指南
 
 ### ✅ 角色編輯系統
 - **完整 CRUD 操作**: 新增、查看、編輯、刪除角色
-- **三種編輯模式**: 完整編輯、評價編輯、補充資料
+- **四種編輯模式**: 完整編輯、評價編輯、補充資料、拖拽評級
 - **批次搜尋刪除**: 支援按角色名稱搜尋後批次刪除
 - **模組化 UI 元件**: 可複用的對話框和表單元件
 - **檔案上傳功能**: 支援角色圖片上傳
 - **管理員認證**: 基本的登入驗證系統
 
-## 🚧 開發中功能
+### ✅ 拖拽評級調整系統
+**完整實現**: 提供直觀的拖拽介面來快速調整角色評級，大幅提升管理效率
 
-### 拖拽評級調整系統
-**目標**: 提供直觀的拖拽介面來快速調整角色評級，取代繁瑣的逐一點擊編輯
-
-#### 系統設計
+#### 系統特色
 - **四個評級分類**: 競技場進攻、競技場防守、戰隊戰、深域及抄作業
 - **六個評級區塊**: T0、T1、T2、T3、T4、倉管
+- **屬性篩選**: 支援按火、水、風、光、闇屬性篩選角色
 - **拖拽操作**: 角色頭像可在不同評級區塊間自由拖拽
-- **手動提交**: 批次儲存變更，避免頻繁API呼叫
+- **批次提交**: 手動批次儲存變更，避免頻繁API呼叫
 
-#### 技術實現計劃
+#### 技術實現
+- **組件架構**: 
+  - `DragRatingManager.tsx`: 主管理組件
+  - `DragRatingNavigation.tsx`: 分類導航
+  - `SingleCategoryRating.tsx`: 單分類評級管理
+  - `AttributeSelector.tsx`: 屬性篩選器
+- **HTML5 Drag & Drop API**: 原生拖拽支援
+- **本地狀態管理**: 即時預覽，手動提交
+- **批次API**: `PATCH /api/characters/batch-ratings` 端點
 
-**階段一: 新編輯模式與頁面結構**
-1. 擴展 EditMode 類型: `'complete' | 'rating' | 'missing' | 'drag-rating'`
-2. 修改 EditModeSelector: 新增「拖拽評級」按鈕
-3. 設計響應式布局: 4分類 × 6評級的網格系統
+#### 用戶體驗
+- **視覺反饋**: 拖拽時半透明效果，有效區域高亮
+- **變更追蹤**: 顯示待儲存變更數量
+- **錯誤處理**: 詳細的錯誤回報機制
+- **響應式設計**: 支援各種螢幕尺寸
 
-**階段二: 組件架構**
-```
-DragRatingSystem/
-├── DragRatingSystem.tsx          # 主組件：整體布局和狀態管理
-├── RatingCategory.tsx             # 單個分類容器（如競技場進攻）
-├── RatingTierBlock.tsx            # 單個評級區塊（如T0區塊）
-├── CharacterAvatar.tsx            # 可拖拽的角色頭像組件
-└── hooks/
-    ├── useDragAndDrop.ts          # 拖拽邏輯和狀態管理
-    └── useRatingData.ts           # 評級資料處理和API整合
-```
+### ✅ 戰隊戰攻略頁面
+- **完整攻略系統**: 戰隊戰簡介、階段建議、等級參考
+- **YouTube 頻道推薦**: 精選戰隊戰攻略頻道
+- **角色推薦系統**: 
+  - 按屬性分類 (火、水、風、光、闇)
+  - 按傷害類型分類 (物理、法術)
+  - 角色重要性分級 (核心、重要、普通)
+- **補償刀專區**: 專門的補償刀角色推薦
+- **視覺化角色頭像**: 整合角色圖片展示
 
-**階段三: 拖拽功能實現**
-- **技術選擇**: HTML5 Drag & Drop API（原生，輕量級）
-- **拖拽流程**:
-  1. `onDragStart`: 記錄被拖拽角色和原始評級
-  2. `onDragOver`: 驗證放置目標有效性
-  3. `onDrop`: 更新本地狀態，記錄變更
+### ✅ 深域攻略頁面  
+- **深域系統介紹**: 完整的深域機制說明
+- **強化系統詳解**: 
+  - 屬性等級系統
+  - 屬性等級節點
+  - 大師技能
+  - 職階專精
+- **道具圖示整合**: 各種強化道具的視覺化展示
+- **外部資源連結**: 提供詳細的Excel攻略連結
 
-**階段四: 手動提交機制**
-```typescript
-interface DragRatingState {
-  originalData: RatingData        // API載入的原始資料
-  currentData: RatingData         // 當前編輯狀態
-  hasUnsavedChanges: boolean      // 是否有未儲存變更
-  pendingChanges: ChangeRecord[]  // 變更記錄
-}
-```
+### ✅ 角色養成指南
+- **四大養成分類**: 六星、專用裝備1、專用裝備2、非六星
+- **優先度系統**: S級、A級、B級、C級分級推薦
+- **非六星角色推薦**: 9個常用非六星角色的詳細說明
+  - 碧(工作服/插班生)、魔霞、優妮(聖學祭)、霞(夏日)
+  - 七七香(夏日)、空花(大江戶)、香織(夏日)、真步(灰姑娘)
+  - 優先度指導: 開專>升五星的養成策略
+- **角色搜尋**: 支援角色名稱搜尋功能
+- **詳細養成資訊**: 每個角色的養成建議和重要性說明
+- **圖片整合**: 角色頭像和六星頭像展示，非六星角色左圖右文顯示
+- **懸停提示**: 完整角色資訊展示
 
-**操作流程**:
-1. 載入所有角色資料到本地狀態
-2. 拖拽操作僅更新本地狀態
-3. 追蹤所有變更到 pendingChanges
-4. 提供「儲存變更」按鈕進行批次提交
-5. 成功後同步原始資料，失敗時保持編輯狀態
+### ✅ 新人指南系統
+- **四大指南分類**: 
+  - 新人必看: 基礎遊戲概念和建議
+  - 道具總覽: 各種遊戲道具說明
+  - 角色系統: 角色養成相關介紹  
+  - 活動介紹: 各類活動機制說明
+- **分頁導航**: 清晰的標籤頁切換
+- **豐富內容**: 詳細的文字說明和建議
+- **視覺化展示**: 整合相關圖示和說明
 
-**階段五: UI/UX 優化**
-- **視覺設計**: 分類區域明確分隔，評級區塊顏色區分
-- **拖拽反饋**: 
-  - 拖拽時半透明效果
-  - 有效放置區域高亮
-  - 無效區域禁用圖標
-- **變更提示**: 未儲存角色加上視覺標記
-- **響應式設計**: 桌面4列、平板2列、手機1列
+### ✅ 回鍋玩家指南系統
+- **三大指南分類**:
+  - 養成與抽角: 角色培養和抽卡策略
+  - 同步與屬性: 等級同步和屬性強化
+  - 日常與副本攻略: 日常任務和副本推進
+- **角色與資源規劃**:
+  - 六星角色確認和養成建議
+  - 非六星常用角色刷取策略
+  - 善用未來視抽角規劃
+  - 跟隨加倍活動資源優化
+- **專業建議**: 針對回鍋玩家的具體情況提供建議
+- **優先度指導**: 清晰的養成和資源分配優先順序
 
-**階段六: 效能優化**
-- **大資料處理**: 虛擬化滾動（如有需要）
-- **記憶化**: React.memo 防止不必要重渲染
-- **批次API**: 設計批次更新端點減少網路請求
+## 🚧 未來優化計劃
 
-#### API 設計
-**選項A: 現有API多次呼叫**
-```typescript
-const saveChanges = async () => {
-  await Promise.allSettled(
-    pendingChanges.map(change => 
-      api.put(`/characters/${change.characterId}`, {
-        [change.field]: change.newValue
-      })
-    )
-  )
-}
-```
+### 效能優化
+- **虛擬化滾動**: 處理大量角色資料時的效能提升
+- **圖片懶載入**: 減少初始載入時間
+- **API 快取**: 減少重複網路請求
 
-**選項B: 新增批次API（建議）**
-```
-PUT /api/characters/batch
-{
-  updates: [
-    { id: 'char_123', 戰隊戰: 'T1' },
-    { id: 'char_456', 競技場進攻: 'T0' }
-  ]
-}
-```
-
-#### 用戶體驗設計
-- **控制按鈕**: 儲存變更(顯示變更數量)、重置變更、取消
-- **變更摘要**: 可選顯示待儲存變更列表
-- **離開保護**: 未儲存變更時的離開確認
-- **快捷鍵**: Ctrl+S 快速儲存
-- **錯誤處理**: 部分失敗時的詳細錯誤報告
+### 功能增強
+- **角色比較功能**: 並排比較多個角色數據
+- **個人化設定**: 使用者偏好設定儲存
+- **匯出功能**: 支援將資料匯出為各種格式
 
 ## 技術實現
 
@@ -289,7 +326,7 @@ npm run dev
 - `GET /api/characters/:id` - 獲取單一角色
 - `POST /api/characters` - 新增角色
 - `PUT /api/characters/:id` - 更新角色資料
-- `PUT /api/characters/batch` - 🚧 批次更新角色（開發中）
+- `PATCH /api/characters/batch-ratings` - 批次更新角色評級
 - `DELETE /api/characters/:id` - 刪除角色
 - `POST /api/auth/login` - 管理員登入
 - `POST /api/auth/create-admin` - 創建管理員帳號
@@ -307,16 +344,25 @@ npm run dev
 
 ## 資料來源
 - Excel 檔案: `2025公主連結角色簡略介紹表_converted.xlsx`
-- 工作表: 前衛、中衛、後衛角色資料
-- 圖片資料夾: `data/images/characters/`
+- 工作表: 前衛、中衛、後衛角色資料  
+- 角色圖片: `data/images/characters/`
+- 圖標資源: `data/images/icons/`
 
-## 未來開發計畫
-其他頁面功能將重新設計開發：
-- 新人指南
-- 回鍋玩家建議
-- 戰隊戰攻略
-- 深域攻略
-- 角色養成指南
+## 核心功能完成度
+
+✅ **已完成的主要功能**:
+- 角色圖鑑系統 (完整)
+- 商店攻略系統 (完整)
+- 競技場/試煉/追憶 (完整)
+- 戰隊戰攻略 (完整)
+- 深域攻略 (完整)
+- 角色養成指南 (完整，含非六星角色)
+- 新人指南 (完整)
+- 回鍋玩家指南 (完整)
+- 角色編輯系統 (完整，含拖拽評級)
+
+🚧 **待開發功能**:
+- 無 (所有主要功能已完成)
 
 ## 使用方式
 1. 訪問 `http://localhost:5173`
@@ -327,6 +373,6 @@ npm run dev
 
 ---
 
-**最後更新**: 2025年8月3日  
+**最後更新**: 2025年8月18日  
 **負責人**: 開發者  
-**專案狀態**: 角色圖鑑、商店系統、競技場頁面完成，拖拽評級系統開發中
+**專案狀態**: 所有主要功能已完成，包含完整的角色管理、攻略系統、拖拽評級、新人指南、回鍋玩家指南、非六星角色養成等全方位功能

@@ -224,7 +224,11 @@ const AddCharacterModal: React.FC<AddCharacterModalProps> = ({
               <div className="mt-2 text-sm text-gray-600">
                 已選擇檔案: {selectedPhoto.name}
                 <br />
-                將儲存為: {character.角色名稱 || '未命名'}.{selectedPhoto.name.split('.').pop()}
+                將儲存為: {
+                  character.角色名稱 
+                    ? character.角色名稱.replace(/[()（）&\s]/g, '') + '.' + selectedPhoto.name.split('.').pop()
+                    : '未命名.' + selectedPhoto.name.split('.').pop()
+                }
               </div>
             )}
             <div className="mt-1 text-xs text-gray-500">
