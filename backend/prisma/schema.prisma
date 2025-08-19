@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -23,8 +23,8 @@ model Character {
   description String? @map("說明")
   avatar      String? @map("頭像檔名")
   avatar_6    String? @map("六星頭像檔名")
-  createdAt   String @default("CURRENT_TIMESTAMP")
-  updatedAt   String @default("CURRENT_TIMESTAMP")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@map("characters")
 }
