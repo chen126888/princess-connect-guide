@@ -51,9 +51,27 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 圖片服務 - 使用本地檔案 (本地測試環境)
-console.log('📁 Using local image files for development');
-app.use('/images', express.static(path.join(__dirname, '../../data/images')));
+// 圖片服務 - 環境變數控制
+if (NODE_ENV === 'development') {
+  console.log('📁 Using local image files for development');
+  app.use('/images', express.static(path.join(__dirname, '../../data/images')));
+} else {
+  // 生產環境：重導向到 R2
+  const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL;
+  if (R2_PUBLIC_URL) {
+    console.log('🔗 Using R2 redirect for production');
+    app.use('/images', (req, res, next) => {
+      const r2Url = `${R2_PUBLIC_URL}${req.path}`;
+      console.log(`🔗 Redirecting ${req.path} to ${r2Url}`);
+      res.redirect(301, r2Url);
+    });
+  } else {
+    console.log('❌ Production environment but R2_PUBLIC_URL not configured');
+    app.use('/images', (req, res, next) => {
+      res.status(404).json({ error: 'Image service not configured for production' });
+    });
+  }
+}
 
 // 路由
 app.use('/api/auth', authRoutes);

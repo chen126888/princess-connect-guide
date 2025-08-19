@@ -18,6 +18,10 @@ build/
 .env.test.local
 .env.production.local
 
+# Allow framework environment files (safe to commit)
+!.env.development
+!.env.production
+!.env.example
 # Database
 *.db
 *.sqlite

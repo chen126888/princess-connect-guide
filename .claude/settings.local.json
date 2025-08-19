@@ -17,7 +17,12 @@
       "Bash(rm:*)",
       "Bash(sqlite3:*)",
       "Bash(find:*)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(npm start)",
+      "Bash(npm run start:*)",
+      "Bash(npm run deploy-check:*)",
+      "Bash(pkill:*)",
+      "Bash(kill:*)"
     ],
     "deny": []
   }

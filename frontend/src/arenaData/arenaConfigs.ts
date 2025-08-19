@@ -15,7 +15,7 @@ export const arenaConfigs: Record<ArenaType, ArenaConfig> = {
         {
           title: '常用角色',
           description: '以下是競技場中推薦使用的角色，將滑鼠懸停在頭像上可查看詳細資訊。',
-          recommendedCharacters: ['新年怜', '暗姊姊', '嘉夜', '祈梨', '布丁', '紡希', '跳跳虎', '靜流&璃乃', '豬妹', '酒鬼', '步未', '雌小鬼', '若菜', '默涅', '公可', '真陽', '涅妃', '咲戀 (夏日)', '妹弓', '霞', '魔霞', '愛梅斯', '凱留', '多娜', '厄', '雪', '涅比亞', '公凱', '泳裝EMT']
+          recommendedCharacters: ['新年怜', '暗姊姊', '嘉夜', '祈梨', '布丁', '紡希', '跳跳虎', '靜流&璃乃', '豬妹', '酒鬼', '步未', '雌小鬼', '若菜', '默涅', '公可', '真陽', '涅妃', '咲戀(夏日)', '妹弓', '霞', '魔霞', '愛梅斯', '凱留', '多娜', '厄', '雪', '涅比亞', '公凱', '泳裝EMT']
         },
         {
           title: '新手推薦隊伍',
@@ -24,7 +24,7 @@ export const arenaConfigs: Record<ArenaType, ArenaConfig> = {
             {
               title: '戰鬥競技場 (1 vs 1)：進攻',
               description: '',
-              recommendedCharacters: ['凱留', '妹弓', ['咲戀 (夏日)', '雪'], '步未', ['杏奈', '布丁']]
+              recommendedCharacters: ['凱留', '妹弓', ['咲戀(夏日)', '雪'], '步未', ['杏奈', '布丁']]
             },
             {
               title: '戰鬥競技場 (1 vs 1)：防守',
@@ -34,7 +34,7 @@ export const arenaConfigs: Record<ArenaType, ArenaConfig> = {
             {
               title: '公主競技場 (3 vs 3)：第一隊',
               description: '',
-              recommendedCharacters: ['凱留', '妹弓', ['咲戀 (夏日)', '雪'], '步未', ['杏奈', '布丁']]
+              recommendedCharacters: ['凱留', '妹弓', ['咲戀(夏日)', '雪'], '步未', ['杏奈', '布丁']]
             },
             {
               title: '公主競技場 (3 vs 3)：第二隊',
