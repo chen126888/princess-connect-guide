@@ -1,9 +1,10 @@
 import express from 'express';
 import { dbGet, dbAll, dbRun } from '../utils/database';
+import { requireAuth, optionalAuth } from '../middleware/auth';
 
 const router = express.Router();
 
-// 取得所有角色
+// 取得所有角色 (公開 API)
 router.get('/', async (req, res) => {
   try {
     const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰, 深域及抄作業, page = 1, limit = 100 } = req.query;
@@ -77,8 +78,8 @@ router.get('/', async (req, res) => {
   }
 });
 
-// 批次更新角色評級 - 必須在 /:id 路由之前
-router.patch('/batch-ratings', async (req, res) => {
+// 批次更新角色評級 (需要管理員權限)
+router.patch('/batch-ratings', requireAuth, async (req, res) => {
   try {
     const { updates } = req.body;
     
@@ -154,7 +155,7 @@ router.patch('/batch-ratings', async (req, res) => {
   }
 });
 
-// 取得單一角色
+// 取得單一角色 (公開 API)
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -175,8 +176,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// 更新角色資料
-router.put('/:id', async (req, res) => {
+// 更新角色資料 (需要管理員權限)
+router.put('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
@@ -229,8 +230,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// 新增角色
-router.post('/', async (req, res) => {
+// 新增角色 (需要管理員權限)
+router.post('/', requireAuth, async (req, res) => {
   try {
     const characterData = req.body;
     
@@ -291,8 +292,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// 刪除角色
-router.delete('/:id', async (req, res) => {
+// 刪除角色 (需要管理員權限)
+router.delete('/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
     

@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { dbRun } from '../utils/database';
+import { requireAuth } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -43,8 +44,8 @@ const upload = multer({
   }
 });
 
-// 上傳角色照片
-router.post('/character-photo', upload.single('photo'), async (req, res) => {
+// 上傳角色照片 (需要管理員權限)
+router.post('/character-photo', requireAuth, upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: '沒有上傳檔案' });

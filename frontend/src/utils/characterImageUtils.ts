@@ -11,21 +11,21 @@ const generateFileName = (characterName: string): string => {
 
 // 共用的圖片路徑生成函數
 export const getCharacterImagePath = (character: Character): { sixStar: string | null; normal: string | null } => {
-  const API_BASE_URL = 'http://localhost:3000';
+  const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images';
   
   // 如果有明確的檔名，優先使用
   let normalImagePath: string | null = null;
   
   if (character.頭像檔名) {
-    normalImagePath = `${API_BASE_URL}/images/characters/${character.頭像檔名}`;
+    normalImagePath = `${IMAGE_BASE_URL}/characters/${character.頭像檔名}`;
   } else if (character.角色名稱) {
     // 如果沒有檔名，嘗試根據角色名稱生成
     const generatedFileName = generateFileName(character.角色名稱);
-    normalImagePath = `${API_BASE_URL}/images/characters/${generatedFileName}`;
+    normalImagePath = `${IMAGE_BASE_URL}/characters/${generatedFileName}`;
   }
   
   return {
-    sixStar: character.六星頭像檔名 ? `${API_BASE_URL}/images/characters/${character.六星頭像檔名}` : null,
+    sixStar: character.六星頭像檔名 ? `${IMAGE_BASE_URL}/characters/${character.六星頭像檔名}` : null,
     normal: normalImagePath
   };
 };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Home from './pages/Home/Home';
 import Characters from './pages/Characters/Characters';
 import CharacterEditor from './pages/CharacterEditor/CharacterEditor';
@@ -9,6 +9,9 @@ import Dungeon from './pages/Dungeon/Dungeon';
 import CharacterDevelopmentPage from './pages/CharacterDevelopment/CharacterDevelopment';
 import Newbie from './pages/Newbie/Newbie';
 import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
+import SuperAdminInitModal from './components/Admin/SuperAdminInitModal';
+import AdminManagement from './components/Admin/AdminManagement';
+import { setAuthToken, removeAuthToken, isAuthenticated, getCurrentAdmin, isSuperAdmin } from './utils/auth';
 
 // 頁面類型定義
 type PageType = 
@@ -28,15 +31,50 @@ type PageType =
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [isAdminMode, setIsAdminMode] = useState(false);
+  const [currentAdmin, setCurrentAdmin] = useState<any>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [hoveredItem, setHoveredItem] = useState<PageType | null>(null);
   const [imageErrors, setImageErrors] = useState<Set<PageType>>(new Set());
+  const [needsInit, setNeedsInit] = useState(false);
+  const [showAdminManagement, setShowAdminManagement] = useState(false);
+  const [initLoading, setInitLoading] = useState(true);
+
+  // 檢查登入狀態和初始化
+  useEffect(() => {
+    const checkAuthAndInit = async () => {
+      try {
+        // 檢查本地 Token
+        if (isAuthenticated()) {
+          const admin = getCurrentAdmin();
+          if (admin) {
+            setIsAdminMode(true);
+            setCurrentAdmin({
+              ...admin,
+              name: admin.name // 這裡可能需要重新獲取完整資訊
+            });
+          }
+        }
+
+        // 檢查是否需要初始化
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+        const response = await fetch(`${API_BASE_URL}/auth/check-init`);
+        const data = await response.json();
+        setNeedsInit(data.needsInit);
+      } catch (error) {
+        console.error('Check auth and init error:', error);
+      }
+      setInitLoading(false);
+    };
+
+    checkAuthAndInit();
+  }, []);
 
   // 管理員登入處理
   const handleAdminLogin = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/auth/login', {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -47,7 +85,11 @@ function App() {
       const data = await response.json();
 
       if (response.ok && data.success) {
+        // 儲存 JWT Token 和管理員資訊
+        setAuthToken(data.token, data.admin);
+        
         setIsAdminMode(true);
+        setCurrentAdmin(data.admin);
         setShowLoginModal(false);
         setLoginForm({ username: '', password: '' });
         alert(`歡迎 ${data.admin.name}，管理員模式已啟用！`);
@@ -62,8 +104,15 @@ function App() {
 
   // 管理員登出
   const handleAdminLogout = () => {
+    removeAuthToken();
     setIsAdminMode(false);
+    setCurrentAdmin(null);
     setCurrentPage('home');
+  };
+
+  // 初始化完成回調
+  const handleInitComplete = () => {
+    setNeedsInit(false);
   };
 
   // 處理圖片載入錯誤
@@ -168,7 +217,15 @@ function App() {
               </button>
             ) : (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-green-600 font-medium">✓ 管理員模式</span>
+                <span className="text-sm text-green-600 font-medium">✓ {currentAdmin?.name || '管理員'}模式</span>
+                {currentAdmin?.role === 'superadmin' && (
+                  <button
+                    onClick={() => setShowAdminManagement(true)}
+                    className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600 transition-colors"
+                  >
+                    管理員
+                  </button>
+                )}
                 <button
                   onClick={handleAdminLogout}
                   className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
@@ -277,9 +334,30 @@ function App() {
         </div>
       )}
 
+      {/* 超級管理員初始化彈窗 */}
+      {needsInit && !initLoading && (
+        <SuperAdminInitModal onInitComplete={handleInitComplete} />
+      )}
+
+      {/* 管理員管理彈窗 */}
+      {showAdminManagement && currentAdmin?.role === 'superadmin' && (
+        <AdminManagement 
+          onClose={() => setShowAdminManagement(false)} 
+        />
+      )}
+
       {/* 頁面內容 */}
       <main>
-        {renderCurrentPage()}
+        {initLoading ? (
+          <div className="min-h-screen flex items-center justify-center">
+            <div className="text-center">
+              <div className="text-2xl mb-4">🌸 公主連結攻略網站 🌸</div>
+              <div className="text-gray-600">載入中...</div>
+            </div>
+          </div>
+        ) : needsInit ? null : (
+          renderCurrentPage()
+        )}
       </main>
     </div>
   );

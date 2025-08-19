@@ -8,22 +8,23 @@ datasource db {
 }
 
 model Character {
-  id          String   @id @default(cuid())
-  name        String   @unique @map("角色名稱")
-  nickname    String?  @map("暱稱")
-  position    String   @map("位置")
-  role        String?  @map("角色定位")
-  rarity      String?  @map("常駐/限定")
-  element     String?  @map("屬性")
-  ability     String?  @map("能力偏向")
-  arena_atk   String?  @map("競技場進攻")
-  arena_def   String?  @map("競技場防守")
-  clan_battle String?  @map("戰隊戰等抄作業場合")
-  description String?  @map("說明")
-  avatar      String?  @map("頭像檔名")
-  avatar_6    String?  @map("六星頭像檔名")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String @id
+  name        String @unique @map("角色名稱")
+  nickname    String? @map("暱稱")
+  position    String @map("位置")
+  role        String? @map("角色定位")
+  rarity      String? @map("常駐/限定")
+  element     String? @map("屬性")
+  ability     String? @map("能力偏向")
+  arena_atk   String? @map("競技場進攻")
+  arena_def   String? @map("競技場防守")
+  clan_battle String? @map("戰隊戰")
+  dungeon     String? @map("深域及抄作業")
+  description String? @map("說明")
+  avatar      String? @map("頭像檔名")
+  avatar_6    String? @map("六星頭像檔名")
+  createdAt   String @default("CURRENT_TIMESTAMP")
+  updatedAt   String @default("CURRENT_TIMESTAMP")
 
   @@map("characters")
 }
@@ -42,24 +43,97 @@ model ShopItem {
   @@map("shop_items")
 }
 
-model Guide {
+// 商店攻略配置
+model ShopGuide {
+  id              String   @id @default(cuid())
+  shopType        String   @unique // dungeon, arena, clan, etc.
+  name            String
+  description     String
+  currency        String
+  currencyIcon    String
+  currencyName    String
+  currencySource  String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("shop_guides")
+}
+
+// 競技場攻略配置
+model ArenaGuide {
+  id          String   @id @default(cuid())
+  arenaType   String   @unique // arena, trial, memory
+  name        String
+  description String?
+  icon        String?
+  content     String   // JSON格式儲存詳細內容
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("arena_guides")
+}
+
+// 戰隊戰攻略配置
+model ClanBattleGuide {
   id        String   @id @default(cuid())
-  title     String
-  type      String
-  content   String
-  author    String?
+  type      String   @unique @default("main") // main, youtube, characters, compensation
+  content   String   // JSON格式儲存內容
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("guides")
+  @@map("clan_battle_guides")
+}
+
+// 深域攻略配置
+model DungeonGuide {
+  id        String   @id @default(cuid())
+  content   String   // JSON格式儲存內容
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("dungeon_guides")
+}
+
+// 角色養成攻略配置
+model CharacterDevelopmentGuide {
+  id        String   @id @default(cuid())
+  category  String   @unique // sixStar, uniqueEquipment1, uniqueEquipment2, nonSixStar
+  content   String   // JSON格式儲存角色資料
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("character_development_guides")
+}
+
+// 新人指南配置
+model NewbieGuide {
+  id        String   @id @default(cuid())
+  category  String   @unique // mustRead, itemOverview, characterSystem, eventIntro, teamFormation
+  content   String   // JSON格式儲存內容
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("newbie_guides")
+}
+
+// 回鍋玩家指南配置
+model ReturnPlayerGuide {
+  id        String   @id @default(cuid())
+  category  String   @unique // newbieBoost, characterPlanning, dailyStrategy
+  content   String   // JSON格式儲存內容
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("return_player_guides")
 }
 
 model Admin {
-  id        String   @id @default(cuid())
+  id        String   @id
   username  String   @unique
   password  String
   name      String?
   isActive  Boolean  @default(true)
+  role      String   @default("admin") // "superadmin" or "admin"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
