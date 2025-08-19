@@ -17,15 +17,15 @@ export const getCharacterImagePath = (character: Character): { sixStar: string |
   let normalImagePath: string | null = null;
   
   if (character.頭像檔名) {
-    normalImagePath = `${IMAGE_BASE_URL}/characters/${character.頭像檔名}`;
+    normalImagePath = `${IMAGE_BASE_URL}/characters/${encodeURIComponent(character.頭像檔名)}`;
   } else if (character.角色名稱) {
     // 如果沒有檔名，嘗試根據角色名稱生成
     const generatedFileName = generateFileName(character.角色名稱);
-    normalImagePath = `${IMAGE_BASE_URL}/characters/${generatedFileName}`;
+    normalImagePath = `${IMAGE_BASE_URL}/characters/${encodeURIComponent(generatedFileName)}`;
   }
   
   return {
-    sixStar: character.六星頭像檔名 ? `${IMAGE_BASE_URL}/characters/${character.六星頭像檔名}` : null,
+    sixStar: character.六星頭像檔名 ? `${IMAGE_BASE_URL}/characters/${encodeURIComponent(character.六星頭像檔名)}` : null,
     normal: normalImagePath
   };
 };

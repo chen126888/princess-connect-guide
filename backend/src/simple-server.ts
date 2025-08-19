@@ -51,20 +51,9 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// 圖片服務 - 重導向到 Cloudflare R2
-const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL;
-app.use('/images', (req, res, next) => {
-  if (R2_PUBLIC_URL) {
-    // 重導向到 R2 URL
-    const r2Url = `${R2_PUBLIC_URL}${req.path}`;
-    console.log(`🔗 Redirecting ${req.path} to ${r2Url}`);
-    res.redirect(301, r2Url);
-  } else {
-    // 如果沒有設定 R2_PUBLIC_URL，退回使用本地檔案
-    console.log('⚠️  R2_PUBLIC_URL not configured, using local files');
-    express.static(path.join(__dirname, '../../data/images'))(req, res, next);
-  }
-});
+// 圖片服務 - 使用本地檔案 (本地測試環境)
+console.log('📁 Using local image files for development');
+app.use('/images', express.static(path.join(__dirname, '../../data/images')));
 
 // 路由
 app.use('/api/auth', authRoutes);
