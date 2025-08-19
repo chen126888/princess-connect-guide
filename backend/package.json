@@ -14,7 +14,7 @@
     "import-excel": "ts-node scripts/importExcelData.ts",
     "extract-images": "ts-node scripts/extractImages.ts",
     "update-images": "ts-node scripts/updateCharacterImages.ts",
-    "postbuild": "cp -r prisma dist/ && cp -r data dist/",
+    "postbuild": "cp -r prisma dist/",
     "generate-jwt-secret": "node scripts/generateJwtSecret.js",
     "deploy-check": "node scripts/deploy-check.js",
     "test": "echo \"Error: no test specified\" && exit 1"
