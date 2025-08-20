@@ -208,6 +208,7 @@ router.put('/:id', requireAuth, async (req, res) => {
     if (updateData.深域及抄作業 !== undefined) mappedData.dungeon = updateData.深域及抄作業 || null;
     if (updateData.說明 !== undefined) mappedData.description = updateData.說明 || null;
     if (updateData.頭像檔名 !== undefined) mappedData.avatar = updateData.頭像檔名 || null;
+    if (updateData.六星頭像檔名 !== undefined) mappedData.avatar_6 = updateData.六星頭像檔名 || null;
     
     if (Object.keys(mappedData).length === 0) {
       console.log('No valid fields to update');
@@ -270,7 +271,8 @@ router.post('/', requireAuth, async (req, res) => {
         clan_battle: characterData.戰隊戰 || null,
         dungeon: characterData.深域及抄作業 || null,
         description: characterData.說明 || null,
-        avatar: characterData.頭像檔名 || null
+        avatar: characterData.頭像檔名 || null,
+        avatar_6: characterData.六星頭像檔名 || null
       }
     });
     
