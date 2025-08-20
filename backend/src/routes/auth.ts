@@ -121,7 +121,7 @@ router.post('/create-first-admin', async (req, res) => {
     const existingAdmins = await dbGet('SELECT COUNT(*) as count FROM admins');
     console.log('Existing admins check:', existingAdmins);
     
-    const adminCount = existingAdmins?.count || existingAdmins?.[0] || 0;
+    const adminCount = parseInt(existingAdmins?.count) || 0;
     if (adminCount > 0) {
       return res.status(403).json({ error: 'Admin already exists. Use /create-admin endpoint.' });
     }
@@ -134,13 +134,13 @@ router.post('/create-first-admin', async (req, res) => {
     
     await dbRun(
       `INSERT INTO admins (id, username, password, name, role) 
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5)`,
       [adminId, username, hashedPassword, name || 'Super Admin', 'superadmin']
     );
 
     // 取得創建的管理員資料
     const newAdmin = await dbGet(
-      'SELECT id, username, name, role, isActive FROM admins WHERE id = ?',
+      'SELECT id, username, name, role, "isActive" FROM admins WHERE id = $1',
       [adminId]
     );
 
