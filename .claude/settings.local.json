@@ -26,7 +26,9 @@
       "Bash(git commit:*)",
       "Bash(npm run migrate-to-production:*)",
       "Bash(export ADMIN_USERNAME=\"admin\")",
-      "Bash(export ADMIN_PASSWORD=\"PrincessConnect2025!\")"
+      "Bash(export ADMIN_PASSWORD=\"PrincessConnect2025!\")",
+      "Bash(DATABASE_URL=\"postgresql://princess_connect_db_user:Yyqt9xZF8tZBaNGz7rllwJL0AhpDYK7j@dpg-ctgltm68ii6s73d6mp00-a.oregon-postgres.render.com/princess_connect_db\" npx ts-node scripts/pushSchema.ts)",
+      "Bash(printenv)"
     ],
     "deny": []
   }

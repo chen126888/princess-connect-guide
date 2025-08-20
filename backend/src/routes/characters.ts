@@ -1,5 +1,5 @@
 import express from 'express';
-import { dbGet, dbAll, dbRun } from '../utils/database';
+import { prisma } from '../utils/database';
 import { requireAuth, optionalAuth } from '../middleware/auth';
 
 const router = express.Router();
@@ -9,67 +9,38 @@ router.get('/', async (req, res) => {
   try {
     const { 位置, 屬性, 競技場進攻, 競技場防守, 戰隊戰, 深域及抄作業, page = 1, limit = 100 } = req.query;
     
-    // 建立篩選條件
-    const conditions: string[] = [];
-    const params: any[] = [];
+    // 建立篩選條件 (使用 Prisma 的 where 條件)
+    const where: any = {};
     
-    if (位置) {
-      conditions.push('位置 = ?');
-      params.push(位置);
-    }
-    if (屬性) {
-      conditions.push('屬性 = ?');
-      params.push(屬性);
-    }
-    if (競技場進攻) {
-      conditions.push('競技場進攻 = ?');
-      params.push(競技場進攻);
-    }
-    if (競技場防守) {
-      conditions.push('競技場防守 = ?');
-      params.push(競技場防守);
-    }
-    if (戰隊戰) {
-      conditions.push('戰隊戰 = ?');
-      params.push(戰隊戰);
-    }
-    if (深域及抄作業) {
-      conditions.push('深域及抄作業 = ?');
-      params.push(深域及抄作業);
-    }
+    if (位置) where.position = 位置 as string;
+    if (屬性) where.element = 屬性 as string;
+    if (競技場進攻) where.arena_atk = 競技場進攻 as string;
+    if (競技場防守) where.arena_def = 競技場防守 as string;
+    if (戰隊戰) where.clan_battle = 戰隊戰 as string;
+    if (深域及抄作業) where.dungeon = 深域及抄作業 as string;
     
-    const whereClause = conditions.length > 0 ? 'WHERE ' + conditions.join(' AND ') : '';
-    const offset = (Number(page) - 1) * Number(limit);
+    const pageNum = Number(page);
+    const limitNum = Number(limit);
+    const skip = (pageNum - 1) * limitNum;
     
-    // 查詢角色列表
-    const charactersQuery = `
-      SELECT * FROM characters 
-      ${whereClause}
-      ORDER BY 角色名稱 ASC
-      LIMIT ? OFFSET ?
-    `;
-    const charactersParams = [...params, Number(limit), offset];
-    
-    // 查詢總數
-    const countQuery = `
-      SELECT COUNT(*) as total FROM characters 
-      ${whereClause}
-    `;
-    
-    const [characters, countResult] = await Promise.all([
-      dbAll(charactersQuery, charactersParams),
-      dbGet(countQuery, params)
+    // 查詢角色列表和總數
+    const [characters, total] = await Promise.all([
+      prisma.character.findMany({
+        where,
+        orderBy: { name: 'asc' },
+        skip,
+        take: limitNum
+      }),
+      prisma.character.count({ where })
     ]);
     
-    const total = countResult.total;
-    
     res.json({
-      characters: characters,
+      characters,
       pagination: {
-        page: Number(page),
-        limit: Number(limit),
+        page: pageNum,
+        limit: limitNum,
         total,
-        pages: Math.ceil(total / Number(limit))
+        pages: Math.ceil(total / limitNum)
       }
     });
   } catch (error) {
@@ -111,18 +82,27 @@ router.patch('/batch-ratings', requireAuth, async (req, res) => {
     const results = [];
     for (const update of updates) {
       try {
-        const updateQuery = `
-          UPDATE characters 
-          SET [${update.category}] = ?, updatedAt = CURRENT_TIMESTAMP
-          WHERE id = ?
-        `;
+        // 映射分類到資料庫欄位
+        const fieldMap: Record<string, string> = {
+          '競技場進攻': 'arena_atk',
+          '競技場防守': 'arena_def',
+          '戰隊戰': 'clan_battle',
+          '深域及抄作業': 'dungeon'
+        };
         
-        const result = await dbRun(updateQuery, [update.value || null, update.characterId]);
+        const field = fieldMap[update.category];
+        const updateData: any = {};
+        updateData[field] = update.value || null;
+        
+        await prisma.character.update({
+          where: { id: update.characterId },
+          data: updateData
+        });
+        
         results.push({
           characterId: update.characterId,
           category: update.category,
-          success: true,
-          changes: result.changes
+          success: true
         });
       } catch (error: any) {
         console.error(`Error updating character ${update.characterId}:`, error);
@@ -160,10 +140,9 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const character = await dbGet(
-      'SELECT * FROM characters WHERE id = ?', 
-      [id]
-    );
+    const character = await prisma.character.findUnique({
+      where: { id }
+    });
     
     if (!character) {
       return res.status(404).json({ error: 'Character not found' });
@@ -185,43 +164,33 @@ router.put('/:id', requireAuth, async (req, res) => {
     console.log('Update request for ID:', id);
     console.log('Update data received:', updateData);
     
-    // 建立更新欄位
-    const updateFields: string[] = [];
-    const params: any[] = [];
+    // 建立更新資料，映射中文欄位到資料庫欄位
+    const mappedData: any = {};
     
-    // 支援的更新欄位 (使用中文欄位名)
-    const allowedFields = ['暱稱', '位置', '屬性', '角色定位', '常駐/限定', '能力偏向', '競技場進攻', '競技場防守', '戰隊戰', '深域及抄作業', '說明', '頭像檔名'];
+    if (updateData.暱稱 !== undefined) mappedData.nickname = updateData.暱稱 || null;
+    if (updateData.位置 !== undefined) mappedData.position = updateData.位置;
+    if (updateData.屬性 !== undefined) mappedData.element = updateData.屬性 || null;
+    if (updateData.角色定位 !== undefined) mappedData.role = updateData.角色定位 || null;
+    if (updateData['常駐/限定'] !== undefined) mappedData.rarity = updateData['常駐/限定'] || null;
+    if (updateData.能力偏向 !== undefined) mappedData.ability = updateData.能力偏向 || null;
+    if (updateData.競技場進攻 !== undefined) mappedData.arena_atk = updateData.競技場進攻 || null;
+    if (updateData.競技場防守 !== undefined) mappedData.arena_def = updateData.競技場防守 || null;
+    if (updateData.戰隊戰 !== undefined) mappedData.clan_battle = updateData.戰隊戰 || null;
+    if (updateData.深域及抄作業 !== undefined) mappedData.dungeon = updateData.深域及抄作業 || null;
+    if (updateData.說明 !== undefined) mappedData.description = updateData.說明 || null;
+    if (updateData.頭像檔名 !== undefined) mappedData.avatar = updateData.頭像檔名 || null;
     
-    for (const field of allowedFields) {
-      if (updateData[field] !== undefined) {
-        // 特殊處理含有斜線的欄位名
-        const columnName = field === '常駐/限定' ? '[常駐/限定]' : `[${field}]`;
-        updateFields.push(`${columnName} = ?`);
-        params.push(updateData[field] || null); // 空字符串轉為 null
-      }
-    }
-    
-    if (updateFields.length === 0) {
+    if (Object.keys(mappedData).length === 0) {
       console.log('No valid fields to update');
       return res.status(400).json({ error: 'No valid fields to update' });
     }
     
-    params.push(id); // WHERE 條件的 id
+    console.log('Mapped update data:', mappedData);
     
-    const updateQuery = `
-      UPDATE characters 
-      SET ${updateFields.join(', ')}, updatedAt = CURRENT_TIMESTAMP
-      WHERE id = ?
-    `;
-    
-    console.log('Update query:', updateQuery);
-    console.log('Query params:', params);
-    
-    const result = await dbRun(updateQuery, params);
-    console.log('Update result:', result);
-    
-    // 返回更新後的角色資料
-    const updatedCharacter = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    const updatedCharacter = await prisma.character.update({
+      where: { id },
+      data: mappedData
+    });
     
     res.json(updatedCharacter);
   } catch (error: any) {
@@ -243,10 +212,9 @@ router.post('/', requireAuth, async (req, res) => {
     }
     
     // 檢查角色名稱是否已存在
-    const existingCharacter = await dbGet(
-      'SELECT * FROM characters WHERE [角色名稱] = ?',
-      [characterData.角色名稱]
-    );
+    const existingCharacter = await prisma.character.findUnique({
+      where: { name: characterData.角色名稱 }
+    });
     
     if (existingCharacter) {
       return res.status(400).json({ error: 'Character with this name already exists' });
@@ -255,35 +223,24 @@ router.post('/', requireAuth, async (req, res) => {
     // 建立新角色
     const id = 'char_' + Date.now(); // 簡單的 ID 生成
     
-    const insertQuery = `
-      INSERT INTO characters (
-        id, [角色名稱], [暱稱], [位置], [角色定位], [常駐/限定], 
-        [屬性], [能力偏向], [競技場進攻], [競技場防守], [戰隊戰], 
-        [深域及抄作業], [說明], [頭像檔名], createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-    `;
-    
-    const params = [
-      id,
-      characterData.角色名稱,
-      characterData.暱稱 || null,
-      characterData.位置,
-      characterData.角色定位 || null,
-      characterData['常駐/限定'] || null,
-      characterData.屬性 || null,
-      characterData.能力偏向 || null,
-      characterData.競技場進攻 || null,
-      characterData.競技場防守 || null,
-      characterData.戰隊戰 || null,
-      characterData.深域及抄作業 || null,
-      characterData.說明 || null,
-      characterData.頭像檔名 || null
-    ];
-    
-    await dbRun(insertQuery, params);
-    
-    // 返回新建立的角色資料
-    const newCharacter = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    const newCharacter = await prisma.character.create({
+      data: {
+        id,
+        name: characterData.角色名稱,
+        nickname: characterData.暱稱 || null,
+        position: characterData.位置,
+        role: characterData.角色定位 || null,
+        rarity: characterData['常駐/限定'] || null,
+        element: characterData.屬性 || null,
+        ability: characterData.能力偏向 || null,
+        arena_atk: characterData.競技場進攻 || null,
+        arena_def: characterData.競技場防守 || null,
+        clan_battle: characterData.戰隊戰 || null,
+        dungeon: characterData.深域及抄作業 || null,
+        description: characterData.說明 || null,
+        avatar: characterData.頭像檔名 || null
+      }
+    });
     
     res.status(201).json(newCharacter);
   } catch (error: any) {
@@ -300,16 +257,20 @@ router.delete('/:id', requireAuth, async (req, res) => {
     console.log('Deleting character with ID:', id);
     
     // 檢查角色是否存在
-    const character = await dbGet('SELECT * FROM characters WHERE id = ?', [id]);
+    const character = await prisma.character.findUnique({
+      where: { id }
+    });
     
     if (!character) {
       return res.status(404).json({ error: 'Character not found' });
     }
     
     // 刪除角色
-    const result = await dbRun('DELETE FROM characters WHERE id = ?', [id]);
+    await prisma.character.delete({
+      where: { id }
+    });
     
-    console.log('Delete result:', result);
+    console.log('Character deleted successfully');
     
     res.json({ message: 'Character deleted successfully', deletedCharacter: character });
   } catch (error: any) {

@@ -1,2 +1,0 @@
--- PostgreSQL format export for characters table
--- Generated from SQLite export
