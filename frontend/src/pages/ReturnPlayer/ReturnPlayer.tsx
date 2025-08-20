@@ -34,7 +34,10 @@ const ReturnPlayer: React.FC<ReturnPlayerProps> = ({ onNavigateToPage }) => {
       case 'development':
         return (
           <Card>
-            <h2 className="text-2xl font-bold mb-4 text-amber-700">同步與屬性相關影片</h2>
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-2xl font-bold text-amber-700">同步與屬性相關影片</h2>
+              <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">(作者：YT煌靈)</span>
+            </div>
             <div className="space-y-4">
               <div className="p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-lg border border-amber-200 shadow-sm">
                 <h3 className="font-bold text-amber-800 mb-2">同步</h3>
