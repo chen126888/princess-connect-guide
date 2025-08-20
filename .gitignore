@@ -70,6 +70,14 @@ coverage/
 # TypeScript cache
 *.tsbuildinfo
 
+# Migration and test scripts (may contain sensitive data)
+**/scripts/migrate*.ts
+**/scripts/test*.ts
+**/*migrate*.ts
+**/*test*.ts
+**/*test*.sql
+**/*export*.sql
+
 # Optional npm cache directory
 .npm
 
