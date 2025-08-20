@@ -22,8 +22,8 @@ const ShopItemCard: React.FC<ShopItemCardProps> = ({
   // 根據characterId查找對應角色 - 標準化移除所有空格
   const character = item.type === 'character' && item.characterId 
     ? characters.find(char => {
-        const normalizedCharName = char.角色名稱.replace(/\s+/g, '');
-        const normalizedItemId = item.characterId.replace(/\s+/g, '');
+        const normalizedCharName = char?.角色名稱?.replace(/\s+/g, '') || '';
+        const normalizedItemId = item.characterId?.replace(/\s+/g, '') || '';
         return normalizedCharName === normalizedItemId;
       })
     : null;

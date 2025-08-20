@@ -1,10 +1,12 @@
 // 應用程式常數配置
 
-export const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// 環境變數配置
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+export const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images';
 
 export const IMAGE_PATHS = {
-  SHOP_ICONS: `${API_BASE_URL}/images/icons`,
-  CHARACTERS: `${API_BASE_URL}/images/characters`,
+  SHOP_ICONS: `${IMAGE_BASE_URL}/icons`,
+  CHARACTERS: `${IMAGE_BASE_URL}/characters`,
 } as const;
 
 export const IMAGE_FALLBACKS = {

@@ -29,10 +29,10 @@ const ItemOverview: React.FC = () => {
   const getIconPath = (itemName: string) => {
     const fileName = getItemIconFileName(itemName);
     if (!fileName) return null;
-    const API_BASE_URL = 'http://localhost:3000';
+    const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images';
     // 對檔案名稱進行 URL 編碼以處理中文字符
     const encodedFileName = encodeURIComponent(fileName);
-    return `${API_BASE_URL}/images/icons/${encodedFileName}.png`;
+    return `${IMAGE_BASE_URL}/icons/${encodedFileName}.png`;
   };
 
   return (

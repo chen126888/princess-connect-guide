@@ -11,7 +11,7 @@ import Newbie from './pages/Newbie/Newbie';
 import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
 import SuperAdminInitModal from './components/Admin/SuperAdminInitModal';
 import AdminManagement from './components/Admin/AdminManagement';
-import { setAuthToken, removeAuthToken, isAuthenticated, getCurrentAdmin, isSuperAdmin } from './utils/auth';
+import { setAuthToken, removeAuthToken, isAuthenticated, getCurrentAdmin } from './utils/auth';
 
 // 頁面類型定義
 type PageType = 
@@ -57,7 +57,7 @@ function App() {
         }
 
         // 檢查是否需要初始化
-        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+        const API_BASE_URL = 'https://princess-connect-guide.onrender.com/api';
         const response = await fetch(`${API_BASE_URL}/auth/check-init`);
         const data = await response.json();
         setNeedsInit(data.needsInit);
@@ -73,7 +73,7 @@ function App() {
   // 管理員登入處理
   const handleAdminLogin = async () => {
     try {
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+      const API_BASE_URL = 'https://princess-connect-guide.onrender.com/api';
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
@@ -125,7 +125,7 @@ function App() {
     if (item.useImage && !imageErrors.has(item.key)) {
       return (
         <img 
-          src="http://localhost:3000/images/icons/商店.png"
+          src="https://princess-connect-guide.onrender.com/images/icons/商店.png"
           alt={item.label}
           className="w-5 h-5 object-contain"
           onError={() => handleImageError(item.key)}

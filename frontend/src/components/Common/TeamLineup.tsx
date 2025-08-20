@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CharacterAvatar from './CharacterAvatar';
 import type { Character } from '../../types';
-import axios from 'axios';
+import { characterApi } from '../../services/api';
 
 interface TeamLineupProps {
   characterNames: string[];
@@ -24,10 +24,10 @@ const TeamLineup: React.FC<TeamLineupProps> = ({
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
-        const response = await axios.get<ApiResponse>('http://localhost:3000/api/characters?limit=400');
+        const response = await characterApi.getAll({ limit: 400 });
         const newCharMap = new Map<string, Character>();
         
-        for (const char of response.data.characters) {
+        for (const char of response.characters) {
           // 使用角色名稱作為 key
           newCharMap.set(char.角色名稱, char);
           // 如果有暱稱，也加入 map 中

@@ -35,7 +35,7 @@ const AttributeSelector: React.FC<AttributeSelectorProps> = ({ attributes, activ
     if (item.hasImage && attributeIconNames[item.key]) {
       return (
         <img
-          src={`http://localhost:3000/images/icons/${attributeIconNames[item.key]}.png`}
+          src={`${import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images'}/icons/${attributeIconNames[item.key]}.png`}
           alt={item.label}
           className="w-6 h-6 object-contain"
         />
