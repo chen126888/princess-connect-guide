@@ -1,5 +1,5 @@
 import express from 'express';
-import { dbGet, dbRun, dbAll } from '../utils/database';
+import { dbGet, dbRun, dbAll, prisma } from '../utils/database';
 import { generateToken } from '../utils/jwt';
 import { requireAuth, requireSuperAdmin } from '../middleware/auth';
 import bcrypt from 'bcrypt';
@@ -282,17 +282,71 @@ router.post('/toggle-admin', requireSuperAdmin, async (req, res) => {
 // Debug endpoint to check database state (temporary)
 router.get('/debug-tables', async (req, res) => {
   try {
+    // Force Prisma to connect and potentially create tables
+    await prisma.$connect();
+    
     const tables = await dbAll('SELECT table_name FROM information_schema.tables WHERE table_schema = $1', ['public']);
-    const adminCount = await dbGet('SELECT COUNT(*)::text as count FROM admins');
-    const sampleAdmin = await dbGet('SELECT id, username, "isActive", role FROM admins LIMIT 1');
+    
+    // Try to get admin count, which should work since we created the admin earlier
+    let adminCount = '0';
+    let sampleAdmin = null;
+    
+    try {
+      const adminResult = await dbGet('SELECT COUNT(*)::text as count FROM admins');
+      adminCount = adminResult?.count || '0';
+      sampleAdmin = await dbGet('SELECT id, username, "isActive", role FROM admins LIMIT 1');
+    } catch (adminError) {
+      console.log('Admin table query error:', adminError);
+    }
     
     res.json({
-      tables: tables.map(t => t.table_name),
-      adminCount: adminCount?.count || '0',
-      sampleAdmin: sampleAdmin || null
+      tables: tables.map((t: any) => t.table_name),
+      adminCount,
+      sampleAdmin,
+      prismaConnected: true
     });
   } catch (error) {
     res.status(500).json({ error: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
+// Initialize schema endpoint (temporary)
+router.post('/init-schema', async (req, res) => {
+  try {
+    console.log('Initializing database schema...');
+    
+    // Force Prisma to initialize the database by making a simple query
+    await prisma.$connect();
+    
+    // Try to create any missing tables by doing a simple upsert operation
+    // First check if Character table exists by attempting a simple query
+    try {
+      await prisma.character.findFirst();
+      console.log('Character table exists');
+    } catch (error) {
+      console.log('Character table might not exist:', error);
+    }
+    
+    // Check Admin table
+    try {
+      await prisma.admin.findFirst();
+      console.log('Admin table exists');
+    } catch (error) {
+      console.log('Admin table might not exist:', error);
+    }
+    
+    res.json({ 
+      success: true, 
+      message: 'Schema initialization attempted',
+      timestamp: new Date().toISOString()
+    });
+    
+  } catch (error) {
+    console.error('Schema initialization error:', error);
+    res.status(500).json({ 
+      error: error instanceof Error ? error.message : 'Unknown error',
+      message: 'Schema initialization failed'
+    });
   }
 });
 
