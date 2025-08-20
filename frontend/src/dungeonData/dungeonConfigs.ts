@@ -1,6 +1,7 @@
 interface ExcelLink {
   name: string;
   url: string;
+  author: string;
 }
 
 interface DungeonConfig {
@@ -29,9 +30,9 @@ export const dungeonConfigs: DungeonConfig = {
 * 大師碎片：大師商店、連結幣商店、巡遊商店、抽角色。
 * 專精卷：每日登陸、活動`,
   excelLinks: [
-    { name: '台服', url: 'https://docs.google.com/spreadsheets/d/1iVt4tB41cl8wW_UCBwtJYCEhYPqHL6MDDPkEitFw81I/edit?gid=1757605278#gid=1757605278' },
-    { name: '對岸(1~5)', url: 'https://docs.qq.com/sheet/DQ0JvVVpaU1NpcnZB?tab=7fijja' },
-    { name: '對岸(6~)', url: 'https://docs.qq.com/sheet/DQ3NHeUlWcGdoUWJD?nlc=1&tab=862w5z' },
-    { name: '英文版(6~)', url: 'https://docs.google.com/spreadsheets/u/0/d/e/2PACX-1vSI2I1LNNIz623PLPc0nW11Q8ilYuZh6RuMrefQRRUD3BNtYRBuvesuRv39ZvNGzLsR-Yx46CahJqb3/pubhtml?pli=1#gid=1699574533' },
+    { name: '台服', url: 'https://docs.google.com/spreadsheets/d/1iVt4tB41cl8wW_UCBwtJYCEhYPqHL6MDDPkEitFw81I/edit?gid=1757605278#gid=1757605278', author: '巴哈 小小阿璁' },
+    { name: '對岸(1~5)', url: 'https://docs.qq.com/sheet/DQ0JvVVpaU1NpcnZB?tab=7fijja', author: '未知' },
+    { name: '對岸(6~)', url: 'https://docs.qq.com/sheet/DQ3NHeUlWcGdoUWJD?nlc=1&tab=862w5z', author: '未知' },
+    { name: '英文版(6~)', url: 'https://docs.google.com/spreadsheets/u/0/d/e/2PACX-1vSI2I1LNNIz623PLPc0nW11Q8ilYuZh6RuMrefQRRUD3BNtYRBuvesuRv39ZvNGzLsR-Yx46CahJqb3/pubhtml?pli=1#gid=1699574533', author: 'WorryChefs' },
   ],
 };

@@ -60,7 +60,10 @@ const Dungeon: React.FC = () => {
                 rel="noopener noreferrer"
                 className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               >
-                <h3 className="text-lg font-semibold text-blue-600 hover:underline">{link.name}</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-blue-600 hover:underline">{link.name}</h3>
+                  <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">(作者：{link.author})</span>
+                </div>
                 <p className="text-sm text-gray-500 truncate">{link.url}</p>
               </a>
             ))}
