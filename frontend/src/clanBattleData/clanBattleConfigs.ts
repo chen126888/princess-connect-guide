@@ -1,21 +1,21 @@
-interface YoutubeChannel {
+export interface YoutubeChannel {
   name: string;
   link: string;
 }
 
-type CharacterTier = '核心' | '重要' | '普通';
+export type CharacterTier = '核心' | '重要' | '普通';
 
-interface ClanBattleCharacter {
+export interface ClanBattleCharacter {
   name: string;
   tier: CharacterTier;
 }
 
-interface ClanBattleDamageTypeSection {
+export interface ClanBattleDamageTypeSection {
   physical: ClanBattleCharacter[];
   magic: ClanBattleCharacter[];
 }
 
-interface ClanBattleAttributeSection {
+export interface ClanBattleAttributeSection {
   [attribute: string]: ClanBattleDamageTypeSection;
 }
 

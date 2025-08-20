@@ -76,7 +76,7 @@ export const useCharacterEditor = (characters: Character[]) => {
       }
 
       // 先新增角色資料
-      const response = await api.post('/characters', newCharacter);
+      await api.post('/characters', newCharacter);
       
       // 如果有選擇照片，則上傳照片
       if (selectedPhoto && newCharacter.角色名稱) {

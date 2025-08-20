@@ -3,7 +3,7 @@ import Card from '../../components/Common/Card';
 import CharacterImageCard from '../../components/Character/CharacterImageCard';
 import type { Character } from '../../types';
 
-import type { ClanBattleCharacter, ClanBattleDamageTypeSection, ClanBattleAttributeSection } from '../../clanBattleData/clanBattleConfigs';
+import type { ClanBattleCharacter, ClanBattleAttributeSection, CharacterTier } from '../../clanBattleData/clanBattleConfigs';
 
 interface CommonCharactersSectionProps {
   activeAttribute: string;
@@ -24,11 +24,9 @@ const CommonCharactersSection: React.FC<CommonCharactersSectionProps> = ({ activ
     );
   }
 
-  const getCharacterDetails = (charName: string) => {
-    return allCharacters.find(c => c.角色名稱 === charName || (c.暱稱 && c.暱稱.includes(charName)));
-  };
-
-  type CharacterTier = '核心' | '重要' | '普通'; // Re-define or import if needed, but it's in clanBattleConfigs.ts now
+  // const getCharacterDetails = (charName: string) => {
+  //   return allCharacters.find(c => c.角色名稱 === charName || (c.暱稱 && c.暱稱.includes(charName)));
+  // };
 
   const renderCharactersByTier = (characters: ClanBattleCharacter[], allChars: Character[]) => {
     const tiers: Record<CharacterTier, ClanBattleCharacter[]> = {
@@ -38,8 +36,8 @@ const CommonCharactersSection: React.FC<CommonCharactersSectionProps> = ({ activ
     };
 
     characters.forEach(char => {
-      if (char.tier) { // Ensure tier exists
-        tiers[char.tier].push(char);
+      if (char.tier && char.tier in tiers) { // Ensure tier exists and is valid
+        tiers[char.tier as CharacterTier].push(char);
       }
     });
 

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Button from './Button';
 import { updateLogs, type UpdateLogItem } from '../../data/updateLogData';
 
 interface UpdateLogManagerProps {

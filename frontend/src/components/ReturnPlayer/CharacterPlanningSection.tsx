@@ -1,6 +1,5 @@
 import React from 'react';
 import Card from '../Common/Card';
-import Button from '../Common/Button';
 import { characterPlanningData } from '../../returnPlayerData';
 
 interface CharacterPlanningSectionProps {

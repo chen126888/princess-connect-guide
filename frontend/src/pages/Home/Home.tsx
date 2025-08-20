@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PageContainer from '../../components/Common/PageContainer';
 import Button from '../../components/Common/Button';
 import UpdateLogManager from '../../components/Common/UpdateLogManager';
-import { updateLogs, getVersionBadgeStyle, getVersionLabel, type UpdateLogItem } from '../../data/updateLogData';
+import { updateLogs, getVersionBadgeStyle, getVersionLabel } from '../../data/updateLogData';
 
 interface HomeProps {
   isAdminMode?: boolean;
