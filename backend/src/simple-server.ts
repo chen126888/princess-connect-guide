@@ -32,7 +32,7 @@ app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 const corsOrigins = process.env.CORS_ORIGINS 
   ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
   : NODE_ENV === 'production'
-    ? true  // 生產環境允許所有來源
+    ? ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://127.0.0.1:5173']  // 生產環境也允許本地開發
     : [
         'http://localhost:5173', 
         'http://localhost:5174', 
@@ -41,9 +41,31 @@ const corsOrigins = process.env.CORS_ORIGINS
       ];
 
 console.log('🌐 CORS Origins:', corsOrigins);
+console.log('🔧 NODE_ENV:', NODE_ENV);
 
 app.use(cors({
-  origin: corsOrigins,
+  origin: function (origin, callback) {
+    // 允許沒有 origin 的請求 (例如 mobile apps, curl)
+    if (!origin) return callback(null, true);
+    
+    if (NODE_ENV === 'production') {
+      // 生產環境允許所有 localhost 和一些常見的開發端口
+      if (origin.startsWith('http://localhost:') || 
+          origin.startsWith('http://127.0.0.1:') ||
+          corsOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      // 也可以允許所有來源 (不安全但方便測試)
+      return callback(null, true);
+    } else {
+      // 開發環境檢查白名單
+      if (corsOrigins.includes(origin)) {
+        return callback(null, true);
+      } else {
+        return callback(new Error('Not allowed by CORS'));
+      }
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
