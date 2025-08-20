@@ -119,7 +119,10 @@ router.post('/create-first-admin', async (req, res) => {
 
     // 檢查是否已有任何管理員
     const existingAdmins = await dbGet('SELECT COUNT(*) as count FROM admins');
-    if (existingAdmins.count > 0) {
+    console.log('Existing admins check:', existingAdmins);
+    
+    const adminCount = existingAdmins?.count || existingAdmins?.[0] || 0;
+    if (adminCount > 0) {
       return res.status(403).json({ error: 'Admin already exists. Use /create-admin endpoint.' });
     }
 
@@ -148,7 +151,10 @@ router.post('/create-first-admin', async (req, res) => {
 
   } catch (error) {
     console.error('Create first admin error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      error: 'Internal server error', 
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
