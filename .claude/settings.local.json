@@ -22,7 +22,11 @@
       "Bash(npm run start:*)",
       "Bash(npm run deploy-check:*)",
       "Bash(pkill:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(git commit:*)",
+      "Bash(npm run migrate-to-production:*)",
+      "Bash(export ADMIN_USERNAME=\"admin\")",
+      "Bash(export ADMIN_PASSWORD=\"PrincessConnect2025!\")"
     ],
     "deny": []
   }

@@ -283,12 +283,12 @@ router.post('/toggle-admin', requireSuperAdmin, async (req, res) => {
 router.get('/debug-tables', async (req, res) => {
   try {
     const tables = await dbAll('SELECT table_name FROM information_schema.tables WHERE table_schema = $1', ['public']);
-    const adminCount = await dbGet('SELECT COUNT(*) as count FROM admins');
+    const adminCount = await dbGet('SELECT COUNT(*)::text as count FROM admins');
     const sampleAdmin = await dbGet('SELECT id, username, "isActive", role FROM admins LIMIT 1');
     
     res.json({
       tables: tables.map(t => t.table_name),
-      adminCount: adminCount?.count || 0,
+      adminCount: adminCount?.count || '0',
       sampleAdmin: sampleAdmin || null
     });
   } catch (error) {
