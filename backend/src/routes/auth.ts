@@ -34,10 +34,11 @@ router.post('/login', async (req, res) => {
     }
 
     // 生成 JWT Token
+    const userRole = admin.role === 'superadmin' ? 'superadmin' : 'admin';
     const token = generateToken({
       adminId: admin.id,
       username: admin.username,
-      role: admin.role
+      role: userRole
     });
 
     // 成功登入
