@@ -4,6 +4,29 @@ import { requireAuth, optionalAuth } from '../middleware/auth';
 
 const router = express.Router();
 
+// 轉換函數：將 Prisma 查詢結果轉換為前端期望的中文欄位名
+const transformCharacterForFrontend = (character: any) => {
+  return {
+    id: character.id,
+    角色名稱: character.name,
+    暱稱: character.nickname,
+    位置: character.position,
+    角色定位: character.role,
+    '常駐/限定': character.rarity,
+    屬性: character.element,
+    能力偏向: character.ability,
+    競技場進攻: character.arena_atk,
+    競技場防守: character.arena_def,
+    戰隊戰: character.clan_battle,
+    深域及抄作業: character.dungeon,
+    說明: character.description,
+    頭像檔名: character.avatar,
+    六星頭像檔名: character.avatar_6,
+    createdAt: character.createdAt,
+    updatedAt: character.updatedAt
+  };
+};
+
 // 取得所有角色 (公開 API)
 router.get('/', async (req, res) => {
   try {
@@ -34,8 +57,11 @@ router.get('/', async (req, res) => {
       prisma.character.count({ where })
     ]);
     
+    // 轉換角色資料為前端期望的格式
+    const transformedCharacters = characters.map(transformCharacterForFrontend);
+    
     res.json({
-      characters,
+      characters: transformedCharacters,
       pagination: {
         page: pageNum,
         limit: limitNum,
@@ -148,7 +174,10 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Character not found' });
     }
     
-    res.json(character);
+    // 轉換角色資料為前端期望的格式
+    const transformedCharacter = transformCharacterForFrontend(character);
+    
+    res.json(transformedCharacter);
   } catch (error) {
     console.error('Error fetching character:', error);
     res.status(500).json({ error: 'Failed to fetch character' });
@@ -192,7 +221,10 @@ router.put('/:id', requireAuth, async (req, res) => {
       data: mappedData
     });
     
-    res.json(updatedCharacter);
+    // 轉換角色資料為前端期望的格式
+    const transformedCharacter = transformCharacterForFrontend(updatedCharacter);
+    
+    res.json(transformedCharacter);
   } catch (error: any) {
     console.error('Error updating character:', error);
     res.status(500).json({ error: 'Failed to update character', details: error.message });
@@ -242,7 +274,10 @@ router.post('/', requireAuth, async (req, res) => {
       }
     });
     
-    res.status(201).json(newCharacter);
+    // 轉換角色資料為前端期望的格式
+    const transformedCharacter = transformCharacterForFrontend(newCharacter);
+    
+    res.status(201).json(transformedCharacter);
   } catch (error: any) {
     console.error('Error creating character:', error);
     res.status(500).json({ error: 'Failed to create character', details: error.message });

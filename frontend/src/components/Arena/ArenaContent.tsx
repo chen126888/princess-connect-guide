@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../Common/Card';
 import TeamLineup from '../Common/TeamLineup';
 import type { Character } from '../../types';
-import type { ArenaType, ArenaSection as ArenaSectionType, ArenaItem as ArenaItemType, ArenaSubsection } from '../../types/arena';
+import type { ArenaType, ArenaSection as ArenaSectionType, ArenaItem as ArenaItemType } from '../../types/arena';
 import { arenaConfigs } from '../../arenaData';
 import CharacterImageCard from '../Character/CharacterImageCard';
 

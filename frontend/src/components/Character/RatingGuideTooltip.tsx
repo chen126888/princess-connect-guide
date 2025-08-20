@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Info, X } from 'lucide-react';
+import { Info } from 'lucide-react';
 
 type RatingCategory = '競技場進攻/防守' | '戰隊戰' | '深域及抄作業';
 

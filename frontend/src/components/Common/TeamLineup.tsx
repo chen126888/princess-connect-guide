@@ -9,10 +9,6 @@ interface TeamLineupProps {
   textColor?: string;
 }
 
-interface ApiResponse {
-  characters: Character[];
-}
-
 const TeamLineup: React.FC<TeamLineupProps> = ({ 
   characterNames, 
   bgColor = 'bg-white',
@@ -32,8 +28,8 @@ const TeamLineup: React.FC<TeamLineupProps> = ({
           newCharMap.set(char.角色名稱, char);
           // 如果有暱稱，也加入 map 中
           if (char.暱稱 && char.暱稱 !== '--') {
-            const nicknames = char.暱稱.split(/[、&]/).map(name => name.trim());
-            nicknames.forEach(nickname => {
+            const nicknames = char.暱稱.split(/[、&]/).map((name: string) => name.trim());
+            nicknames.forEach((nickname: string) => {
               if (nickname && nickname !== '--') {
                 newCharMap.set(nickname, char);
               }
