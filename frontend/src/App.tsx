@@ -239,7 +239,7 @@ function App() {
           {/* 標題 */}
           <div className="text-center mb-6">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">
-              🌸 公主連結攻略網站 🌸
+              🌸 公主連結新手向攻略網站 🌸
             </h1>
             <p className="text-gray-600">Princess Connect! Re:Dive Guide</p>
           </div>
@@ -351,7 +351,7 @@ function App() {
         {initLoading ? (
           <div className="min-h-screen flex items-center justify-center">
             <div className="text-center">
-              <div className="text-2xl mb-4">🌸 公主連結攻略網站 🌸</div>
+              <div className="text-2xl mb-4">🌸 公主連結新手向攻略網站 🌸</div>
               <div className="text-gray-600">載入中...</div>
             </div>
           </div>
