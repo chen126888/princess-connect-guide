@@ -17,7 +17,7 @@ router.post('/login', async (req, res) => {
 
     // 查找管理員
     const admin = await dbGet(
-      'SELECT * FROM admins WHERE username = ? AND isActive = 1',
+      'SELECT * FROM admins WHERE username = $1 AND "isActive" = true',
       [username]
     );
 
@@ -58,7 +58,7 @@ router.post('/login', async (req, res) => {
 // 檢查是否需要初始化超級管理員
 router.get('/check-init', async (req, res) => {
   try {
-    const adminCount = await dbGet('SELECT COUNT(*) as count FROM admins WHERE isActive = 1');
+    const adminCount = await dbGet('SELECT COUNT(*) as count FROM admins WHERE "isActive" = true');
     res.json({
       needsInit: adminCount.count === 0
     });
@@ -74,7 +74,7 @@ router.post('/init-superadmin', async (req, res) => {
     const { username, password, name } = req.body;
 
     // 檢查是否已有管理員
-    const adminCount = await dbGet('SELECT COUNT(*) as count FROM admins WHERE isActive = 1');
+    const adminCount = await dbGet('SELECT COUNT(*) as count FROM admins WHERE "isActive" = true');
     if (adminCount.count > 0) {
       return res.status(400).json({ error: 'Admin already exists' });
     }
@@ -88,8 +88,8 @@ router.post('/init-superadmin', async (req, res) => {
 
     // 創建超級管理員
     const result = await dbRun(
-      `INSERT INTO admins (id, username, password, name, role, isActive, createdAt, updatedAt) 
-       VALUES (?, ?, ?, ?, 'superadmin', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      `INSERT INTO admins (id, username, password, name, role, "isActive", "createdAt", "updatedAt") 
+       VALUES ($1, $2, $3, $4, 'superadmin', true, NOW(), NOW())`,
       [
         'superadmin_' + Date.now(),
         username,
@@ -171,7 +171,7 @@ router.post('/create-admin', requireSuperAdmin, async (req, res) => {
 
     // 檢查是否已存在
     const existingAdmin = await dbGet(
-      'SELECT * FROM admins WHERE username = ?',
+      'SELECT * FROM admins WHERE username = $1',
       [username]
     );
 
@@ -184,8 +184,8 @@ router.post('/create-admin', requireSuperAdmin, async (req, res) => {
 
     // 創建一般管理員
     const result = await dbRun(
-      `INSERT INTO admins (id, username, password, name, role, isActive, createdAt, updatedAt) 
-       VALUES (?, ?, ?, ?, 'admin', 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)`,
+      `INSERT INTO admins (id, username, password, name, role, "isActive", "createdAt", "updatedAt") 
+       VALUES ($1, $2, $3, $4, 'admin', true, NOW(), NOW())`,
       [
         'admin_' + Date.now(),
         username,
@@ -196,8 +196,8 @@ router.post('/create-admin', requireSuperAdmin, async (req, res) => {
 
     // 取得新建立的管理員資料
     const newAdmin = await dbGet(
-      'SELECT id, username, name, role FROM admins WHERE rowid = ?',
-      [result.lastID]
+      'SELECT id, username, name, role FROM admins WHERE username = $1',
+      [username]
     );
 
     res.json({
@@ -216,7 +216,7 @@ router.get('/admins', requireSuperAdmin, async (req, res) => {
     
     // 獲取所有管理員
     const admins = await dbAll(
-      'SELECT id, username, name, role, isActive, createdAt FROM admins ORDER BY createdAt DESC',
+      'SELECT id, username, name, role, "isActive", "createdAt" FROM admins ORDER BY "createdAt" DESC',
       []
     );
     
@@ -241,7 +241,7 @@ router.post('/reset-password', requireSuperAdmin, async (req, res) => {
     
     // 更新密碼
     await dbRun(
-      'UPDATE admins SET password = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+      'UPDATE admins SET password = $1, "updatedAt" = NOW() WHERE id = $2',
       [hashedPassword, adminId]
     );
     
@@ -268,8 +268,8 @@ router.post('/toggle-admin', requireSuperAdmin, async (req, res) => {
     
     // 更新狀態
     await dbRun(
-      'UPDATE admins SET isActive = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-      [isActive ? 1 : 0, adminId]
+      'UPDATE admins SET "isActive" = $1, "updatedAt" = NOW() WHERE id = $2',
+      [isActive, adminId]
     );
     
     res.json({ success: true, message: `Admin ${isActive ? 'activated' : 'deactivated'} successfully` });
