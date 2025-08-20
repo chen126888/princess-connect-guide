@@ -108,6 +108,50 @@ router.post('/init-superadmin', async (req, res) => {
   }
 });
 
+// 創建第一個管理員 (僅在沒有任何管理員時允許)
+router.post('/create-first-admin', async (req, res) => {
+  try {
+    const { username, password, name } = req.body;
+
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Username and password are required' });
+    }
+
+    // 檢查是否已有任何管理員
+    const existingAdmins = await dbGet('SELECT COUNT(*) as count FROM admins');
+    if (existingAdmins.count > 0) {
+      return res.status(403).json({ error: 'Admin already exists. Use /create-admin endpoint.' });
+    }
+
+    // 密碼加密
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // 建立管理員資料
+    const adminId = `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    await dbRun(
+      `INSERT INTO admins (id, username, password, name, role) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [adminId, username, hashedPassword, name || 'Super Admin', 'superadmin']
+    );
+
+    // 取得創建的管理員資料
+    const newAdmin = await dbGet(
+      'SELECT id, username, name, role, isActive FROM admins WHERE id = ?',
+      [adminId]
+    );
+
+    res.status(201).json({
+      message: 'First admin created successfully',
+      admin: newAdmin
+    });
+
+  } catch (error) {
+    console.error('Create first admin error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // 創建管理員 (僅超級管理員可使用)
 router.post('/create-admin', requireSuperAdmin, async (req, res) => {
   try {
