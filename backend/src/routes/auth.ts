@@ -133,8 +133,8 @@ router.post('/create-first-admin', async (req, res) => {
     const adminId = `admin_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     await dbRun(
-      `INSERT INTO admins (id, username, password, name, role) 
-       VALUES ($1, $2, $3, $4, $5)`,
+      `INSERT INTO admins (id, username, password, name, role, "updatedAt") 
+       VALUES ($1, $2, $3, $4, $5, NOW())`,
       [adminId, username, hashedPassword, name || 'Super Admin', 'superadmin']
     );
 
