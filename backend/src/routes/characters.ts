@@ -217,10 +217,20 @@ router.put('/:id', requireAuth, async (req, res) => {
     
     console.log('Mapped update data:', mappedData);
     
-    const updatedCharacter = await prisma.character.update({
-      where: { id },
-      data: mappedData
-    });
+    // 嘗試通過ID查找，如果失敗則通過角色名稱查找
+    let updatedCharacter;
+    try {
+      updatedCharacter = await prisma.character.update({
+        where: { id },
+        data: mappedData
+      });
+    } catch (error) {
+      // 如果通過ID查找失敗，嘗試通過角色名稱查找
+      updatedCharacter = await prisma.character.update({
+        where: { name: id },
+        data: mappedData
+      });
+    }
     
     // 轉換角色資料為前端期望的格式
     const transformedCharacter = transformCharacterForFrontend(updatedCharacter);
