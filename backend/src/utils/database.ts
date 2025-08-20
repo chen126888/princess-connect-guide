@@ -1,51 +1,46 @@
-import sqlite3 from 'sqlite3';
-import path from 'path';
+import { PrismaClient } from '@prisma/client';
 
-// 資料庫連接
-const dbPath = path.join(__dirname, '../../prisma/database.db');
+// Prisma 客戶端
+export const prisma = new PrismaClient();
 
-export const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('❌ Error opening database:', err.message);
-  } else {
-    console.log('✅ Connected to SQLite database');
+// 初始化連接並記錄
+prisma.$connect()
+  .then(() => {
+    console.log('✅ Connected to PostgreSQL database');
+  })
+  .catch((err) => {
+    console.error('❌ Error connecting to database:', err);
+  });
+
+// Promise 包裝器 - 保持相同的 API 介面
+export const dbGet = async (sql: string, params: any[] = []): Promise<any> => {
+  try {
+    const result = await prisma.$queryRawUnsafe(sql, ...params);
+    return Array.isArray(result) ? result[0] : result;
+  } catch (error) {
+    throw error;
   }
-});
-
-// Promise 包裝器
-export const dbGet = (sql: string, params: any[] = []): Promise<any> => {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
 };
 
-export const dbAll = (sql: string, params: any[] = []): Promise<any[]> => {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
+export const dbAll = async (sql: string, params: any[] = []): Promise<any[]> => {
+  try {
+    const result = await prisma.$queryRawUnsafe(sql, ...params);
+    return Array.isArray(result) ? result : [result];
+  } catch (error) {
+    throw error;
+  }
 };
 
-export const dbRun = (sql: string, params: any[] = []): Promise<sqlite3.RunResult> => {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve(this);
-    });
-  });
+export const dbRun = async (sql: string, params: any[] = []): Promise<any> => {
+  try {
+    const result = await prisma.$executeRawUnsafe(sql, ...params);
+    return { changes: result };
+  } catch (error) {
+    throw error;
+  }
 };
 
 // 關閉資料庫連接
-export const closeDatabase = () => {
-  return new Promise<void>((resolve, reject) => {
-    db.close((err) => {
-      if (err) reject(err);
-      else resolve();
-    });
-  });
+export const closeDatabase = async () => {
+  await prisma.$disconnect();
 };
