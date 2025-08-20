@@ -31,12 +31,14 @@ app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
 // CORS 設定
 const corsOrigins = process.env.CORS_ORIGINS 
   ? process.env.CORS_ORIGINS.split(',').map(origin => origin.trim())
-  : [
-      'http://localhost:5173', 
-      'http://localhost:5174', 
-      'http://localhost:5175',
-      'http://127.0.0.1:5173'
-    ];
+  : NODE_ENV === 'production'
+    ? true  // 生產環境允許所有來源
+    : [
+        'http://localhost:5173', 
+        'http://localhost:5174', 
+        'http://localhost:5175',
+        'http://127.0.0.1:5173'
+      ];
 
 console.log('🌐 CORS Origins:', corsOrigins);
 
