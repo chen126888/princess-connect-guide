@@ -57,6 +57,9 @@ const Home: React.FC<HomeProps> = ({ isAdminMode = false }) => {
               本站由個人興趣與熱情維護，完全不營利。若有任何建議或發現Bug，歡迎透過 <a href="https://home.gamer.com.tw/homeindex.php?owner=chen126888" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline font-bold">巴哈姆特站內信</a> 或 <a href="https://github.com/chen126888/princess-connect-guide/issues" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline font-bold">GitHub Issue</a> 與我聯繫，感謝你的理解！
             </p>
             <p>
+              本站內引用的所有外部連結（包含攻略影片、Excel表格等），皆出自於對原創作者的尊重與推薦。若您是該內容的原作者，且不希望被本站引用，請隨時透過上述任一方式與我聯繫，我會在收到通知後立即將其移除。感謝您的理解。
+            </p>
+            <p>
               GitHub：<a href="https://github.com/chen126888/princess-connect-guide" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800 underline">https://github.com/chen126888/princess-connect-guide</a>
             </p>
             <p className="text-sm text-gray-600 text-center mt-6">
