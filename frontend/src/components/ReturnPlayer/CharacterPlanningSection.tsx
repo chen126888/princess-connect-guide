@@ -9,7 +9,7 @@ interface CharacterPlanningSectionProps {
 const CharacterPlanningSection: React.FC<CharacterPlanningSectionProps> = ({
   onNavigateToCharacterDevelopment
 }) => {
-  const { sixStarAdvice, teamBuildingStrategy, eventStrategy, nonSixStarStrategy } = characterPlanningData;
+  const { sixStarAdvice, teamBuildingStrategy, eventStrategy, nonSixStarStrategy, resourceManagement } = characterPlanningData;
 
   return (
     <Card className="mb-6">
@@ -55,6 +55,12 @@ const CharacterPlanningSection: React.FC<CharacterPlanningSectionProps> = ({
         <div className="p-4 bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg border border-purple-200">
           <h3 className="text-lg font-semibold text-purple-800 mb-2">{eventStrategy.title}</h3>
           <p className="text-gray-700 leading-relaxed">{eventStrategy.description}</p>
+        </div>
+
+        {/* 資源管理建議 */}
+        <div className="p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg border border-pink-200">
+          <h3 className="text-lg font-semibold text-pink-800 mb-2">{resourceManagement.title}</h3>
+          <p className="text-gray-700 leading-relaxed">{resourceManagement.description}</p>
         </div>
       </div>
     </Card>

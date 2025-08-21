@@ -17,6 +17,10 @@ export interface CharacterPlanningData {
     title: string;
     description: string;
   };
+  resourceManagement: {
+    title: string;
+    description: string;
+  };
 }
 
 export const characterPlanningData: CharacterPlanningData = {
@@ -37,5 +41,9 @@ export const characterPlanningData: CharacterPlanningData = {
   nonSixStarStrategy: {
     title: "刷取非六星常用角色",
     description: "這邊角色有三星後，開專>升五星，有些時候沒五星也能用。"
+  },
+  resourceManagement: {
+    title: "資源管理建議",
+    description: "女神的秘石(母豬石)只用在刷不到的角色，等打戰隊戰或深域時，有使用到在拉上去。阿斯特賴亞戒指(突破戒指)不多的話，請用在常駐不可刷的角色上，因為限定的極限突破只要40碎片，常駐不可刷的卻需要120碎片。"
   }
 };
