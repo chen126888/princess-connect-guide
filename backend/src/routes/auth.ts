@@ -197,7 +197,67 @@ router.get('/admins', requireSuperAdmin, async (req, res) => {
   }
 });
 
-// 停用管理員 (需要超級管理員權限)
+// 重置密碼 (需要超級管理員權限)
+router.post('/reset-password', requireSuperAdmin, async (req, res) => {
+  try {
+    const { adminId, newPassword } = req.body;
+
+    if (!adminId || !newPassword) {
+      return res.status(400).json({ error: 'Admin ID and new password are required' });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters long' });
+    }
+
+    // 密碼加密
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    const admin = await prisma.admin.update({
+      where: { id: adminId },
+      data: { password: hashedPassword }
+    });
+
+    res.json({
+      success: true,
+      message: 'Password reset successfully'
+    });
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 切換管理員狀態 (需要超級管理員權限)
+router.post('/toggle-admin', requireSuperAdmin, async (req, res) => {
+  try {
+    const { adminId, isActive } = req.body;
+
+    if (!adminId || typeof isActive !== 'boolean') {
+      return res.status(400).json({ error: 'Admin ID and status are required' });
+    }
+
+    const admin = await prisma.admin.update({
+      where: { id: adminId },
+      data: { isActive }
+    });
+
+    res.json({
+      success: true,
+      message: `Admin ${isActive ? 'activated' : 'deactivated'} successfully`,
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        isActive: admin.isActive
+      }
+    });
+  } catch (error) {
+    console.error('Error toggling admin status:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// 停用管理員 (需要超級管理員權限) - 保留原有路由作為兼容
 router.patch('/admins/:id/deactivate', requireSuperAdmin, async (req, res) => {
   try {
     const { id } = req.params;

@@ -36,7 +36,8 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ onClose }) => {
   const loadAdmins = async () => {
     try {
       const data = await adminApi.getAdmins();
-      setAdmins(Array.isArray(data.admins) ? data.admins : []);
+      // 後端直接返回管理員陣列，而非 { admins: [...] } 格式
+      setAdmins(Array.isArray(data) ? data : []);
     } catch (error: any) {
       console.error('Load admins error:', error);
       const errorMsg = error.response?.data?.error || '載入管理員列表失敗';
