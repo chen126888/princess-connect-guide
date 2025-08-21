@@ -14,13 +14,13 @@ build/
 # Environment variables
 .env
 .env.local
+.env.development
+.env.production
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Allow framework environment files (safe to commit)
-!.env.development
-!.env.production
+# Allow only example environment files (safe to commit)
 !.env.example
 # Database
 *.db
@@ -77,6 +77,10 @@ coverage/
 **/*test*.ts
 **/*test*.sql
 **/*export*.sql
+
+# Batch update scripts (may contain credentials)
+batch_update*.sh
+**/batch_update*.sh
 
 # Optional npm cache directory
 .npm
