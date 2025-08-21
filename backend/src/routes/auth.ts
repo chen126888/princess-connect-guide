@@ -257,6 +257,39 @@ router.post('/toggle-admin', requireSuperAdmin, async (req, res) => {
   }
 });
 
+// 刪除管理員 (需要超級管理員權限)
+router.delete('/delete-admin', requireSuperAdmin, async (req, res) => {
+  try {
+    const { adminId } = req.body;
+
+    if (!adminId) {
+      return res.status(400).json({ error: 'Admin ID is required' });
+    }
+
+    // 檢查要刪除的管理員是否存在
+    const adminToDelete = await prisma.admin.findUnique({
+      where: { id: adminId }
+    });
+
+    if (!adminToDelete) {
+      return res.status(404).json({ error: 'Admin not found' });
+    }
+
+    // 刪除管理員
+    await prisma.admin.delete({
+      where: { id: adminId }
+    });
+
+    res.json({
+      success: true,
+      message: 'Admin deleted successfully'
+    });
+  } catch (error) {
+    console.error('Error deleting admin:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 // 停用管理員 (需要超級管理員權限) - 保留原有路由作為兼容
 router.patch('/admins/:id/deactivate', requireSuperAdmin, async (req, res) => {
   try {

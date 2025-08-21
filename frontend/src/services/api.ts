@@ -132,6 +132,12 @@ export const adminApi = {
     const response = await api.post('/auth/toggle-admin', { adminId, isActive });
     return response.data;
   },
+
+  // 刪除管理員 (需要超級管理員權限)
+  deleteAdmin: async (adminId: string) => {
+    const response = await api.delete('/auth/delete-admin', { data: { adminId } });
+    return response.data;
+  },
 };
 
 // 文件上傳 API 服務

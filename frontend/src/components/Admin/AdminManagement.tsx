@@ -152,6 +152,32 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ onClose }) => {
     }
   };
 
+  // 刪除管理員
+  const deleteAdmin = async (adminId: string, adminName: string) => {
+    const currentAdmin = getCurrentAdmin();
+    if (adminId === currentAdmin?.id) {
+      alert('不能刪除自己的帳號');
+      return;
+    }
+
+    if (!confirm(`確定要永久刪除管理員「${adminName}」嗎？\n\n⚠️ 此操作無法復原！`)) return;
+
+    try {
+      const data = await adminApi.deleteAdmin(adminId);
+
+      if (data.success) {
+        alert('管理員刪除成功！');
+        loadAdmins();
+      } else {
+        alert(data.error || '刪除失敗');
+      }
+    } catch (error: any) {
+      console.error('Delete admin error:', error);
+      const errorMsg = error.response?.data?.error || '刪除管理員失敗';
+      alert(errorMsg);
+    }
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -231,6 +257,12 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ onClose }) => {
                         }`}
                       >
                         {admin.isActive ? '停用' : '啟用'}
+                      </button>
+                      <button
+                        onClick={() => deleteAdmin(admin.id, admin.name)}
+                        className="bg-red-700 hover:bg-red-800 text-white px-3 py-1 rounded text-sm"
+                      >
+                        刪除
                       </button>
                     </div>
                   )}

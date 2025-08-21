@@ -73,7 +73,7 @@ const CommonCharactersSection: React.FC<CommonCharactersSectionProps> = ({ activ
 
       {/* Magic Characters Section */}
       <Card>
-        <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">法術常用角色</h3>
+        <h3 className="text-xl font-bold text-gray-800 mb-4 border-b pb-2">魔法常用角色</h3>
         {renderCharactersByTier(currentAttributeData.magic, allCharacters)}
       </Card>
     </div>
