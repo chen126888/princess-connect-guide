@@ -155,6 +155,12 @@ export const uploadApi = {
     });
     return response.data;
   },
+
+  // 檢查 R2 配置狀態 (需要管理員權限)
+  checkR2Status: async () => {
+    const response = await api.get('/upload/r2-status');
+    return response.data;
+  },
 };
 
 // 攻略 API 服務

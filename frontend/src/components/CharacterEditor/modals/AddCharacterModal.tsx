@@ -232,7 +232,7 @@ const AddCharacterModal: React.FC<AddCharacterModalProps> = ({
               </div>
             )}
             <div className="mt-1 text-xs text-gray-500">
-              照片將自動以角色名稱命名並儲存至 data/images/characters 資料夾
+              照片將自動以角色名稱命名並上傳至 R2 雲端儲存空間
             </div>
           </div>
         </div>
