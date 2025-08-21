@@ -4,7 +4,7 @@ export const uniqueEquipment1Tiers: PriorityTier[] = [
   { 
     tier: 'SS', 
     characters: [
-      { name: '凱留(公主)' }, { name: '似似花' }, { name: '克莉絲提娜' },
+      { name: '克莉絲提娜' },
       { name: '優花梨' }, { name: '璃乃' },{name:'泳咲'},
     ], 
     color: 'bg-red-500' 
@@ -12,7 +12,7 @@ export const uniqueEquipment1Tiers: PriorityTier[] = [
   {
     tier: 'S',
     characters: [
-      { name: '晶' }, { name: '栞' }, { name: '矛依未' }, { name: '流夏' }, { name: '純' }, { name: '望(解放者)' },
+      { name: '凱留(公主)' }, { name: '似似花' }, { name: '晶' }, { name: '栞' }, { name: '矛依未' }, { name: '流夏' }, { name: '純' }, { name: '望(解放者)' },
       { name: '吉塔(魔導士)' }, { name: '可可蘿(公主)' }, { name: '帆希(新年)' }, { name: '怜(夏日)' }, { name: '真步(夏日)' }, 
       { name: '美空' }, { name: '蘭法' }, { name: '莉莉(泳裝)' }, { name: '愛梅斯(夏日)' }, { name: '帆希(夏日)' }, 
       { name: '杏奈' }, { name: '步未' }, { name: '雪' }, { name: '宮子' }, { name: '凱留' },
