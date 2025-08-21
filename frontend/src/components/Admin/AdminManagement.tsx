@@ -214,7 +214,7 @@ const AdminManagement: React.FC<AdminManagementProps> = ({ onClose }) => {
                     </div>
                   </div>
                   
-                  {admin.role !== 'superadmin' && (
+                  {admin.id !== getCurrentAdmin()?.id && (
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowResetModal(admin.id)}
