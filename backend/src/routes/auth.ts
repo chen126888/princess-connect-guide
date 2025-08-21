@@ -178,12 +178,12 @@ router.post('/create-admin', requireSuperAdmin, async (req, res) => {
 router.get('/admins', requireSuperAdmin, async (req, res) => {
   try {
     const admins = await prisma.admin.findMany({
-      where: { isActive: true },
       select: {
         id: true,
         username: true,
         name: true,
         role: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true
       },
