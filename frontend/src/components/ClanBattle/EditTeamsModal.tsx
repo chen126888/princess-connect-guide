@@ -11,14 +11,12 @@ interface EditTeamsModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: {
-    description: string;
     sourceUrl?: string;
     bossNumber: number;
     teams: TeamData[];
   }) => void;
   initialData?: {
     id: number;
-    description: string;
     characters: {
       teams: TeamData[];
     };
@@ -29,7 +27,6 @@ interface EditTeamsModalProps {
 
 const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubmit, initialData }) => {
   const [bossNumber, setBossNumber] = useState(1);
-  const [description, setDescription] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
   const [teams, setTeams] = useState<TeamData[]>([
     { name: '', fixedCharacters: [], flexibleOptions: [] }
@@ -39,7 +36,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
   useEffect(() => {
     if (initialData && isOpen) {
       setBossNumber(initialData.boss_number);
-      setDescription(initialData.description);
       setSourceUrl(initialData.source_url || '');
       setTeams(initialData.characters.teams.length > 0 ? initialData.characters.teams : [
         { name: '', fixedCharacters: [], flexibleOptions: [] }
@@ -115,12 +111,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    // 驗證必填欄位
-    if (!description.trim()) {
-      alert('請填寫隊伍描述');
-      return;
-    }
 
     const validTeams = teams.filter(team => 
       team.name.trim() && 
@@ -134,7 +124,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
 
     onSubmit({
       bossNumber,
-      description: description.trim(),
       sourceUrl: sourceUrl.trim() || undefined,
       teams: validTeams
     });
@@ -142,7 +131,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
 
   const resetForm = () => {
     setBossNumber(1);
-    setDescription('');
     setSourceUrl('');
     setTeams([{ name: '', fixedCharacters: [], flexibleOptions: [] }]);
   };
@@ -196,19 +184,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              隊伍描述 *
-            </label>
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="例如：一王推薦隊伍"
-              required
-            />
-          </div>
 
           {/* 隊伍列表 */}
           <div className="space-y-4">

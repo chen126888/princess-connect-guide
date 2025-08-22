@@ -22,7 +22,7 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
 }) => {
   const [characterMap, setCharacterMap] = useState<Map<string, Character>>(new Map());
   const [loading, setLoading] = useState(true);
-  const [selectedFlexible, setSelectedFlexible] = useState<string[]>([]);
+  const [selectedCombination, setSelectedCombination] = useState<number>(0);
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -53,21 +53,16 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
   }, []);
 
   useEffect(() => {
-    if (teamData.flexibleOptions) {
-      setSelectedFlexible(teamData.flexibleOptions.map(options => options[0] || ''));
-    }
+    // 預設選擇第一個彈性組合
+    setSelectedCombination(0);
   }, [teamData]);
 
   const findCharacter = (name: string): Character | null => {
     return characterMap.get(name) || null;
   };
 
-  const handleFlexibleSelect = (groupIndex: number, characterName: string) => {
-    setSelectedFlexible(prev => {
-      const newSelected = [...prev];
-      newSelected[groupIndex] = characterName;
-      return newSelected;
-    });
+  const handleCombinationSelect = (combinationIndex: number) => {
+    setSelectedCombination(combinationIndex);
   };
 
   const parseCharacterNames = (name: string): { characters: string[]; separator: string } => {
@@ -89,7 +84,9 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
 
   return (
     <div className={`${bgColor} p-4 rounded-lg`}>
-      <div className="flex flex-wrap items-center gap-3">
+      {/* 隊伍成員顯示 */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        {/* 固定角色 */}
         {teamData.fixedCharacters.map((characterName, index) => {
           const { characters, separator } = parseCharacterNames(characterName);
           
@@ -115,46 +112,56 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
                   );
                 })}
               </div>
-              {(index < teamData.fixedCharacters.length - 1 || !isAllFixed) && (
+              {index < teamData.fixedCharacters.length - 1 && (
                 <span className={`${textColor} text-lg font-medium`}>+</span>
               )}
             </React.Fragment>
           );
         })}
 
-        {!isAllFixed && teamData.flexibleOptions?.map((options, groupIndex) => (
-          <React.Fragment key={`flexible-${groupIndex}`}>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center gap-1">
-                <CharacterAvatar
-                  character={findCharacter(selectedFlexible[groupIndex])}
-                  characterName={selectedFlexible[groupIndex]}
-                  size="medium"
-                  showName={true}
-                />
-              </div>
-              <div className="flex flex-wrap gap-1">
-                {options.map((option, optionIndex) => (
-                  <button
-                    key={optionIndex}
-                    onClick={() => handleFlexibleSelect(groupIndex, option)}
-                    className={`px-2 py-1 text-xs rounded ${
-                      selectedFlexible[groupIndex] === option
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    {option}
-                  </button>
-                ))}
-              </div>
-            </div>
-            {groupIndex < teamData.flexibleOptions.length - 1 && (
-              <span className={`${textColor} text-lg font-medium`}>+</span>
-            )}
-          </React.Fragment>
-        ))}
+        {/* 加號分隔符 */}
+        {teamData.fixedCharacters.length > 0 && !isAllFixed && (
+          <span className={`${textColor} text-lg font-medium`}>+</span>
+        )}
+
+        {/* 當前選中的彈性組合 */}
+        {!isAllFixed && teamData.flexibleOptions && teamData.flexibleOptions[selectedCombination]?.map((characterName, index) => {
+          const character = findCharacter(characterName);
+          return (
+            <React.Fragment key={`flexible-${index}`}>
+              <CharacterAvatar
+                character={character}
+                characterName={characterName}
+                size="medium"
+                showName={true}
+              />
+              {index < teamData.flexibleOptions[selectedCombination].length - 1 && (
+                <span className={`${textColor} text-lg font-medium`}>+</span>
+              )}
+            </React.Fragment>
+          );
+        })}
       </div>
+
+      {/* 彈性組合選擇按鈕 */}
+      {!isAllFixed && teamData.flexibleOptions && teamData.flexibleOptions.length > 1 && (
+        <div className="flex flex-wrap gap-2">
+          <span className={`${textColor} text-sm font-medium mr-2`}>彈性組合：</span>
+          {teamData.flexibleOptions.map((combination, index) => (
+            <button
+              key={index}
+              onClick={() => handleCombinationSelect(index)}
+              className={`px-3 py-1 text-sm rounded ${
+                selectedCombination === index
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              組合 {index + 1} ({combination.join('、')})
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

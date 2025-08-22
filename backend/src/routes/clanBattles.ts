@@ -261,13 +261,13 @@ router.get('/:clanBattleId/teams', async (req: Request, res: Response) => {
 router.post('/:clanBattleId/teams', requireAuth, async (req: Request, res: Response) => {
   try {
     const { clanBattleId } = req.params;
-    const { description, characters, source_url, boss_number } = req.body;
+    const { characters, source_url, boss_number } = req.body;
 
     // 驗證必填欄位
-    if (!description || !characters || !boss_number) {
+    if (!characters || !boss_number) {
       return res.status(400).json({
         success: false,
-        error: 'Description, characters, and boss_number are required'
+        error: 'Characters and boss_number are required'
       });
     }
 
@@ -293,7 +293,6 @@ router.post('/:clanBattleId/teams', requireAuth, async (req: Request, res: Respo
 
     const team = await getPrismaClient().team.create({
       data: {
-        description,
         characters,
         source_url,
         boss_number,
@@ -318,7 +317,7 @@ router.post('/:clanBattleId/teams', requireAuth, async (req: Request, res: Respo
 router.put('/teams/:teamId', requireAuth, async (req: Request, res: Response) => {
   try {
     const { teamId } = req.params;
-    const { description, characters, source_url, boss_number } = req.body;
+    const { characters, source_url, boss_number } = req.body;
 
     // 檢查隊伍是否存在
     const existing = await getPrismaClient().team.findUnique({
@@ -341,7 +340,6 @@ router.put('/teams/:teamId', requireAuth, async (req: Request, res: Response) =>
     }
 
     const updateData: any = {};
-    if (description !== undefined) updateData.description = description;
     if (characters !== undefined) updateData.characters = characters;
     if (source_url !== undefined) updateData.source_url = source_url;
     if (boss_number !== undefined) updateData.boss_number = boss_number;
@@ -401,13 +399,13 @@ router.delete('/teams/:teamId', requireAuth, async (req: Request, res: Response)
 // POST /api/clan-battles/batch-teams - 批次新增隊伍 (需要管理員權限)
 router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => {
   try {
-    const { year, month, bossNumber, description, sourceUrl, teams } = req.body;
+    const { year, month, bossNumber, sourceUrl, teams } = req.body;
 
     // 驗證必填欄位
-    if (!year || !month || !bossNumber || !description || !teams || !Array.isArray(teams)) {
+    if (!year || !month || !bossNumber || !teams || !Array.isArray(teams)) {
       return res.status(400).json({
         success: false,
-        error: 'Year, month, bossNumber, description, and teams array are required'
+        error: 'Year, month, bossNumber, and teams array are required'
       });
     }
 
@@ -417,6 +415,16 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
         success: false,
         error: 'At least one team is required'
       });
+    }
+
+    // 驗證每個隊伍都有名稱
+    for (let i = 0; i < teams.length; i++) {
+      if (!teams[i].name || !teams[i].name.trim()) {
+        return res.status(400).json({
+          success: false,
+          error: `Team ${i + 1} must have a name`
+        });
+      }
     }
 
     // 驗證 boss_number 範圍
@@ -438,30 +446,33 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
       });
     }
 
-    // 準備隊伍資料格式
-    const charactersData = {
-      teams: teams.map((team: any) => ({
-        name: team.name,
-        fixedCharacters: team.fixedCharacters || [],
-        flexibleOptions: team.flexibleOptions || []
-      }))
-    };
+    // 為每個隊伍創建獨立的 Team 記錄
+    const createdTeams = [];
+    for (const team of teams) {
+      const charactersData = {
+        teams: [{
+          name: team.name,
+          fixedCharacters: team.fixedCharacters || [],
+          flexibleOptions: team.flexibleOptions || []
+        }]
+      };
 
-    // 創建 Team 記錄
-    const newTeam = await getPrismaClient().team.create({
-      data: {
-        description,
-        characters: charactersData,
-        source_url: sourceUrl || null,
-        boss_number: bossNumber,
-        clan_battle_id: clanBattle.id
-      }
-    });
+      const newTeam = await getPrismaClient().team.create({
+        data: {
+          characters: charactersData,
+          source_url: sourceUrl || null,
+          boss_number: bossNumber,
+          clan_battle_id: clanBattle.id
+        }
+      });
+      
+      createdTeams.push(newTeam);
+    }
 
     res.status(201).json({
       success: true,
       data: {
-        team: newTeam,
+        teams: createdTeams,
         clanBattle
       }
     });
@@ -470,6 +481,70 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
     res.status(500).json({
       success: false,
       error: 'Failed to create teams'
+    });
+  }
+});
+
+// POST /api/clan-battles/ensure-future-sight - 確保未來視所需的 ClanBattle 記錄存在
+router.post('/ensure-future-sight', async (req: Request, res: Response) => {
+  try {
+    const { months } = req.body;
+
+    // 驗證參數
+    if (!months || !Array.isArray(months) || months.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Months array is required'
+      });
+    }
+
+    // 驗證每個月份的格式
+    for (const month of months) {
+      if (!month.year || !month.month || month.year < 2024 || month.month < 1 || month.month > 12) {
+        return res.status(400).json({
+          success: false,
+          error: 'Invalid month format. Each month must have valid year and month properties'
+        });
+      }
+    }
+
+    const createdBattles = [];
+    const existingBattles = [];
+
+    // 檢查每個月份並創建缺少的 ClanBattle
+    for (const monthData of months) {
+      const { year, month } = monthData;
+
+      // 檢查是否已存在
+      const existing = await getPrismaClient().clanBattle.findFirst({
+        where: { year, month }
+      });
+
+      if (existing) {
+        existingBattles.push(existing);
+      } else {
+        // 創建新的 ClanBattle
+        const newBattle = await getPrismaClient().clanBattle.create({
+          data: { year, month }
+        });
+        createdBattles.push(newBattle);
+      }
+    }
+
+    res.json({
+      success: true,
+      data: {
+        created: createdBattles,
+        existing: existingBattles,
+        total: createdBattles.length + existingBattles.length
+      },
+      message: `Ensured ${createdBattles.length + existingBattles.length} ClanBattle records (${createdBattles.length} created, ${existingBattles.length} existing)`
+    });
+  } catch (error) {
+    console.error('Error ensuring future sight clan battles:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to ensure clan battles'
     });
   }
 });

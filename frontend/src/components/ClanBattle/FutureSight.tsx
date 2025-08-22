@@ -7,7 +7,6 @@ import EditTeamsModal from './EditTeamsModal';
 
 interface TeamData {
   id: number;
-  description: string;
   characters: {
     teams: Array<{
       name: string;
@@ -33,13 +32,13 @@ const FutureSight: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingTeam, setEditingTeam] = useState<TeamData | null>(null);
   const [clanBattles, setClanBattles] = useState<ClanBattleData[]>([]);
-  const [selectedYear, setSelectedYear] = useState(2025);
-  const [selectedMonth, setSelectedMonth] = useState(1);
+  const [selectedYear, setSelectedYear] = useState<number | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // 檢查管理員權限
-    const token = localStorage.getItem('adminToken');
+    const token = sessionStorage.getItem('authToken');
     console.log('Token:', token);
     if (token) {
       try {
@@ -59,14 +58,70 @@ const FutureSight: React.FC = () => {
     loadClanBattles();
   }, []);
 
+  // 獲取未來視需要的5個月份（當前月份 + 未來4個月）
+  const getFutureSightMonths = () => {
+    const months = [];
+    const now = new Date();
+    
+    for (let i = 0; i < 5; i++) {
+      const futureDate = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      months.push({
+        year: futureDate.getFullYear(),
+        month: futureDate.getMonth() + 1,
+        label: `${futureDate.getFullYear()}年${futureDate.getMonth() + 1}月`
+      });
+    }
+    
+    return months;
+  };
+
+  // 確保未來視所需的 ClanBattle 記錄都存在
+  const ensureFutureSightClanBattles = async () => {
+    try {
+      const futureSightMonths = getFutureSightMonths();
+      
+      // 批次檢查並創建缺少的 ClanBattle
+      const response = await fetch('http://localhost:3000/api/clan-battles/ensure-future-sight', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          months: futureSightMonths.map(m => ({ year: m.year, month: m.month }))
+        })
+      });
+      
+      const result = await response.json();
+      if (!response.ok) {
+        console.error('確保 ClanBattle 記錄失敗:', result.error);
+      }
+    } catch (error) {
+      console.error('確保 ClanBattle 記錄錯誤:', error);
+    }
+  };
+
   const loadClanBattles = async () => {
     try {
       setLoading(true);
+      
+      // 先確保未來視所需的 ClanBattle 都存在
+      await ensureFutureSightClanBattles();
+      
+      // 然後載入所有戰隊戰資料
       const response = await fetch('http://localhost:3000/api/clan-battles');
       const result = await response.json();
       
       if (response.ok) {
-        setClanBattles(result.data || []);
+        const battles = result.data || [];
+        setClanBattles(battles);
+        
+        // 設定預設選擇當前月份
+        const currentDate = new Date();
+        const currentYear = currentDate.getFullYear();
+        const currentMonth = currentDate.getMonth() + 1;
+        
+        setSelectedYear(currentYear);
+        setSelectedMonth(currentMonth);
       } else {
         console.error('載入戰隊戰資料失敗:', result.error);
       }
@@ -79,7 +134,7 @@ const FutureSight: React.FC = () => {
 
   const handleAddTeams = async (data: any) => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = sessionStorage.getItem('authToken');
       if (!token) {
         alert('請先登入管理員帳號');
         return;
@@ -120,7 +175,7 @@ const FutureSight: React.FC = () => {
     if (!editingTeam) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = sessionStorage.getItem('authToken');
       if (!token) {
         alert('請先登入管理員帳號');
         return;
@@ -133,7 +188,6 @@ const FutureSight: React.FC = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          description: data.description,
           characters: {
             teams: data.teams
           },
@@ -161,12 +215,12 @@ const FutureSight: React.FC = () => {
   };
 
   const handleDeleteTeam = async (team: TeamData) => {
-    if (!confirm(`確定要刪除「${team.description}」嗎？此操作無法復原。`)) {
+    if (!confirm(`確定要刪除這個隊伍組合嗎？此操作無法復原。`)) {
       return;
     }
 
     try {
-      const token = localStorage.getItem('adminToken');
+      const token = sessionStorage.getItem('authToken');
       if (!token) {
         alert('請先登入管理員帳號');
         return;
@@ -195,132 +249,43 @@ const FutureSight: React.FC = () => {
     }
   };
 
-  const testTeams = [
-    {
-      id: 1,
-      description: '全固定隊伍',
-      characters: {
-        teams: [{
-          name: '一刀隊',
-          fixedCharacters: ['佩可', '可可蘿', '優妮(聖學祭)', '春田', '紐咕嚕'],
-          flexibleOptions: []
-        }]
-      },
-      boss_number: 1,
-      clan_battle_id: 1,
-      title: '全固定隊伍',
-      data: {
-        id: 'all-fixed',
-        fixedCharacters: ['佩可', '可可蘿', '優妮(聖學祭)', '春田', '紐咕嚕']
-      }
-    },
-    {
-      id: 2,
-      description: '3固定+2彈性',
-      characters: {
-        teams: [{
-          name: '彈性隊',
-          fixedCharacters: ['佩可', '可可蘿', '優妮(聖學祭)'],
-          flexibleOptions: [
-            ['春田', '香織', '真步'],
-            ['紐咕嚕', '雪', '茜里']
-          ]
-        }]
-      },
-      boss_number: 2,
-      clan_battle_id: 1,
-      title: '3固定+2彈性',
-      data: {
-        id: '3-fixed-2-flexible',
-        fixedCharacters: ['佩可', '可可蘿', '優妮(聖學祭)'],
-        flexibleOptions: [
-          ['春田', '香織', '真步'],
-          ['紐咕嚕', '雪', '茜里']
-        ]
-      }
-    },
-    {
-      id: 3,
-      description: '2固定+3彈性',
-      characters: {
-        teams: [{
-          name: '高彈性隊',
-          fixedCharacters: ['佩可', '可可蘿'],
-          flexibleOptions: [
-            ['優妮(聖學祭)', '美美', '茜里'],
-            ['春田', '香織'],
-            ['紐咕嚕', '雪', '真步', '碧']
-          ]
-        }]
-      },
-      boss_number: 3,
-      clan_battle_id: 1,
-      title: '2固定+3彈性', 
-      data: {
-        id: '2-fixed-3-flexible',
-        fixedCharacters: ['佩可', '可可蘿'],
-        flexibleOptions: [
-          ['優妮(聖學祭)', '美美', '茜里'],
-          ['春田', '香織'],
-          ['紐咕嚕', '雪', '真步', '碧']
-        ]
-      }
-    },
-    {
-      id: 4,
-      description: '1固定+4彈性',
-      characters: {
-        teams: [{
-          name: '超彈性隊',
-          fixedCharacters: ['佩可'],
-          flexibleOptions: [
-            ['可可蘿', '茜里'],
-            ['優妮(聖學祭)', '美美'],
-            ['春田', '香織', '真步'],
-            ['紐咕嚕', '雪', '碧', '鈴奈']
-          ]
-        }]
-      },
-      boss_number: 4,
-      clan_battle_id: 1,
-      title: '1固定+4彈性',
-      data: {
-        id: '1-fixed-4-flexible', 
-        fixedCharacters: ['佩可'],
-        flexibleOptions: [
-          ['可可蘿', '茜里'],
-          ['優妮(聖學祭)', '美美'],
-          ['春田', '香織', '真步'],
-          ['紐咕嚕', '雪', '碧', '鈴奈']
-        ]
-      }
-    },
-    {
-      id: 5,
-      description: '固定角色含斜線選項',
-      characters: {
-        teams: [{
-          name: '選擇隊',
-          fixedCharacters: ['佩可', '可可蘿/茜里', '優妮(聖學祭)'],
-          flexibleOptions: [
-            ['春田', '香織'],
-            ['紐咕嚕', '雪']
-          ]
-        }]
-      },
-      boss_number: 5,
-      clan_battle_id: 1,
-      title: '固定角色含斜線選項',
-      data: {
-        id: 'fixed-with-options',
-        fixedCharacters: ['佩可', '可可蘿/茜里', '優妮(聖學祭)'],
-        flexibleOptions: [
-          ['春田', '香織'],
-          ['紐咕嚕', '雪']
-        ]
-      }
+  // 從資料庫獲取當前選擇年月的隊伍資料
+  const getCurrentTeams = () => {
+    if (selectedYear === null || selectedMonth === null) {
+      return [];
     }
-  ];
+    
+    const currentBattle = clanBattles.find(
+      battle => battle.year === selectedYear && battle.month === selectedMonth
+    );
+    
+    return currentBattle?.teams || [];
+  };
+
+  // 按 Boss 編號分組隊伍
+  const getTeamsByBoss = () => {
+    const teams = getCurrentTeams();
+    const groupedTeams: { [key: number]: TeamData[] } = {};
+    
+    // 初始化 1-5 王的分組
+    for (let i = 1; i <= 5; i++) {
+      groupedTeams[i] = [];
+    }
+    
+    // 將隊伍分組到對應的王
+    teams.forEach(team => {
+      if (team.boss_number >= 1 && team.boss_number <= 5) {
+        groupedTeams[team.boss_number].push(team);
+      }
+    });
+    
+    return groupedTeams;
+  };
+
+  // 獲取未來視可選的年月組合（固定5個月）
+  const getAvailableMonths = () => {
+    return getFutureSightMonths();
+  };
 
   return (
     <Card>
@@ -337,58 +302,150 @@ const FutureSight: React.FC = () => {
         )}
       </div>
       <div className="text-gray-700 leading-relaxed mb-6">
-        <p>FlexibleTeamLineup 元件測試</p>
+        <p>戰隊戰未來視 - 隊伍編成資料</p>
       </div>
 
-      <div className="space-y-6">
-        {testTeams.map((team) => (
-          <div key={team.id} className="bg-gray-50 p-4 rounded-lg">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-lg font-semibold text-gray-800">
-                {team.title}
-              </h3>
+      {/* 未來視年月選擇按鈕 */}
+      <div className="mb-6">
+        <h3 className="text-md font-medium text-gray-700 mb-3">選擇未來視期間：</h3>
+        <div className="flex flex-wrap gap-2">
+          {getAvailableMonths().map((period, index) => (
+            <button
+              key={`${period.year}-${period.month}`}
+              onClick={() => {
+                setSelectedYear(period.year);
+                setSelectedMonth(period.month);
+              }}
+              className={`px-4 py-2 rounded-lg border transition-colors ${
+                selectedYear === period.year && selectedMonth === period.month
+                  ? 'bg-blue-500 text-white border-blue-500'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {period.label}
+              {index === 0 && <span className="ml-1 text-xs">(當前)</span>}
+            </button>
+          ))}
+        </div>
+        <div className="text-sm text-gray-500 mt-2 space-y-1">
+          <p>※ 未來視資料來源：日服進度（領先台服約5個月），參考YT えるる作業</p>
+          {selectedYear && selectedMonth && getCurrentTeams().length > 0 && (
+            <div>
+              {(() => {
+                const firstTeamWithUrl = getCurrentTeams().find(team => team.source_url);
+                if (firstTeamWithUrl?.source_url) {
+                  return (
+                    <p>
+                      資料來源：
+                      <a 
+                        href={firstTeamWithUrl.source_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-blue-600 hover:underline ml-1"
+                      >
+                        查看攻略影片
+                      </a>
+                    </p>
+                  );
+                }
+                return null;
+              })()}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">載入中...</p>
+        </div>
+      ) : (
+        <div className="space-y-8">
+          {getCurrentTeams().length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-500 mb-4">
+                {selectedYear && selectedMonth 
+                  ? `${selectedYear}年${selectedMonth}月目前沒有隊伍資料`
+                  : '目前沒有隊伍資料'
+                }
+              </p>
               {isAdmin && (
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEditTeam(team as any)}
-                    className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
-                  >
-                    <Edit size={14} />
-                    編輯
-                  </button>
-                  <button
-                    onClick={() => handleDeleteTeam(team as any)}
-                    className="flex items-center gap-1 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
-                  >
-                    <Trash2 size={14} />
-                    刪除
-                  </button>
-                </div>
+                <p className="text-sm text-gray-400">點擊上方「新增隊伍」按鈕來新增第一個隊伍</p>
               )}
             </div>
-            <FlexibleTeamLineup 
-              teamData={team.data}
-              bgColor="bg-white"
-              textColor="text-gray-800"
-            />
-          </div>
-        ))}
-      </div>
+          ) : (
+            Object.entries(getTeamsByBoss()).map(([bossNumber, teams]) => (
+              <div key={bossNumber}>
+                <h3 className="text-xl font-bold text-gray-800 mb-4">
+                  {bossNumber}王
+                </h3>
+                {teams.length === 0 ? (
+                  <div className="text-center py-6 bg-gray-50 rounded-lg">
+                    <p className="text-gray-500">尚無{bossNumber}王隊伍資料</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {teams.map((team) => (
+                      <div key={team.id}>
+                        {isAdmin && (
+                          <div className="flex justify-end gap-2 mb-3">
+                            <button
+                              onClick={() => handleEditTeam(team)}
+                              className="flex items-center gap-1 px-3 py-1 text-sm bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                            >
+                              <Edit size={14} />
+                              編輯
+                            </button>
+                            <button
+                              onClick={() => handleDeleteTeam(team)}
+                              className="flex items-center gap-1 px-3 py-1 text-sm bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                            >
+                              <Trash2 size={14} />
+                              刪除
+                            </button>
+                          </div>
+                        )}
+                        {team.characters?.teams?.map((singleTeam, index) => (
+                          <div key={index} className="mb-4">
+                            <FlexibleTeamLineup 
+                              teamData={{
+                                id: `${team.id}-${index}`,
+                                fixedCharacters: singleTeam.fixedCharacters || [],
+                                flexibleOptions: singleTeam.flexibleOptions || []
+                              }}
+                              bgColor="bg-white"
+                              textColor="text-gray-800"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
-      <div className="mt-8 p-4 bg-blue-50 rounded-lg">
-        <h3 className="text-lg font-semibold text-blue-800 mb-2">測試說明</h3>
-        <ul className="text-blue-700 space-y-1 text-sm">
-          <li>• 全固定：只顯示固定角色，無彈性選項</li>
-          <li>• 3+2、2+3、1+4：不同比例的固定與彈性組合</li>
-          <li>• 斜線選項：固定位置也可以有多個選擇</li>
-          <li>• 彈性選項：可點擊按鈕切換不同角色</li>
-        </ul>
-      </div>
+      {getCurrentTeams().length > 0 && (
+        <div className="mt-8 p-4 bg-blue-50 rounded-lg">
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">使用說明</h3>
+          <ul className="text-blue-700 space-y-1 text-sm">
+            <li>• 固定角色：隊伍中必須的角色</li>
+            <li>• 彈性選項：可替換的角色選擇，點擊切換</li>
+            <li>• 斜線選項：同一位置可選擇的多個角色</li>
+            <li>• 來源連結：點擊查看詳細攻略說明</li>
+          </ul>
+        </div>
+      )}
 
       <AddTeamsModal
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSubmit={handleAddTeams}
+        initialYear={selectedYear || 2025}
+        initialMonth={selectedMonth || 1}
       />
 
       <EditTeamsModal

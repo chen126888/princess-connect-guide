@@ -14,17 +14,17 @@ interface AddTeamsModalProps {
     year: number;
     month: number;
     bossNumber: number;
-    description: string;
     sourceUrl?: string;
     teams: TeamData[];
   }) => void;
+  initialYear?: number;
+  initialMonth?: number;
 }
 
-const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [year, setYear] = useState(2025);
-  const [month, setMonth] = useState(1);
+const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit, initialYear, initialMonth }) => {
+  const [year, setYear] = useState(initialYear || 2025);
+  const [month, setMonth] = useState(initialMonth || 1);
   const [bossNumber, setBossNumber] = useState(1);
-  const [description, setDescription] = useState('');
   const [sourceUrl, setSourceUrl] = useState('');
   const [teams, setTeams] = useState<TeamData[]>([
     { name: '', fixedCharacters: [], flexibleOptions: [] }
@@ -99,12 +99,6 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // 驗證必填欄位
-    if (!description.trim()) {
-      alert('請填寫隊伍描述');
-      return;
-    }
-
     const validTeams = teams.filter(team => 
       team.name.trim() && 
       (team.fixedCharacters.some(char => char.trim()) || team.flexibleOptions.length > 0)
@@ -119,17 +113,15 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
       year,
       month,
       bossNumber,
-      description: description.trim(),
       sourceUrl: sourceUrl.trim() || undefined,
       teams: validTeams
     });
   };
 
   const resetForm = () => {
-    setYear(2025);
-    setMonth(1);
+    setYear(initialYear || 2025);
+    setMonth(initialMonth || 1);
     setBossNumber(1);
-    setDescription('');
     setSourceUrl('');
     setTeams([{ name: '', fixedCharacters: [], flexibleOptions: [] }]);
   };
@@ -139,6 +131,13 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
       resetForm();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && (initialYear || initialMonth)) {
+      setYear(initialYear || 2025);
+      setMonth(initialMonth || 1);
+    }
+  }, [isOpen, initialYear, initialMonth]);
 
   if (!isOpen) return null;
 
@@ -198,19 +197,6 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              隊伍描述 *
-            </label>
-            <input
-              type="text"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="例如：一王推薦隊伍"
-              required
-            />
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
