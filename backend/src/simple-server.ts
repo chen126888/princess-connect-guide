@@ -8,10 +8,13 @@ import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import characterRoutes from './routes/characters';
 import uploadRoutes from './routes/upload';
-import guidesRoutes from './routes/guides';
 
-// 載入環境變數
-dotenv.config();
+// 載入環境變數 - 根據 NODE_ENV 選擇配置檔案
+if (process.env.NODE_ENV === 'development') {
+  dotenv.config({ path: '.env.development' });
+} else {
+  dotenv.config(); // 生產環境使用 Render 的環境變數或預設 .env
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -82,7 +85,6 @@ if (NODE_ENV === 'development') {
 app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/api/guides', guidesRoutes);
 
 // 健康檢查端點
 app.get('/api/health', async (req, res) => {
