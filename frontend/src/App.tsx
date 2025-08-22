@@ -57,7 +57,7 @@ function App() {
         }
 
         // 檢查是否需要初始化
-        const API_BASE_URL = 'https://princess-connect-guide.onrender.com/api';
+        const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         const response = await fetch(`${API_BASE_URL}/auth/check-init`);
         const data = await response.json();
         setNeedsInit(data.needsInit);
@@ -73,7 +73,7 @@ function App() {
   // 管理員登入處理
   const handleAdminLogin = async () => {
     try {
-      const API_BASE_URL = 'https://princess-connect-guide.onrender.com/api';
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {

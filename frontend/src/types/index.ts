@@ -19,3 +19,29 @@ export interface Character {
   createdAt?: string;
   updatedAt?: string;
 }
+
+// 其他常用類型
+export interface ApiResponse<T> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+}
+
+export interface CharacterListResponse {
+  characters: Character[];
+  total: number;
+  page: number;
+  limit: number;
+}
+
+export interface FilterOptions {
+  位置?: string[];
+  屬性?: string[];
+  競技場進攻?: string[];
+  競技場防守?: string[];
+  戰隊戰?: string[];
+  深域及抄作業?: string[];
+  角色定位?: string[];
+  '常駐/限定'?: string[];
+}

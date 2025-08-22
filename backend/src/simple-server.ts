@@ -8,12 +8,14 @@ import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import characterRoutes from './routes/characters';
 import uploadRoutes from './routes/upload';
+import clanBattlesRoutes from './routes/clanBattles';
 
 // 載入環境變數 - 根據 NODE_ENV 選擇配置檔案
 if (process.env.NODE_ENV === 'development') {
   dotenv.config({ path: '.env.development' });
 } else {
-  dotenv.config(); // 生產環境使用 Render 的環境變數或預設 .env
+  // 生產環境使用 Render 的環境變數，不需要 .env 檔案
+  console.log('🚀 Production mode: Using Render environment variables');
 }
 
 const app = express();
@@ -85,6 +87,7 @@ if (NODE_ENV === 'development') {
 app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/clan-battles', clanBattlesRoutes);
 
 // 健康檢查端點
 app.get('/api/health', async (req, res) => {
@@ -125,7 +128,8 @@ app.get('/', (req, res) => {
       health: '/api/health',
       auth: '/api/auth',
       characters: '/api/characters',
-      upload: '/api/upload'
+      upload: '/api/upload',
+      clanBattles: '/api/clan-battles'
     }
   });
 });

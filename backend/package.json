@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/simple-server.ts",
+    "dev": "NODE_ENV=development nodemon src/simple-server.ts",
     "build": "tsc && npx prisma generate && npx prisma db push",
     "start": "node dist/simple-server.js",
     "start:dev": "ts-node src/simple-server.ts",
