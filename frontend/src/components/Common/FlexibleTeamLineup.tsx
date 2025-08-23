@@ -65,12 +65,6 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
     setSelectedCombination(combinationIndex);
   };
 
-  const parseCharacterNames = (name: string): { characters: string[]; separator: string } => {
-    if (name.includes('/')) {
-      return { characters: name.split('/').map(n => n.trim()), separator: '或' };
-    }
-    return { characters: [name], separator: '' };
-  };
 
   if (loading) {
     return (
@@ -88,30 +82,15 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
       <div className="flex flex-wrap items-center gap-3 mb-4">
         {/* 固定角色 */}
         {teamData.fixedCharacters.map((characterName, index) => {
-          const { characters, separator } = parseCharacterNames(characterName);
-          
+          const character = findCharacter(characterName);
           return (
             <React.Fragment key={`fixed-${index}`}>
-              <div className="flex items-center gap-1">
-                {characters.map((charName, charIndex) => {
-                  const character = findCharacter(charName);
-                  return (
-                    <React.Fragment key={charIndex}>
-                      <CharacterAvatar
-                        character={character}
-                        characterName={charName}
-                        size="medium"
-                        showName={true}
-                      />
-                      {charIndex < characters.length - 1 && (
-                        <span className={`mx-1 ${textColor} text-sm font-medium`}>
-                          {separator}
-                        </span>
-                      )}
-                    </React.Fragment>
-                  );
-                })}
-              </div>
+              <CharacterAvatar
+                character={character}
+                characterName={characterName}
+                size="medium"
+                showName={true}
+              />
               {index < teamData.fixedCharacters.length - 1 && (
                 <span className={`${textColor} text-lg font-medium`}>+</span>
               )}
@@ -135,7 +114,7 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
                 size="medium"
                 showName={true}
               />
-              {index < teamData.flexibleOptions[selectedCombination].length - 1 && (
+              {index < (teamData.flexibleOptions?.[selectedCombination]?.length || 0) - 1 && (
                 <span className={`${textColor} text-lg font-medium`}>+</span>
               )}
             </React.Fragment>

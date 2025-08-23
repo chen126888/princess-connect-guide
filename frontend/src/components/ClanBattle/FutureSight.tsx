@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Calendar } from 'lucide-react';
+import { Plus, Edit, Trash2 } from 'lucide-react';
 import Card from '../Common/Card';
 import FlexibleTeamLineup from '../Common/FlexibleTeamLineup';
 import AddTeamsModal from './AddTeamsModal';
@@ -458,7 +458,7 @@ const FutureSight: React.FC = () => {
           setEditingTeam(null);
         }}
         onSubmit={handleUpdateTeam}
-        initialData={editingTeam}
+        initialData={editingTeam || undefined}
       />
     </Card>
   );

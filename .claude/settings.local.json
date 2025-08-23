@@ -34,7 +34,8 @@
       "Bash(chmod:*)",
       "Bash(/mnt/c/Users/chen1/Desktop/learn/princess-connect-guide/batch_update_six_star.sh)",
       "Bash(NODE_ENV=development npm run dev)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npm run preview:*)"
     ],
     "deny": []
   }

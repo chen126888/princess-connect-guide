@@ -39,11 +39,6 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
     }
   };
 
-  const updateTeam = (index: number, field: keyof TeamData, value: any) => {
-    const newTeams = [...teams];
-    newTeams[index] = { ...newTeams[index], [field]: value };
-    setTeams(newTeams);
-  };
 
   const addFixedCharacter = (teamIndex: number) => {
     const newTeams = [...teams];
@@ -260,7 +255,7 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
                             value={char}
                             onChange={(e) => updateFixedCharacter(teamIndex, charIndex, e.target.value)}
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="角色名稱 (支援 角色A/角色B 格式)"
+                            placeholder="角色名稱"
                           />
                           <button
                             type="button"

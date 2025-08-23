@@ -17,7 +17,10 @@ interface EditTeamsModalProps {
   initialData?: {
     id: number;
     characters: {
-      teams: TeamData[];
+      teams: Array<{
+        fixedCharacters: string[];
+        flexibleOptions?: string[][];
+      }>;
     };
     source_url?: string;
     boss_number: number;
@@ -36,7 +39,10 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
     if (initialData && isOpen) {
       setBossNumber(initialData.boss_number);
       setSourceUrl(initialData.source_url || '');
-      setTeams(initialData.characters.teams.length > 0 ? initialData.characters.teams : [
+      setTeams(initialData.characters.teams.length > 0 ? initialData.characters.teams.map(team => ({
+        fixedCharacters: team.fixedCharacters,
+        flexibleOptions: team.flexibleOptions || []
+      })) : [
         {fixedCharacters: [], flexibleOptions: [] }
       ]);
     }
@@ -52,11 +58,6 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
     }
   };
 
-  const updateTeam = (index: number, field: keyof TeamData, value: any) => {
-    const newTeams = [...teams];
-    newTeams[index] = { ...newTeams[index], [field]: value };
-    setTeams(newTeams);
-  };
 
   const addFixedCharacter = (teamIndex: number) => {
     const newTeams = [...teams];
@@ -234,7 +235,7 @@ const EditTeamsModal: React.FC<EditTeamsModalProps> = ({ isOpen, onClose, onSubm
                             value={char}
                             onChange={(e) => updateFixedCharacter(teamIndex, charIndex, e.target.value)}
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="角色名稱 (支援 角色A/角色B 格式)"
+                            placeholder="角色名稱"
                           />
                           <button
                             type="button"
