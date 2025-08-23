@@ -19,7 +19,7 @@ const Dungeon: React.FC = () => {
 
     for (const key in iconMap) {
       const iconNames = iconMap[key];
-      const imgTags = iconNames.map(iconName => `<img src="${import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images'}/icons/${iconName}.png" alt="${iconName}" class="inline-block w-5 h-5 mx-1 align-middle" />`).join('');
+      const imgTags = iconNames.map(iconName => `<img src="${import.meta.env.VITE_IMAGE_BASE_URL}/icons/${iconName}.png" alt="${iconName}" class="inline-block w-5 h-5 mx-1 align-middle" />`).join('');
       processedText = processedText.replace(new RegExp(key, 'g'), `${key}${imgTags}`);
     }
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
 
 interface TeamData {
-  name: string;
   fixedCharacters: string[];
   flexibleOptions: string[][];
 }
@@ -27,11 +26,11 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
   const [bossNumber, setBossNumber] = useState(1);
   const [sourceUrl, setSourceUrl] = useState('');
   const [teams, setTeams] = useState<TeamData[]>([
-    { name: '', fixedCharacters: [], flexibleOptions: [] }
+    { fixedCharacters: [], flexibleOptions: [] }
   ]);
 
   const addTeam = () => {
-    setTeams([...teams, { name: '', fixedCharacters: [], flexibleOptions: [] }]);
+    setTeams([...teams, { fixedCharacters: [], flexibleOptions: [] }]);
   };
 
   const removeTeam = (index: number) => {
@@ -100,7 +99,6 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
     e.preventDefault();
     
     const validTeams = teams.filter(team => 
-      team.name.trim() && 
       (team.fixedCharacters.some(char => char.trim()) || team.flexibleOptions.length > 0)
     );
 
@@ -123,7 +121,7 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
     setMonth(initialMonth || 1);
     setBossNumber(1);
     setSourceUrl('');
-    setTeams([{ name: '', fixedCharacters: [], flexibleOptions: [] }]);
+    setTeams([{ fixedCharacters: [], flexibleOptions: [] }]);
   };
 
   useEffect(() => {
@@ -241,18 +239,6 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
                 </div>
 
                 <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      隊伍名稱 *
-                    </label>
-                    <input
-                      type="text"
-                      value={team.name}
-                      onChange={(e) => updateTeam(teamIndex, 'name', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="例如：一刀隊"
-                    />
-                  </div>
 
                   {/* 固定角色 */}
                   <div>

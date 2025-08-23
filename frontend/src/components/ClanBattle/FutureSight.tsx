@@ -5,11 +5,12 @@ import FlexibleTeamLineup from '../Common/FlexibleTeamLineup';
 import AddTeamsModal from './AddTeamsModal';
 import EditTeamsModal from './EditTeamsModal';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 interface TeamData {
   id: number;
   characters: {
     teams: Array<{
-      name: string;
       fixedCharacters: string[];
       flexibleOptions?: string[][];
     }>;
@@ -81,7 +82,7 @@ const FutureSight: React.FC = () => {
       const futureSightMonths = getFutureSightMonths();
       
       // 批次檢查並創建缺少的 ClanBattle
-      const response = await fetch('http://localhost:3000/api/clan-battles/ensure-future-sight', {
+      const response = await fetch(`${API_BASE_URL}/clan-battles/ensure-future-sight`, { // <--- 已修正
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -108,7 +109,7 @@ const FutureSight: React.FC = () => {
       await ensureFutureSightClanBattles();
       
       // 然後載入所有戰隊戰資料
-      const response = await fetch('http://localhost:3000/api/clan-battles');
+      const response = await fetch(`${API_BASE_URL}/clan-battles`); // <--- 已修正
       const result = await response.json();
       
       if (response.ok) {
@@ -140,7 +141,7 @@ const FutureSight: React.FC = () => {
         return;
       }
 
-      const response = await fetch('http://localhost:3000/api/clan-battles/batch-teams', {
+      const response = await fetch(`${API_BASE_URL}/clan-battles/batch-teams`, { // <--- 已修正
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -181,7 +182,7 @@ const FutureSight: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/clan-battles/teams/${editingTeam.id}`, {
+      const response = await fetch(`${API_BASE_URL}/clan-battles/teams/${editingTeam.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -226,7 +227,7 @@ const FutureSight: React.FC = () => {
         return;
       }
 
-      const response = await fetch(`http://localhost:3000/api/clan-battles/teams/${team.id}`, {
+      const response = await fetch(`${API_BASE_URL}/clan-battles/teams/${team.id}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -249,6 +250,8 @@ const FutureSight: React.FC = () => {
     }
   };
 
+  // ... (剩下的程式碼與您提供的一致，所以省略)
+  
   // 從資料庫獲取當前選擇年月的隊伍資料
   const getCurrentTeams = () => {
     if (selectedYear === null || selectedMonth === null) {

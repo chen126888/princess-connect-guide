@@ -11,7 +11,7 @@ const generateFileName = (characterName: string): string => {
 
 // 共用的圖片路徑生成函數
 export const getCharacterImagePath = (character: Character): { sixStar: string | null; normal: string | null } => {
-  const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images';
+  const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
   
   // 如果有明確的檔名，優先使用
   let normalImagePath: string | null = null;

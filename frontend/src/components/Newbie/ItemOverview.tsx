@@ -29,7 +29,7 @@ const ItemOverview: React.FC = () => {
   const getIconPath = (itemName: string) => {
     const fileName = getItemIconFileName(itemName);
     if (!fileName) return null;
-    const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images';
+    const IMAGE_BASE_URL = import.meta.env.VITE_IMAGE_BASE_URL;
     // 對檔案名稱進行 URL 編碼以處理中文字符
     const encodedFileName = encodeURIComponent(fileName);
     return `${IMAGE_BASE_URL}/icons/${encodedFileName}.png`;

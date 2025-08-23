@@ -165,7 +165,7 @@ const SingleCategoryRating: React.FC<SingleCategoryRatingProps> = ({
   const renderCharacterAvatar = useCallback((character: Character) => {
     const imagePath = character.六星頭像檔名 || character.頭像檔名;
     const imageUrl = imagePath 
-      ? `${import.meta.env.VITE_IMAGE_BASE_URL || 'http://localhost:3000/images'}/characters/${imagePath}`
+      ? `${import.meta.env.VITE_IMAGE_BASE_URL}/characters/${imagePath}`
       : '/placeholder-character.png';
 
     return (

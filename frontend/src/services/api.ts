@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAuthToken, removeAuthToken } from '../utils/auth';
 
 // 環境變數配置
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 console.log('🔗 API_BASE_URL:', API_BASE_URL);
 

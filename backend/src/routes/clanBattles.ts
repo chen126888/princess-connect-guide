@@ -417,16 +417,6 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
       });
     }
 
-    // 驗證每個隊伍都有名稱
-    for (let i = 0; i < teams.length; i++) {
-      if (!teams[i].name || !teams[i].name.trim()) {
-        return res.status(400).json({
-          success: false,
-          error: `Team ${i + 1} must have a name`
-        });
-      }
-    }
-
     // 驗證 boss_number 範圍
     if (bossNumber < 1 || bossNumber > 5) {
       return res.status(400).json({
@@ -451,7 +441,6 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
     for (const team of teams) {
       const charactersData = {
         teams: [{
-          name: team.name,
           fixedCharacters: team.fixedCharacters || [],
           flexibleOptions: team.flexibleOptions || []
         }]
