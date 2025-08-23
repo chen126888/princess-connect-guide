@@ -1,10 +1,15 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Card from '../Common/Card';
 import TeamLineup from '../Common/TeamLineup';
 import type { Character } from '../../types';
 import type { ArenaType, ArenaSection as ArenaSectionType, ArenaItem as ArenaItemType } from '../../types/arena';
 import { arenaConfigs } from '../../arenaData';
 import CharacterImageCard from '../Character/CharacterImageCard';
+import { useArenaData } from '../../hooks/useArenaData';
+import { useAuth } from '../../hooks/useAuth';
+import ManagementButton from '../Management/ManagementButton';
+import ArenaCommonManagementModal from '../Management/ArenaCommonManagementModal';
+import TrialCharacterManagementModal from '../Management/TrialCharacterManagementModal';
 
 interface ArenaContentProps {
   activeType: ArenaType;
@@ -133,56 +138,129 @@ const RecommendedCharacters: React.FC<{
   }
 };
 
-const ArenaSection: React.FC<{ section: ArenaSectionType, allCharacters: Character[] }> = ({ section, allCharacters }) => (
-  <Card className="mb-6">
-    <h3 className="text-xl font-bold text-gray-800 mb-3">{section.title}</h3>
-    <p className="text-gray-600 mb-4" dangerouslySetInnerHTML={renderNewlines(section.description)}></p>
+const ArenaSection: React.FC<{ 
+  section: ArenaSectionType, 
+  allCharacters: Character[],
+  dynamicCharacters?: string[], // 用於替換靜態角色列表
+  trialCharactersByCategory?: { [key: string]: string[] }, // 戰鬥試煉場分類資料
+  activeType: ArenaType,
+  onArenaManagementModalOpen?: () => void,
+  onTrialManagementModalOpen?: () => void
+}> = ({ section, allCharacters, dynamicCharacters, trialCharactersByCategory, activeType, onArenaManagementModalOpen, onTrialManagementModalOpen }) => {
+  // 如果是「常用角色」section且有動態資料，使用動態資料
+  // 如果是戰鬥試煉場的特定section，使用對應分類的資料
+  const getCharactersToShow = () => {
+    if (section.title === '常用角色' && dynamicCharacters) {
+      return dynamicCharacters;
+    }
+    if (section.title === '推薦練' && trialCharactersByCategory?.推薦練) {
+      return trialCharactersByCategory.推薦練;
+    }
+    if (section.title === '後期資源夠再練' && trialCharactersByCategory?.後期練) {
+      return trialCharactersByCategory.後期練;
+    }
+    return section.recommendedCharacters;
+  };
 
-    {section.recommendedCharacters && (
-      <RecommendedCharacters 
-        characters={allCharacters} 
-        names={section.recommendedCharacters} 
-        title={section.title}
-      />
-    )}
+  const charactersToShow = getCharactersToShow();
+  const { isAdmin } = useAuth();
+
+  // 判斷是否需要顯示編輯按鈕及其類型
+  const getEditButtonConfig = () => {
+    if (!isAdmin) return null;
     
-    {section.items && section.items.length > 0 && (
-      <div className="space-y-3 mb-4 pt-4 border-t border-gray-200 mt-4">
-        {section.items.map((item, index) => (
-          <ArenaItem key={index} item={item} />
-        ))}
-      </div>
-    )}
+    if (activeType === 'arena' && section.title === '常用角色') {
+      return {
+        show: true,
+        onClick: onArenaManagementModalOpen
+      };
+    }
     
-    {section.subsections && section.subsections.length > 0 && (
-      <div className="space-y-4 pt-4 border-t border-gray-200 mt-4">
-        {section.subsections.map((subsection, index) => (
-          <div key={index} className="">
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">{subsection.title}</h4>
-            <p className="text-gray-600 mb-3" dangerouslySetInnerHTML={renderNewlines(subsection.description)}></p>
-            {subsection.recommendedCharacters && (
-              <RecommendedCharacters 
-                characters={allCharacters} 
-                names={subsection.recommendedCharacters} 
-                title={subsection.title}
-              />
-            )}
-            {subsection.items && subsection.items.length > 0 && (
-              <div className="space-y-2 mt-3">
-                {subsection.items.map((item, itemIndex) => (
-                  <ArenaItem key={itemIndex} item={item} />
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+    if (activeType === 'trial' && (section.title === '推薦練' || section.title === '後期資源夠再練')) {
+      return {
+        show: true,
+        onClick: onTrialManagementModalOpen
+      };
+    }
+    
+    return null;
+  };
+
+  const editButtonConfig = getEditButtonConfig();
+
+  return (
+    <Card className="mb-6">
+      <div className="flex justify-between items-start mb-3">
+        <h3 className="text-xl font-bold text-gray-800">{section.title}</h3>
+        {editButtonConfig?.show && editButtonConfig.onClick && (
+          <ManagementButton onEdit={editButtonConfig.onClick} />
+        )}
       </div>
-    )}
-  </Card>
-);
+      <p className="text-gray-600 mb-4" dangerouslySetInnerHTML={renderNewlines(section.description)}></p>
+
+      {charactersToShow && (
+        <RecommendedCharacters 
+          characters={allCharacters} 
+          names={charactersToShow} 
+          title={section.title}
+        />
+      )}
+    
+      {section.items && section.items.length > 0 && (
+        <div className="space-y-3 mb-4 pt-4 border-t border-gray-200 mt-4">
+          {section.items.map((item, index) => (
+            <ArenaItem key={index} item={item} />
+          ))}
+        </div>
+      )}
+    
+      {section.subsections && section.subsections.length > 0 && (
+        <div className="space-y-4 pt-4 border-t border-gray-200 mt-4">
+          {section.subsections.map((subsection, index) => (
+            <div key={index} className="">
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">{subsection.title}</h4>
+              <p className="text-gray-600 mb-3" dangerouslySetInnerHTML={renderNewlines(subsection.description)}></p>
+              {subsection.recommendedCharacters && (
+                <RecommendedCharacters 
+                  characters={allCharacters} 
+                  names={subsection.recommendedCharacters} 
+                  title={subsection.title}
+                />
+              )}
+              {subsection.items && subsection.items.length > 0 && (
+                <div className="space-y-2 mt-3">
+                  {subsection.items.map((item, itemIndex) => (
+                    <ArenaItem key={itemIndex} item={item} />
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </Card>
+  );
+};
 
 const ArenaContent: React.FC<ArenaContentProps> = ({ activeType, characters, loading }) => {
+  const { arenaCommonCharacters, trialCharactersByCategory, loading: arenaDataLoading, refetch } = useArenaData();
   const config = arenaConfigs[activeType];
+  const [isManagementModalOpen, setIsManagementModalOpen] = useState(false);
+  const [isTrialManagementModalOpen, setIsTrialManagementModalOpen] = useState(false);
+  
+  // 將 API 資料轉換為角色名稱陣列
+  const dynamicArenaCharacters = arenaCommonCharacters.map(item => item.character_name);
+  
+  // 處理管理Modal的開關
+  const handleManagementModalOpen = () => setIsManagementModalOpen(true);
+  const handleManagementModalClose = () => setIsManagementModalOpen(false);
+  const handleTrialManagementModalOpen = () => setIsTrialManagementModalOpen(true);
+  const handleTrialManagementModalClose = () => setIsTrialManagementModalOpen(false);
+  
+  // 保存後刷新資料
+  const handleManagementSave = () => {
+    refetch(); // 刷新 arena 資料
+  };
   
   if (!config) {
     return (
@@ -196,7 +274,7 @@ const ArenaContent: React.FC<ArenaContentProps> = ({ activeType, characters, loa
     );
   }
 
-  if (loading) {
+  if (loading || arenaDataLoading) {
     return <Card><div className="text-center p-8">正在載入角色資料...</div></Card>;
   }
 
@@ -214,8 +292,30 @@ const ArenaContent: React.FC<ArenaContentProps> = ({ activeType, characters, loa
       
       {/* 內容區域 */}
       {config.content.sections.map((section, index) => (
-        <ArenaSection key={index} section={section} allCharacters={characters} />
+        <ArenaSection 
+          key={index} 
+          section={section} 
+          allCharacters={characters}
+          dynamicCharacters={activeType === 'arena' ? dynamicArenaCharacters : undefined}
+          trialCharactersByCategory={activeType === 'trial' ? trialCharactersByCategory : undefined}
+          activeType={activeType}
+          onArenaManagementModalOpen={handleManagementModalOpen}
+          onTrialManagementModalOpen={handleTrialManagementModalOpen}
+        />
       ))}
+      
+      {/* 管理Modal */}
+      <ArenaCommonManagementModal
+        isOpen={isManagementModalOpen}
+        onClose={handleManagementModalClose}
+        onSave={handleManagementSave}
+      />
+      
+      <TrialCharacterManagementModal
+        isOpen={isTrialManagementModalOpen}
+        onClose={handleTrialManagementModalClose}
+        onSave={handleManagementSave}
+      />
     </div>
   );
 };

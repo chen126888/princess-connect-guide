@@ -164,6 +164,126 @@ export const uploadApi = {
 };
 
 
+// 競技場常用角色 API
+export const arenaCommonApi = {
+  getAll: async () => {
+    const response = await api.get('/arena-common');
+    return response.data;
+  },
+  create: async (data: { character_name: string }) => {
+    const response = await api.post('/arena-common', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string }) => {
+    const response = await api.put(`/arena-common/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/arena-common/${id}`);
+    return response.data;
+  },
+};
+
+// 戰鬥試煉場角色 API
+export const trialCharactersApi = {
+  getAll: async () => {
+    const response = await api.get('/trial-characters');
+    return response.data;
+  },
+  create: async (data: { character_name: string; category: string }) => {
+    const response = await api.post('/trial-characters', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; category: string }) => {
+    const response = await api.put(`/trial-characters/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/trial-characters/${id}`);
+    return response.data;
+  },
+};
+
+// 六星優先度 API
+export const sixstarPriorityApi = {
+  getAll: async () => {
+    const response = await api.get('/sixstar-priority');
+    return response.data;
+  },
+  create: async (data: { character_name: string; tier: string }) => {
+    const response = await api.post('/sixstar-priority', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; tier: string }) => {
+    const response = await api.put(`/sixstar-priority/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/sixstar-priority/${id}`);
+    return response.data;
+  },
+};
+
+// 專用裝備1優先度 API
+export const ue1PriorityApi = {
+  getAll: async () => {
+    const response = await api.get('/ue1-priority');
+    return response.data;
+  },
+  create: async (data: { character_name: string; tier: string }) => {
+    const response = await api.post('/ue1-priority', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; tier: string }) => {
+    const response = await api.put(`/ue1-priority/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/ue1-priority/${id}`);
+    return response.data;
+  },
+};
+
+// 專用裝備2優先度 API
+export const ue2PriorityApi = {
+  getAll: async () => {
+    const response = await api.get('/ue2-priority');
+    return response.data;
+  },
+  create: async (data: { character_name: string; tier: string }) => {
+    const response = await api.post('/ue2-priority', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; tier: string }) => {
+    const response = await api.put(`/ue2-priority/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/ue2-priority/${id}`);
+    return response.data;
+  },
+};
+
+// 非六星角色 API
+export const nonSixstarCharactersApi = {
+  getAll: async () => {
+    const response = await api.get('/non-sixstar-characters');
+    return response.data;
+  },
+  create: async (data: { character_name: string; description: string; acquisition_method: string }) => {
+    const response = await api.post('/non-sixstar-characters', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; description: string; acquisition_method: string }) => {
+    const response = await api.put(`/non-sixstar-characters/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/non-sixstar-characters/${id}`);
+    return response.data;
+  },
+};
+
 // 健康檢查 API
 export const healthApi = {
   check: async () => {

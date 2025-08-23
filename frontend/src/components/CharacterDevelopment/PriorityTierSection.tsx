@@ -3,20 +3,25 @@ import type { PriorityTier, CharacterPriorityInfo } from '../../characterDevelop
 import type { Character } from '../../types';
 import CharacterCard from './CharacterCard';
 import { getCharacterImageSrc, handleCharacterImageError } from '../../utils/characterImageUtils';
+import { useAuth } from '../../hooks/useAuth';
+import ManagementButton from '../Management/ManagementButton';
 
 interface PriorityTierSectionProps {
   tiers: PriorityTier[];
   characterMap: Map<string, Character>;
   searchTerm: string;
   displayMode: 'sixStar' | 'uePriority' | 'nonSixStar';
+  onManagementModalOpen?: () => void;
 }
 
 const PriorityTierSection: React.FC<PriorityTierSectionProps> = ({
   tiers,
   characterMap,
   searchTerm,
-  displayMode
+  displayMode,
+  onManagementModalOpen
 }) => {
+  const { isAdmin } = useAuth();
   const renderTierContent = () => {
     // Special handling for nonSixStar display mode
     if (displayMode === 'nonSixStar') {
@@ -24,9 +29,14 @@ const PriorityTierSection: React.FC<PriorityTierSectionProps> = ({
         <div className="space-y-6">
           {tiers.map((tier) => (
             <div key={tier.tier} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h2 className={`text-xl font-bold mb-3 text-white px-3 py-1 rounded-md inline-block ${tier.color || 'bg-purple-600'}`}>
-                {tier.tier}
-              </h2>
+              <div className="flex justify-between items-center mb-3">
+                <h2 className={`text-xl font-bold text-white px-3 py-1 rounded-md inline-block ${tier.color || 'bg-purple-600'}`}>
+                  {tier.tier}
+                </h2>
+                {isAdmin && onManagementModalOpen && tiers.indexOf(tier) === 0 && (
+                  <ManagementButton onEdit={onManagementModalOpen} />
+                )}
+              </div>
               <div className="space-y-3">
                 {tier.characters.map((char, index) => {
                   // Try to find the character in the database
@@ -101,9 +111,14 @@ const PriorityTierSection: React.FC<PriorityTierSectionProps> = ({
 
           return (
             <div key={tier.tier} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-              <h2 className={`text-xl font-bold mb-3 text-white px-3 py-1 rounded-md inline-block ${tier.color || 'bg-gray-600'}`}>
-                {tier.tier}
-              </h2>
+              <div className="flex justify-between items-center mb-3">
+                <h2 className={`text-xl font-bold text-white px-3 py-1 rounded-md inline-block ${tier.color || 'bg-gray-600'}`}>
+                  {tier.tier}
+                </h2>
+                {isAdmin && onManagementModalOpen && tiers.indexOf(tier) === 0 && (
+                  <ManagementButton onEdit={onManagementModalOpen} />
+                )}
+              </div>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 lg:grid-cols-9 xl:grid-cols-12 gap-[0.1px]">
                 {finalFilteredCharacters.map((item, index) => (
                   <CharacterCard 

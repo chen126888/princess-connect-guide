@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import CharacterAvatar from './CharacterAvatar';
 import type { Character } from '../../types';
-import { characterApi } from '../../services/api';
+import { useCharactersContext } from '../../contexts/CharactersContext';
 
 interface FlexibleTeamData {
   id: string;
@@ -20,37 +20,26 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
   bgColor = 'bg-white',
   textColor = 'text-gray-800'
 }) => {
-  const [characterMap, setCharacterMap] = useState<Map<string, Character>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const { characters, loading } = useCharactersContext();
   const [selectedCombination, setSelectedCombination] = useState<number>(0);
 
-  useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        const response = await characterApi.getAll({ limit: 400 });
-        const newCharMap = new Map<string, Character>();
-        
-        for (const char of response.characters) {
-          newCharMap.set(char.角色名稱, char);
-          if (char.暱稱 && char.暱稱 !== '--') {
-            const nicknames = char.暱稱.split(/[、&]/).map((name: string) => name.trim());
-            nicknames.forEach((nickname: string) => {
-              if (nickname && nickname !== '--') {
-                newCharMap.set(nickname, char);
-              }
-            });
+  // 使用 useMemo 來優化角色 Map 的構建
+  const characterMap = useMemo(() => {
+    const newCharMap = new Map<string, Character>();
+    
+    for (const char of characters) {
+      newCharMap.set(char.角色名稱, char);
+      if (char.暱稱 && char.暱稱 !== '--') {
+        const nicknames = char.暱稱.split(/[、&]/).map((name: string) => name.trim());
+        nicknames.forEach((nickname: string) => {
+          if (nickname && nickname !== '--') {
+            newCharMap.set(nickname, char);
           }
-        }
-        setCharacterMap(newCharMap);
-      } catch (err) {
-        console.error('Failed to fetch characters:', err);
-      } finally {
-        setLoading(false);
+        });
       }
-    };
-
-    fetchCharacters();
-  }, []);
+    }
+    return newCharMap;
+  }, [characters]);
 
   useEffect(() => {
     // 預設選擇第一個彈性組合

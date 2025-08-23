@@ -9,6 +9,12 @@ import authRoutes from './routes/auth';
 import characterRoutes from './routes/characters';
 import uploadRoutes from './routes/upload';
 import clanBattlesRoutes from './routes/clanBattles';
+import arenaCommonRoutes from './routes/arenaCommon';
+import trialCharactersRoutes from './routes/trialCharacters';
+import sixstarPriorityRoutes from './routes/sixstarPriority';
+import ue1PriorityRoutes from './routes/ue1Priority';
+import ue2PriorityRoutes from './routes/ue2Priority';
+import nonSixstarCharactersRoutes from './routes/nonSixstarCharacters';
 
 // 載入環境變數 - 根據 NODE_ENV 選擇配置檔案
 if (process.env.NODE_ENV === 'development') {
@@ -88,6 +94,12 @@ app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/clan-battles', clanBattlesRoutes);
+app.use('/api/arena-common', arenaCommonRoutes);
+app.use('/api/trial-characters', trialCharactersRoutes);
+app.use('/api/sixstar-priority', sixstarPriorityRoutes);
+app.use('/api/ue1-priority', ue1PriorityRoutes);
+app.use('/api/ue2-priority', ue2PriorityRoutes);
+app.use('/api/non-sixstar-characters', nonSixstarCharactersRoutes);
 
 // 健康檢查端點
 app.get('/api/health', async (req, res) => {
@@ -129,7 +141,13 @@ app.get('/', (req, res) => {
       auth: '/api/auth',
       characters: '/api/characters',
       upload: '/api/upload',
-      clanBattles: '/api/clan-battles'
+      clanBattles: '/api/clan-battles',
+      arenaCommon: '/api/arena-common',
+      trialCharacters: '/api/trial-characters',
+      sixstarPriority: '/api/sixstar-priority',
+      ue1Priority: '/api/ue1-priority',
+      ue2Priority: '/api/ue2-priority',
+      nonSixstarCharacters: '/api/non-sixstar-characters'
     }
   });
 });

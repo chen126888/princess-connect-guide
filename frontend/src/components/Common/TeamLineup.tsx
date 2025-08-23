@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import CharacterAvatar from './CharacterAvatar';
 import type { Character } from '../../types';
-import { characterApi } from '../../services/api';
+import { useCharactersContext } from '../../contexts/CharactersContext';
 
 interface TeamLineupProps {
   characterNames: string[];
@@ -14,38 +14,27 @@ const TeamLineup: React.FC<TeamLineupProps> = ({
   bgColor = 'bg-white',
   textColor = 'text-gray-800'
 }) => {
-  const [characterMap, setCharacterMap] = useState<Map<string, Character>>(new Map());
-  const [loading, setLoading] = useState(true);
+  const { characters, loading } = useCharactersContext();
 
-  useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        const response = await characterApi.getAll({ limit: 400 });
-        const newCharMap = new Map<string, Character>();
-        
-        for (const char of response.characters) {
-          // 使用角色名稱作為 key
-          newCharMap.set(char.角色名稱, char);
-          // 如果有暱稱，也加入 map 中
-          if (char.暱稱 && char.暱稱 !== '--') {
-            const nicknames = char.暱稱.split(/[、&]/).map((name: string) => name.trim());
-            nicknames.forEach((nickname: string) => {
-              if (nickname && nickname !== '--') {
-                newCharMap.set(nickname, char);
-              }
-            });
+  // 使用 useMemo 來優化角色 Map 的構建
+  const characterMap = useMemo(() => {
+    const newCharMap = new Map<string, Character>();
+    
+    for (const char of characters) {
+      // 使用角色名稱作為 key
+      newCharMap.set(char.角色名稱, char);
+      // 如果有暱稱，也加入 map 中
+      if (char.暱稱 && char.暱稱 !== '--') {
+        const nicknames = char.暱稱.split(/[、&]/).map((name: string) => name.trim());
+        nicknames.forEach((nickname: string) => {
+          if (nickname && nickname !== '--') {
+            newCharMap.set(nickname, char);
           }
-        }
-        setCharacterMap(newCharMap);
-      } catch (err) {
-        console.error('Failed to fetch characters:', err);
-      } finally {
-        setLoading(false);
+        });
       }
-    };
-
-    fetchCharacters();
-  }, []);
+    }
+    return newCharMap;
+  }, [characters]);
 
   const parseCharacterNames = (name: string): { characters: string[]; separator: string } => {
     if (name.includes('/')) {

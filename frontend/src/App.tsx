@@ -11,6 +11,7 @@ import Newbie from './pages/Newbie/Newbie';
 import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
 import SuperAdminInitModal from './components/Admin/SuperAdminInitModal';
 import AdminManagement from './components/Admin/AdminManagement';
+import { CharactersProvider } from './contexts/CharactersContext';
 import { setAuthToken, removeAuthToken, isAuthenticated, getCurrentAdmin } from './utils/auth';
 
 // 頁面類型定義
@@ -202,9 +203,10 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
-      {/* Header 導航 */}
-      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <CharactersProvider>
+      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+        {/* Header 導航 */}
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           {/* 右上角管理員區域 */}
           <div className="absolute top-4 right-4">
@@ -359,7 +361,8 @@ function App() {
           renderCurrentPage()
         )}
       </main>
-    </div>
+      </div>
+    </CharactersProvider>
   );
 }
 
