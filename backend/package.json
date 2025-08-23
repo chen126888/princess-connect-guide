@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon src/simple-server.ts",
     "build": "tsc && npx prisma generate && npx prisma db push",
+    "postinstall": "npx prisma generate",
     "start": "node dist/simple-server.js",
     "start:dev": "ts-node src/simple-server.ts",
     "start:prod": "NODE_ENV=production node dist/simple-server.js",
