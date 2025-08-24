@@ -12,6 +12,7 @@ import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
 import SuperAdminInitModal from './components/Admin/SuperAdminInitModal';
 import AdminManagement from './components/Admin/AdminManagement';
 import { CharactersProvider } from './contexts/CharactersContext';
+import { DataCacheProvider } from './contexts/DataCacheContext';
 import { setAuthToken, removeAuthToken, isAuthenticated, getCurrentAdmin } from './utils/auth';
 
 // 頁面類型定義
@@ -203,8 +204,9 @@ function App() {
   };
 
   return (
-    <CharactersProvider>
-      <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
+    <DataCacheProvider>
+      <CharactersProvider>
+        <div className="min-h-screen" style={{ backgroundColor: '#f8f9fa' }}>
         {/* Header 導航 */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
@@ -361,8 +363,9 @@ function App() {
           renderCurrentPage()
         )}
       </main>
-      </div>
-    </CharactersProvider>
+        </div>
+      </CharactersProvider>
+    </DataCacheProvider>
   );
 }
 

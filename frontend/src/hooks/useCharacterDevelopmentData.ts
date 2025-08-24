@@ -1,53 +1,47 @@
-import { useState, useEffect } from 'react';
-import { 
-  sixstarPriorityApi, 
-  ue1PriorityApi, 
-  ue2PriorityApi, 
-  nonSixstarCharactersApi 
-} from '../services/api';
+import { useMemo, useEffect } from 'react';
+import { useDataCache } from '../contexts/DataCacheContext';
 import type { PriorityTier, CharacterPriorityInfo } from '../characterDevelopmentData/types';
 
 interface ApiCharacter {
   id: number;
   character_name: string;
+  priority?: string;
   tier?: string;
   description?: string;
   acquisition_method?: string;
 }
 
 export const useCharacterDevelopmentData = () => {
-  const [sixstarData, setSixstarData] = useState<ApiCharacter[]>([]);
-  const [ue1Data, setUe1Data] = useState<ApiCharacter[]>([]);
-  const [ue2Data, setUe2Data] = useState<ApiCharacter[]>([]);
-  const [nonSixstarData, setNonSixstarData] = useState<ApiCharacter[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    cache,
+    loading,
+    error,
+    getSixstarPriorityCharacters,
+    getUe1PriorityCharacters,
+    getUe2PriorityCharacters,
+    getNonSixstarCharacters,
+    refreshSixstarPriorityCharacters,
+    refreshUe1PriorityCharacters,
+    refreshUe2PriorityCharacters,
+    refreshNonSixstarCharacters
+  } = useDataCache();
+
+  // 自動載入資料
+  useEffect(() => {
+    getSixstarPriorityCharacters();
+    getUe1PriorityCharacters();
+    getUe2PriorityCharacters();
+    getNonSixstarCharacters();
+  }, [getSixstarPriorityCharacters, getUe1PriorityCharacters, getUe2PriorityCharacters, getNonSixstarCharacters]);
 
   const fetchAllData = async () => {
-    try {
-      setLoading(true);
-      const [sixstar, ue1, ue2, nonSixstar] = await Promise.all([
-        sixstarPriorityApi.getAll(),
-        ue1PriorityApi.getAll(),
-        ue2PriorityApi.getAll(),
-        nonSixstarCharactersApi.getAll()
-      ]);
-
-      setSixstarData(sixstar);
-      setUe1Data(ue1);
-      setUe2Data(ue2);
-      setNonSixstarData(nonSixstar);
-    } catch (err) {
-      console.error('Failed to fetch character development data:', err);
-      setError('無法載入角色養成資料');
-    } finally {
-      setLoading(false);
-    }
+    await Promise.all([
+      refreshSixstarPriorityCharacters(),
+      refreshUe1PriorityCharacters(),
+      refreshUe2PriorityCharacters(),
+      refreshNonSixstarCharacters()
+    ]);
   };
-
-  useEffect(() => {
-    fetchAllData();
-  }, []);
 
   // 將 API 資料轉換為前端需要的 PriorityTier[] 格式
   const convertToPriorityTiers = (data: ApiCharacter[], tierOrder: string[]): PriorityTier[] => {
@@ -62,7 +56,7 @@ export const useCharacterDevelopmentData = () => {
 
     return tierOrder.map(tierName => {
       const characters = data
-        .filter(item => item.tier === tierName)
+        .filter(item => (item.tier || item.priority) === tierName)
         .map(item => ({ 
           name: item.character_name,
           ue2: '無' // 預設值，實際要根據具體邏輯調整
@@ -89,17 +83,32 @@ export const useCharacterDevelopmentData = () => {
   };
 
   // 轉換後的資料
-  const sixstarTiers = convertToPriorityTiers(sixstarData, ['SS', 'S', 'AA', 'A', 'B', 'C']);
-  const ue1Tiers = convertToPriorityTiers(ue1Data, ['SS', 'S', 'A', 'B']);
-  const ue2Tiers = convertToPriorityTiers(ue2Data, ['SS', 'S', 'A']);
-  const nonSixstarTiers = convertToNonSixstarTiers(nonSixstarData);
+  const sixstarTiers = useMemo(() => 
+    convertToPriorityTiers(cache.sixstarPriorityCharacters, ['SS', 'S', 'AA', 'A', 'B', 'C']), 
+    [cache.sixstarPriorityCharacters]
+  );
+  
+  const ue1Tiers = useMemo(() => 
+    convertToPriorityTiers(cache.ue1PriorityCharacters, ['SS', 'S', 'A', 'B']), 
+    [cache.ue1PriorityCharacters]
+  );
+  
+  const ue2Tiers = useMemo(() => 
+    convertToPriorityTiers(cache.ue2PriorityCharacters, ['SS', 'S', 'A']), 
+    [cache.ue2PriorityCharacters]
+  );
+  
+  const nonSixstarTiers = useMemo(() => 
+    convertToNonSixstarTiers(cache.nonSixstarCharacters), 
+    [cache.nonSixstarCharacters]
+  );
 
   return {
     sixstarTiers,
     ue1Tiers,
     ue2Tiers,
     nonSixstarTiers,
-    loading,
+    loading: loading.sixstarPriorityCharacters || loading.ue1PriorityCharacters || loading.ue2PriorityCharacters || loading.nonSixstarCharacters,
     error,
     refetch: fetchAllData
   };
