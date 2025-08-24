@@ -204,18 +204,13 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
               onKeyPress={handleKeyPress}
               placeholder="輸入角色名稱"
               disabled={loading || saving}
-              className="flex-1"
+              className="w-2/5"
             />
-            <AddButton onClick={handleAddCharacter}>
-              新增
-            </AddButton>
-          </div>
-          <div className="flex gap-2">
             <ModalSelect
               value={newCharacter.attribute}
               onChange={(e) => setNewCharacter({ ...newCharacter, attribute: e.target.value })}
               disabled={loading || saving}
-              className="flex-1"
+              className="w-1/5"
             >
               {attributeOptions.map(attr => (
                 <option key={attr} value={attr}>{attr}</option>
@@ -225,7 +220,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
               value={newCharacter.damage_type}
               onChange={(e) => setNewCharacter({ ...newCharacter, damage_type: e.target.value })}
               disabled={loading || saving}
-              className="flex-1"
+              className="w-1/5"
             >
               {damageTypeOptions.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -235,12 +230,15 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
               value={newCharacter.importance}
               onChange={(e) => setNewCharacter({ ...newCharacter, importance: e.target.value })}
               disabled={loading || saving}
-              className="flex-1"
+              className="w-1/5"
             >
               {importanceOptions.map(imp => (
                 <option key={imp} value={imp}>{imp}</option>
               ))}
             </ModalSelect>
+            <AddButton onClick={handleAddCharacter}>
+              新增
+            </AddButton>
           </div>
         </div>
 
@@ -257,14 +255,14 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
                   value={char.character_name}
                   onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
                   disabled={loading || saving}
-                  className="w-40 flex-shrink-0"
+                  className="w-2/5 flex-shrink-0"
                   placeholder="角色名稱"
                 />
                 <ModalSelect
                   value={char.attribute}
                   onChange={(e) => handleUpdateCharacter(char.id, 'attribute', e.target.value)}
                   disabled={loading || saving}
-                  className="w-20"
+                  className="w-1/5"
                 >
                   {attributeOptions.map(attr => (
                     <option key={attr} value={attr}>{attr}</option>
@@ -274,7 +272,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
                   value={char.damage_type}
                   onChange={(e) => handleUpdateCharacter(char.id, 'damage_type', e.target.value)}
                   disabled={loading || saving}
-                  className="w-16"
+                  className="w-1/5"
                 >
                   {damageTypeOptions.map(type => (
                     <option key={type} value={type}>{type}</option>
@@ -284,7 +282,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
                   value={char.importance}
                   onChange={(e) => handleUpdateCharacter(char.id, 'importance', e.target.value)}
                   disabled={loading || saving}
-                  className="w-16"
+                  className="w-1/5"
                 >
                   {importanceOptions.map(imp => (
                     <option key={imp} value={imp}>{imp}</option>
