@@ -14,12 +14,12 @@ export const arenaConfigTrial: ArenaConfig = {
       {
         title: '推薦練',
         description: '建議優先培養的角色，先後順序不代表優先順序。',
-        recommendedCharacters: ['新年怜', '魔霞', '杏奈', '酒鬼', '咲戀(夏日)', '妹弓', '雪', '凱留', '祈梨', '吉塔', '公凱', '新年帆希', '步未', '厄', '姬騎士']
+        // 角色資料已遷移到資料庫，由 TrialCharacter 表管理
       },
       {
         title: '後期資源夠再練',
         description: '資源充足後再考慮培養的角色，除了嘉夜外，其他三星有機會就夠用。',
-        recommendedCharacters: ['優妮', '聖誕姊法', '嘉夜', '新年姆咪']
+        // 角色資料已遷移到資料庫，由 TrialCharacter 表管理
       },
       {
         title: '1~12關常見隊伍',
