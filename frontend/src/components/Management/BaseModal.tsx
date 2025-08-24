@@ -1,5 +1,4 @@
 import React from 'react';
-import { X } from 'lucide-react';
 
 interface BaseModalProps {
   isOpen: boolean;
@@ -7,14 +6,16 @@ interface BaseModalProps {
   title: string;
   children: React.ReactNode;
   maxWidth?: string;
+  headerActions?: React.ReactNode; // 新增：右上角操作按鈕區域
 }
 
 const BaseModal: React.FC<BaseModalProps> = ({ 
   isOpen, 
-  onClose, 
+  onClose: _, // 移除X按鈕後不再使用，但保留介面一致性
   title, 
   children,
-  maxWidth = "max-w-2xl"
+  maxWidth = "max-w-2xl",
+  headerActions
 }) => {
   if (!isOpen) return null;
 
@@ -23,9 +24,9 @@ const BaseModal: React.FC<BaseModalProps> = ({
       <div className={`bg-white rounded-lg shadow-xl ${maxWidth} w-full max-h-[90vh] overflow-y-auto`}>
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold text-gray-800">{title}</h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
-            <X size={24} />
-          </button>
+          <div className="flex items-center gap-3">
+            {headerActions}
+          </div>
         </div>
         
         {children}

@@ -2,8 +2,8 @@
 
 ## 專案概述
 - **目標**: 建立公主連結遊戲攻略網站
-- **技術棧**: React + TypeScript + Tailwind CSS (前端), Node.js + Express + SQLite (後端)
-- **目前階段**: 所有主要頁面已完成，包含拖拽評級系統、新人指南、戰隊戰、深域、角色養成、回鍋玩家指南等功能
+- **技術棧**: React + TypeScript + Tailwind CSS (前端), Node.js + Express + PostgreSQL (後端)
+- **目前階段**: 所有主要頁面已完成，包含拖拽評級系統、新人指南、戰隊戰、深域、角色養成、回鍋玩家指南等功能，並具備完整的資料庫管理系統
 - **開發環境**: Ubuntu 22.04 LTS, VS Code, Claude Code
 
 ## 專案結構
@@ -110,13 +110,20 @@ princess-connect-guide/
 │   │   ├── routes/             # API 路由
 │   │   │   ├── auth.ts         # 認證相關 API
 │   │   │   ├── characters.ts   # 角色 CRUD API
+│   │   │   ├── arenaCommon.ts  # 競技場常用角色 API
+│   │   │   ├── trialCharacters.ts # 戰鬥試煉場角色 API
+│   │   │   ├── sixstarPriority.ts # 六星優先度 API
+│   │   │   ├── ue1Priority.ts  # 專用裝備1優先度 API
+│   │   │   ├── ue2Priority.ts  # 專用裝備2優先度 API
+│   │   │   ├── nonSixstarCharacters.ts # 非六星角色 API
 │   │   │   └── upload.ts       # 檔案上傳 API
 │   │   ├── utils/              # 工具函數
 │   │   │   └── database.ts     # 資料庫連接與操作
 │   │   └── simple-server.ts    # 主服務器
 │   ├── prisma/
-│   │   ├── database.db         # SQLite 資料庫
-│   │   └── schema.prisma       # 資料庫 schema
+│   │   ├── migrations/         # 資料庫遷移檔案
+│   │   └── schema.prisma       # 資料庫 schema (PostgreSQL)
+│   ├── .env                    # 環境變數配置
 │   └── package.json
 ├── data/
 │   ├── images/
@@ -172,6 +179,20 @@ princess-connect-guide/
 - **模組化 UI 元件**: 可複用的對話框和表單元件
 - **檔案上傳功能**: 支援角色圖片上傳
 - **管理員認證**: 基本的登入驗證系統
+
+### ✅ 資料庫管理系統
+- **六個新增資料表管理**: 
+  - 競技場常用角色 (arena_common_characters)
+  - 戰鬥試煉場角色 (trial_characters) - 包含推薦練/後期練分類
+  - 六星優先度 (sixstar_priority) - SS/S/A/B/C 分級
+  - 專用裝備1優先度 (ue1_priority) - SS/S/A/B 分級
+  - 專用裝備2優先度 (ue2_priority) - SS/S/A 分級  
+  - 非六星角色 (non_sixstar_characters) - 包含描述和取得方式
+- **統一管理介面**: 使用 BaseModal 提供一致的管理體驗
+- **頂部按鈕設計**: 保存/取消按鈕位於右上角，無需滾動操作
+- **即時編輯功能**: 支援新增、修改、刪除資料
+- **分類顯示**: 按優先度或類別自動分組顯示
+- **批次操作**: 支援資料的批次變更和提交
 
 ### ✅ 拖拽評級調整系統
 **完整實現**: 提供直觀的拖拽介面來快速調整角色評級，大幅提升管理效率
@@ -254,6 +275,16 @@ princess-connect-guide/
 - **專業建議**: 針對回鍋玩家的具體情況提供建議
 - **優先度指導**: 清晰的養成和資源分配優先順序
 
+## 🚧 進行中的開發
+
+### 戰隊戰管理系統 (開發中)
+- **戰隊戰常用角色表**: 
+  - 角色名稱、屬性(火水風光闇)、傷害類型(物理/法術)、重要程度(核心/重要/普通)
+- **戰隊戰補償刀角色表**: 
+  - 專門管理補償刀角色名單
+- **管理員編輯介面**: 可手動編輯戰隊戰角色推薦名單
+- **前端整合**: 與現有戰隊戰頁面整合顯示
+
 ## 🚧 未來優化計劃
 
 ### 效能優化
@@ -279,39 +310,64 @@ princess-connect-guide/
 ### 後端技術棧
 - **執行環境**: Node.js + TypeScript
 - **框架**: Express.js
-- **資料庫**: SQLite (本地檔案，直接SQL操作)
+- **資料庫**: PostgreSQL (使用 Prisma ORM)
+- **ORM**: Prisma Client
+- **認證**: JWT + bcrypt 密碼雜湊
 - **CORS**: 支援前端跨域請求
 
-### 資料庫 Schema
-```sql
-CREATE TABLE characters (
-  id TEXT PRIMARY KEY,
-  [角色名稱] TEXT UNIQUE NOT NULL,
-  [暱稱] TEXT,
-  [位置] TEXT NOT NULL,
-  [角色定位] TEXT,
-  [常駐/限定] TEXT,
-  [屬性] TEXT,
-  [能力偏向] TEXT,
-  [競技場進攻] TEXT,
-  [競技場防守] TEXT,
-  [戰隊戰] TEXT,
-  [深域及抄作業] TEXT,
-  [說明] TEXT,
-  [頭像檔名] TEXT,
-  [六星頭像檔名] TEXT,
-  createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
-  updatedAt TEXT DEFAULT CURRENT_TIMESTAMP
-);
+### 資料庫 Schema (PostgreSQL + Prisma)
+```prisma
+// 主要角色表
+model Character {
+  id          String @id
+  name        String @unique @map("角色名稱")
+  nickname    String? @map("暱稱")
+  position    String @map("位置")
+  role        String? @map("角色定位")
+  rarity      String? @map("常駐/限定")
+  element     String? @map("屬性")
+  ability     String? @map("能力偏向")
+  arena_atk   String? @map("競技場進攻")
+  arena_def   String? @map("競技場防守")
+  clan_battle String? @map("戰隊戰")
+  dungeon     String? @map("深域及抄作業")
+  description String? @map("說明")
+  avatar      String? @map("頭像檔名")
+  avatar_6    String? @map("六星頭像檔名")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  @@map("characters")
+}
+
+// 新增資料表
+model ArenaCommonCharacter { ... }        // 競技場常用角色
+model TrialCharacter { ... }               // 戰鬥試煉場角色
+model SixstarPriority { ... }              // 六星優先度
+model Ue1Priority { ... }                  // 專用裝備1優先度  
+model Ue2Priority { ... }                  // 專用裝備2優先度
+model NonSixstarCharacter { ... }          // 非六星角色
+
+// 開發中
+model ClanBattleCommonCharacter { ... }    // 戰隊戰常用角色
+model ClanBattleCompensationCharacter { ... } // 戰隊戰補償刀角色
 ```
 
 ## 開發環境設定
+
+### 環境變數設定
+```bash
+# backend/.env
+DATABASE_URL="postgresql://username:password@localhost:5432/princess_connect_db"
+JWT_SECRET="your-jwt-secret-key"
+```
 
 ### 啟動服務
 ```bash
 # 後端服務 (port 3000)
 cd backend
 npm install
+npx prisma generate          # 生成 Prisma Client
+npx prisma migrate dev       # 執行資料庫遷移
 npx ts-node src/simple-server.ts
 
 # 前端服務 (port 5173)
@@ -321,15 +377,32 @@ npm run dev
 ```
 
 ### API 端點
-- `GET /api/health` - 健康檢查
+
+#### 角色管理
 - `GET /api/characters` - 獲取角色列表 (支援篩選參數)
 - `GET /api/characters/:id` - 獲取單一角色
 - `POST /api/characters` - 新增角色
 - `PUT /api/characters/:id` - 更新角色資料
 - `PATCH /api/characters/batch-ratings` - 批次更新角色評級
 - `DELETE /api/characters/:id` - 刪除角色
+
+#### 認證系統
 - `POST /api/auth/login` - 管理員登入
+- `GET /api/auth/check-init` - 檢查是否需要初始化
+- `POST /api/auth/init-superadmin` - 初始化超級管理員
 - `POST /api/auth/create-admin` - 創建管理員帳號
+- `GET /api/auth/me` - 獲取目前登入管理員資訊
+
+#### 新增資料表管理
+- `GET /api/arena-common` - 競技場常用角色
+- `GET /api/trial-characters` - 戰鬥試煉場角色
+- `GET /api/sixstar-priority` - 六星優先度
+- `GET /api/ue1-priority` - 專用裝備1優先度
+- `GET /api/ue2-priority` - 專用裝備2優先度
+- `GET /api/non-sixstar-characters` - 非六星角色
+- (各表支援 POST/PUT/DELETE 操作)
+
+#### 檔案上傳
 - `POST /api/upload/character-photo` - 上傳角色圖片
 
 ### 篩選參數
@@ -360,9 +433,10 @@ npm run dev
 - 新人指南 (完整)
 - 回鍋玩家指南 (完整)
 - 角色編輯系統 (完整，含拖拽評級)
+- 資料庫管理系統 (完整，六個新增資料表)
 
-🚧 **待開發功能**:
-- 無 (所有主要功能已完成)
+🚧 **開發中功能**:
+- 戰隊戰管理系統 (Schema 設計完成，待實作 API 和前端)
 
 ## 使用方式
 1. 訪問 `http://localhost:5173`
@@ -373,6 +447,6 @@ npm run dev
 
 ---
 
-**最後更新**: 2025年8月18日  
+**最後更新**: 2025年8月24日  
 **負責人**: 開發者  
-**專案狀態**: 所有主要功能已完成，包含完整的角色管理、攻略系統、拖拽評級、新人指南、回鍋玩家指南、非六星角色養成等全方位功能
+**專案狀態**: 所有主要功能已完成，包含完整的角色管理、攻略系統、拖拽評級、新人指南、回鍋玩家指南、非六星角色養成、六個新增資料表管理系統等全方位功能。目前正在開發戰隊戰管理系統，預計新增可編輯的戰隊戰常用角色和補償刀角色管理功能。

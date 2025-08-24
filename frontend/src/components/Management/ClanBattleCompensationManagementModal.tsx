@@ -1,39 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
 import { ModalInput, DeleteButton, AddButton } from './FormElements';
-import { arenaCommonApi } from '../../services/api';
+import { clanBattleCompensationApi } from '../../services/api';
 
-interface ArenaCommonCharacter {
+interface ClanBattleCompensationCharacter {
   id: number;
   character_name: string;
 }
 
-interface ArenaCommonManagementModalProps {
+interface ClanBattleCompensationManagementModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave?: () => void;
 }
 
-const ArenaCommonManagementModal: React.FC<ArenaCommonManagementModalProps> = ({ 
+const ClanBattleCompensationManagementModal: React.FC<ClanBattleCompensationManagementModalProps> = ({ 
   isOpen, 
   onClose,
   onSave 
 }) => {
-  const [characters, setCharacters] = useState<ArenaCommonCharacter[]>([]);
+  const [characters, setCharacters] = useState<ClanBattleCompensationCharacter[]>([]);
   const [newCharacterName, setNewCharacterName] = useState('');
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [editingCharacters, setEditingCharacters] = useState<ArenaCommonCharacter[]>([]);
+  const [editingCharacters, setEditingCharacters] = useState<ClanBattleCompensationCharacter[]>([]);
 
   // 載入資料
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await arenaCommonApi.getAll();
+      const data = await clanBattleCompensationApi.getAll();
       setCharacters(data);
       setEditingCharacters([...data]); // 建立副本用於編輯
     } catch (error) {
-      console.error('Failed to load arena common characters:', error);
+      console.error('Failed to load clan battle compensation characters:', error);
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ const ArenaCommonManagementModal: React.FC<ArenaCommonManagementModalProps> = ({
   // 新增角色
   const handleAddCharacter = () => {
     if (newCharacterName.trim()) {
-      const newCharacter: ArenaCommonCharacter = {
+      const newCharacter: ClanBattleCompensationCharacter = {
         id: -Date.now(), // 暫時ID，保存時會更新
         character_name: newCharacterName.trim()
       };
@@ -89,19 +89,19 @@ const ArenaCommonManagementModal: React.FC<ArenaCommonManagementModalProps> = ({
 
       // 執行刪除
       for (const char of toDelete) {
-        await arenaCommonApi.delete(char.id);
+        await clanBattleCompensationApi.delete(char.id);
       }
 
       // 執行更新
       for (const char of toUpdate) {
-        await arenaCommonApi.update(char.id, { 
+        await clanBattleCompensationApi.update(char.id, { 
           character_name: char.character_name 
         });
       }
 
       // 執行新增
       for (const char of toAdd) {
-        await arenaCommonApi.create({ 
+        await clanBattleCompensationApi.create({ 
           character_name: char.character_name 
         });
       }
@@ -154,7 +154,7 @@ const ArenaCommonManagementModal: React.FC<ArenaCommonManagementModalProps> = ({
     <BaseModal 
       isOpen={isOpen} 
       onClose={handleCancel} 
-      title="競技場常用角色管理"
+      title="戰隊戰補償刀角色管理"
       headerActions={headerActions}
     >
       <div className="p-6 space-y-6">
@@ -196,4 +196,4 @@ const ArenaCommonManagementModal: React.FC<ArenaCommonManagementModalProps> = ({
   );
 };
 
-export default ArenaCommonManagementModal;
+export default ClanBattleCompensationManagementModal;

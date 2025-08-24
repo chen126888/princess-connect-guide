@@ -29,14 +29,13 @@ model Character {
   @@map("characters")
 }
 
-
 model Admin {
   id        String   @id
   username  String   @unique
   password  String
   name      String?
   isActive  Boolean  @default(true)
-  role      String   @default("admin") // "superadmin" or "admin"
+  role      String   @default("admin")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -44,7 +43,7 @@ model Admin {
 }
 
 model ClanBattle {
-  id    Int @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
   year  Int
   month Int
   teams Team[]
@@ -53,17 +52,16 @@ model ClanBattle {
 }
 
 model Team {
-  id             Int         @id @default(autoincrement())
-  characters     Json        @db.JsonB
-  source_url     String?     @db.VarChar
+  id             Int        @id @default(autoincrement())
+  characters     Json
+  source_url     String?    @db.VarChar
   boss_number    Int
   clan_battle_id Int
-  clan_battle    ClanBattle  @relation(fields: [clan_battle_id], references: [id], onDelete: Cascade)
+  clan_battle    ClanBattle @relation(fields: [clan_battle_id], references: [id], onDelete: Cascade)
 
   @@map("teams")
 }
 
-// 競技場常用角色表
 model ArenaCommonCharacter {
   id             Int    @id @default(autoincrement())
   character_name String
@@ -71,48 +69,60 @@ model ArenaCommonCharacter {
   @@map("arena_common_characters")
 }
 
-// 戰鬥試煉場角色表
 model TrialCharacter {
   id             Int    @id @default(autoincrement())
   character_name String
-  category       String // '推薦練' or '後期練'
+  category       String
 
   @@map("trial_characters")
 }
 
-// 六星優先度表
 model SixstarPriority {
   id             Int    @id @default(autoincrement())
   character_name String
-  tier           String // 'SS', 'S', 'AA', 'A', 'B', 'C'
+  tier           String
 
   @@map("sixstar_priority")
 }
 
-// 專用裝備1優先度表
 model Ue1Priority {
   id             Int    @id @default(autoincrement())
   character_name String
-  tier           String // 'SS', 'S', 'A', 'B'
+  tier           String
 
   @@map("ue1_priority")
 }
 
-// 專用裝備2優先度表
 model Ue2Priority {
   id             Int    @id @default(autoincrement())
   character_name String
-  tier           String // 'SS', 'S', 'A'
+  tier           String
 
   @@map("ue2_priority")
 }
 
-// 非六星角色表
 model NonSixstarCharacter {
-  id                  Int    @id @default(autoincrement())
-  character_name      String
-  description         String
-  acquisition_method  String
+  id                 Int    @id @default(autoincrement())
+  character_name     String
+  description        String
+  acquisition_method String
 
   @@map("non_sixstar_characters")
+}
+
+model ClanBattleCommonCharacter {
+  id             Int    @id @default(autoincrement())
+  character_name String
+  attribute      String
+  damage_type    String
+  importance     String
+
+  @@map("clan_battle_common_characters")
+}
+
+model ClanBattleCompensationCharacter {
+  id             Int    @id @default(autoincrement())
+  character_name String
+
+  @@map("clan_battle_compensation_characters")
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import BaseModal from '../../Management/BaseModal';
 import type { Character } from '../../../types';
 
 interface DeleteSearchModalProps {
@@ -22,11 +23,24 @@ const DeleteSearchModal: React.FC<DeleteSearchModalProps> = ({
     (char.暱稱 && char.暱稱.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
+  const headerActions = (
+    <button
+      onClick={onCancel}
+      className="px-3 py-1.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
+    >
+      取消
+    </button>
+  );
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">🗑️ 刪除角色</h2>
-        
+    <BaseModal
+      isOpen={true}
+      onClose={onCancel}
+      title="🗑️ 刪除角色"
+      maxWidth="max-w-md"
+      headerActions={headerActions}
+    >
+      <div className="p-6">
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">搜尋要刪除的角色</label>
           <div className="relative">
@@ -61,17 +75,8 @@ const DeleteSearchModal: React.FC<DeleteSearchModalProps> = ({
             </div>
           </div>
         )}
-        
-        <div className="flex gap-2 justify-end">
-          <button
-            onClick={onCancel}
-            className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors"
-          >
-            取消
-          </button>
-        </div>
       </div>
-    </div>
+    </BaseModal>
   );
 };
 

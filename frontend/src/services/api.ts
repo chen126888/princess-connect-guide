@@ -284,6 +284,46 @@ export const nonSixstarCharactersApi = {
   },
 };
 
+// 戰隊戰常用角色 API
+export const clanBattleCommonApi = {
+  getAll: async () => {
+    const response = await api.get('/clan-battle-common');
+    return response.data;
+  },
+  create: async (data: { character_name: string; attribute: string; damage_type: string; importance: string }) => {
+    const response = await api.post('/clan-battle-common', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string; attribute: string; damage_type: string; importance: string }) => {
+    const response = await api.put(`/clan-battle-common/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/clan-battle-common/${id}`);
+    return response.data;
+  },
+};
+
+// 戰隊戰補償刀角色 API
+export const clanBattleCompensationApi = {
+  getAll: async () => {
+    const response = await api.get('/clan-battle-compensation');
+    return response.data;
+  },
+  create: async (data: { character_name: string }) => {
+    const response = await api.post('/clan-battle-compensation', data);
+    return response.data;
+  },
+  update: async (id: number, data: { character_name: string }) => {
+    const response = await api.put(`/clan-battle-compensation/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/clan-battle-compensation/${id}`);
+    return response.data;
+  },
+};
+
 // 健康檢查 API
 export const healthApi = {
   check: async () => {

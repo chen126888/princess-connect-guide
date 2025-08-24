@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, ModalSelect, DeleteButton, AddButton, ConfirmButtons } from './FormElements';
+import { ModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
 import { trialCharactersApi } from '../../services/api';
 
 interface TrialCharacter {
@@ -161,8 +161,32 @@ const TrialCharacterManagementModal: React.FC<TrialCharacterManagementModalProps
     return a.character_name.localeCompare(b.character_name);
   });
 
+  const headerActions = (
+    <div className="flex gap-2">
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:bg-gray-400 transition-colors text-sm"
+      >
+        {saving ? "保存中..." : "保存"}
+      </button>
+      <button
+        onClick={handleCancel}
+        disabled={saving}
+        className="px-3 py-1.5 bg-gray-500 text-white rounded-lg hover:bg-gray-600 disabled:bg-gray-400 transition-colors text-sm"
+      >
+        取消
+      </button>
+    </div>
+  );
+
   return (
-    <BaseModal isOpen={isOpen} onClose={handleCancel} title="戰鬥試煉場角色管理">
+    <BaseModal 
+      isOpen={isOpen} 
+      onClose={handleCancel} 
+      title="戰鬥試煉場角色管理"
+      headerActions={headerActions}
+    >
       <div className="p-6 space-y-6">
         {/* 新增角色區域 */}
         <div className="space-y-2">
@@ -259,14 +283,6 @@ const TrialCharacterManagementModal: React.FC<TrialCharacterManagementModalProps
             </>
           )}
         </div>
-
-        {/* 確認按鈕 */}
-        <ConfirmButtons
-          onCancel={handleCancel}
-          onSave={handleSave}
-          disabled={saving}
-          saveText={saving ? "保存中..." : "保存"}
-        />
       </div>
     </BaseModal>
   );
