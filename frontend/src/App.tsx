@@ -127,7 +127,7 @@ function App() {
     if (item.useImage && !imageErrors.has(item.key)) {
       return (
         <img 
-          src="https://princess-connect-guide.onrender.com/images/icons/商店.png"
+          src={`${import.meta.env.VITE_IMAGE_BASE_URL}/icons/商店.png`}
           alt={item.label}
           className="w-5 h-5 object-contain"
           onError={() => handleImageError(item.key)}

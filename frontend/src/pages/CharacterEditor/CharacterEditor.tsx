@@ -85,9 +85,7 @@ const CharacterEditor: React.FC = () => {
       }));
       
       // 使用批次更新 API
-      const response = await characterApi.batchUpdateRatings(updates);
-      
-      console.log('Batch update result:', response);
+      await characterApi.batchUpdateRatings(updates);
       
       // 重新獲取資料
       await fetchCharacters();

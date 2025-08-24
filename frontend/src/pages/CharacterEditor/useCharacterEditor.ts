@@ -90,8 +90,6 @@ export const useCharacterEditor = (characters: Character[]) => {
               'Content-Type': 'multipart/form-data',
             },
           });
-          
-          console.log('照片上傳成功');
         } catch (photoError: any) {
           console.error('照片上傳失敗:', photoError);
           // 照片上傳失敗不影響角色新增成功，只記錄錯誤

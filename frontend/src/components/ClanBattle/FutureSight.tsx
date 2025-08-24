@@ -40,19 +40,15 @@ const FutureSight: React.FC = () => {
   useEffect(() => {
     // 檢查管理員權限
     const token = sessionStorage.getItem('authToken');
-    console.log('Token:', token);
     if (token) {
       try {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        console.log('Token payload:', payload);
         setIsAdmin(true);
-        console.log('Set isAdmin to true');
       } catch (error) {
         console.error('Token parse error:', error);
         setIsAdmin(false);
       }
     } else {
-      console.log('No token found');
       setIsAdmin(false);
     }
     // 載入初始資料
@@ -156,7 +152,6 @@ const FutureSight: React.FC = () => {
         throw new Error(result.error || '新增隊伍失敗');
       }
 
-      console.log('新增隊伍成功:', result);
       setShowAddModal(false);
       alert('隊伍新增成功！');
       // 重新載入資料
@@ -203,7 +198,6 @@ const FutureSight: React.FC = () => {
         throw new Error(result.error || '更新隊伍失敗');
       }
 
-      console.log('更新隊伍成功:', result);
       setShowEditModal(false);
       setEditingTeam(null);
       alert('隊伍更新成功！');
@@ -240,7 +234,6 @@ const FutureSight: React.FC = () => {
         throw new Error(result.error || '刪除隊伍失敗');
       }
 
-      console.log('刪除隊伍成功:', result);
       alert('隊伍刪除成功！');
       // 重新載入資料
       loadClanBattles();
