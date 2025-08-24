@@ -8,23 +8,23 @@ datasource db {
 }
 
 model Character {
-  id          String @id
-  name        String @unique @map("角色名稱")
-  nickname    String? @map("暱稱")
-  position    String @map("位置")
-  role        String? @map("角色定位")
-  rarity      String? @map("常駐/限定")
-  element     String? @map("屬性")
-  ability     String? @map("能力偏向")
-  arena_atk   String? @map("競技場進攻")
-  arena_def   String? @map("競技場防守")
+  id        String   @id
+  name      String   @unique @map("角色名稱")
+  nickname  String?  @map("暱稱")
+  position  String   @map("位置")
+  role      String?  @map("角色定位")
+  rarity    String?  @map("常駐/限定")
+  element   String?  @map("屬性")
+  ability   String?  @map("能力偏向")
+  arena_atk String?  @map("競技場進攻")
+  arena_def String?  @map("競技場防守")
   clan_battle String? @map("戰隊戰")
-  dungeon     String? @map("深域及抄作業")
+  dungeon   String?  @map("深域及抄作業")
   description String? @map("說明")
-  avatar      String? @map("頭像檔名")
-  avatar_6    String? @map("六星頭像檔名")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  avatar    String?  @map("頭像檔名")
+  avatar_6  String?  @map("六星頭像檔名")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("characters")
 }
