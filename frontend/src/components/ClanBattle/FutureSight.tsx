@@ -299,7 +299,7 @@ const FutureSight: React.FC = () => {
         )}
       </div>
       <div className="text-gray-700 leading-relaxed mb-6">
-        <p>戰隊戰未來視 - 隊伍編成資料</p>
+        <p>僅提供隊伍組成，且非所有隊伍，詳細時間軸、傷害，請查看資料來源</p>
       </div>
 
       {/* 未來視年月選擇按鈕 */}
