@@ -42,7 +42,8 @@ const FutureSight: React.FC = () => {
     const token = sessionStorage.getItem('authToken');
     if (token) {
       try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
+        // 檢查 token 是否有效
+        JSON.parse(atob(token.split('.')[1]));
         setIsAdmin(true);
       } catch (error) {
         console.error('Token parse error:', error);
