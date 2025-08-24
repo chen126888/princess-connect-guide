@@ -9,6 +9,15 @@ export interface UpdateLogItem {
 
 export const updateLogs: UpdateLogItem[] = [
   {
+  date: '2025/08/25',
+  version: 'v1.1.0',
+  title: '新增功能',
+  type: 'minor',
+  items: [
+    '加入戰隊戰未來視'
+  ]
+  },
+  {
     date: '2025/08/19',
     version: 'v1.0',
     title: '🎉 網站功能全面完成',
