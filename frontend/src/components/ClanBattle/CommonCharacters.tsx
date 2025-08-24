@@ -7,29 +7,13 @@ import ManagementButton from '../Management/ManagementButton';
 import ClanBattleCommonManagementModal from '../Management/ClanBattleCommonManagementModal';
 import ClanBattleCompensationManagementModal from '../Management/ClanBattleCompensationManagementModal';
 import Card from '../Common/Card';
-import { getCharacterImageSrc, handleCharacterImageError } from '../../utils/characterImageUtils';
+import CharacterImageCard from '../Character/CharacterImageCard';
 import type { Character } from '../../types';
 
 interface CommonCharactersProps {
   allCharacters: Character[];
 }
 
-// 角色圖片組件
-const ClanBattleCharacterImage: React.FC<{ character: Character }> = ({ character }) => {
-  const [imageError, setImageError] = useState(false);
-  
-  return (
-    <div className="relative">
-      <img
-        src={getCharacterImageSrc(character)}
-        alt={character.角色名稱}
-        className="w-16 h-16 rounded-full object-cover border-2 border-gray-200 hover:border-blue-500 transition-colors cursor-pointer"
-        title={character.角色名稱}
-        onError={(e) => handleCharacterImageError(e, character, imageError, setImageError)}
-      />
-    </div>
-  );
-};
 
 const CommonCharacters: React.FC<CommonCharactersProps> = ({ allCharacters }) => {
   const [activeAttribute, setActiveAttribute] = useState<string>('fire'); // Default to 'fire' or first attribute
@@ -83,7 +67,7 @@ const CommonCharacters: React.FC<CommonCharactersProps> = ({ allCharacters }) =>
                   (c.暱稱 && c.暱稱.includes(charData.character_name))
                 );
                 return character ? (
-                  <ClanBattleCharacterImage key={index} character={character} />
+                  <CharacterImageCard key={index} character={character} />
                 ) : null;
               })}
             </div>
@@ -127,7 +111,7 @@ const CommonCharacters: React.FC<CommonCharactersProps> = ({ allCharacters }) =>
                             (c.暱稱 && c.暱稱.includes(charData.character_name))
                           );
                           return character ? (
-                            <ClanBattleCharacterImage key={index} character={character} />
+                            <CharacterImageCard key={index} character={character} />
                           ) : null;
                         })}
                       </div>
@@ -174,7 +158,7 @@ const CommonCharacters: React.FC<CommonCharactersProps> = ({ allCharacters }) =>
                             (c.暱稱 && c.暱稱.includes(charData.character_name))
                           );
                           return character ? (
-                            <ClanBattleCharacterImage key={index} character={character} />
+                            <CharacterImageCard key={index} character={character} />
                           ) : null;
                         })}
                       </div>

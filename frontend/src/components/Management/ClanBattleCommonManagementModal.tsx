@@ -257,7 +257,8 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
                   value={char.character_name}
                   onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
                   disabled={loading || saving}
-                  className="flex-1"
+                  className="w-40 flex-shrink-0"
+                  placeholder="角色名稱"
                 />
                 <ModalSelect
                   value={char.attribute}
