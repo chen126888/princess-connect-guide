@@ -3,8 +3,8 @@ import { Trash2, Plus } from 'lucide-react';
 
 // 樣式常數
 export const MODAL_STYLES = {
-  input: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
-  select: "w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+  input: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
+  select: "px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500",
   deleteButton: "text-red-500 hover:text-red-700",
   addButton: "text-blue-500 hover:text-blue-700 text-sm",
   primaryButton: "px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600",
@@ -16,7 +16,7 @@ interface ModalInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string;
 }
 
-export const ModalInput: React.FC<ModalInputProps> = ({ className = "", ...props }) => (
+export const ModalInput: React.FC<ModalInputProps> = ({ className = "w-full", ...props }) => (
   <input className={`${MODAL_STYLES.input} ${className}`} {...props} />
 );
 
@@ -26,7 +26,7 @@ interface ModalSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement>
   children: React.ReactNode;
 }
 
-export const ModalSelect: React.FC<ModalSelectProps> = ({ className = "", children, ...props }) => (
+export const ModalSelect: React.FC<ModalSelectProps> = ({ className = "w-full", children, ...props }) => (
   <select className={`${MODAL_STYLES.select} ${className}`} {...props}>
     {children}
   </select>
