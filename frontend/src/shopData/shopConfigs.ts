@@ -99,8 +99,7 @@ export const shopConfigs: Record<ShopType, ShopConfig> = {
     name: 'EX裝備商店',
     description: `兌換EX裝備
 
-僅列出彩裝，彩裝順序參考自煌靈大大
-至於一般EX裝備請按自身需求購買
+有單獨列出來的彩裝為個人覺得常用的，詳細順序請參考以下連結
 
 詳細說明請查詢以下影片(作者YT煌靈)：
 彩裝：[影片連結](https://youtu.be/gxmhkdtAmrU?si=ygUTDkyo9u2JJAw3)

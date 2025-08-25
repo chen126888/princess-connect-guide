@@ -47,14 +47,6 @@ const Shop: React.FC = () => {
                 </div>
               </div>
 
-              {/* EX裝備商店專用說明 */}
-              {activeShop === 'ex_equipment' && (
-                <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-sm text-blue-700 font-medium">
-                    購買順序：1杖=1書=1單手劍 &gt; 2杖 &gt; 1雙手劍 &gt; 自由發揮
-                  </p>
-                </div>
-              )}
               
               {shopItems.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
