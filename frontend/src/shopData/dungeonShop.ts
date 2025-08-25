@@ -72,8 +72,16 @@ export const dungeonShopItems: ShopItem[] = [
     name: '空花碎片',
     type: 'character',
     characterId: '空花',
+    priority: 'optional',    
+    shopType: 'dungeon'
+  },
+  
+  {
+    id: 'dun_char_014',
+    name: '深月碎片',
+    type: 'character',
+    characterId: '深月',
     priority: 'optional',
-    
     shopType: 'dungeon'
   },
 
@@ -126,14 +134,6 @@ export const dungeonShopItems: ShopItem[] = [
     name: '茜里碎片',
     type: 'character',
     characterId: '茜里',
-    priority: 'skip',
-    shopType: 'dungeon'
-  },
-  {
-    id: 'dun_char_014',
-    name: '深月碎片',
-    type: 'character',
-    characterId: '深月',
     priority: 'skip',
     shopType: 'dungeon'
   }

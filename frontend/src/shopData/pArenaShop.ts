@@ -40,16 +40,15 @@ export const pArenaShopItems: ShopItem[] = [
     
     shopType: 'p_arena'
   },
-
-  // 跳過項目
   {
     id: 'p_arena_char_005',
     name: '千歌(夏日)碎片',
     type: 'character',
     characterId: '千歌 (夏日)',
-    priority: 'skip',
+    priority: 'recommended',
     shopType: 'p_arena'
   },
+  // 跳過項目
   {
     id: 'p_arena_char_006',
     name: '真琴(灰姑娘)碎片',
