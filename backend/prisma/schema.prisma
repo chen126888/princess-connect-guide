@@ -126,3 +126,14 @@ model ClanBattleCompensationCharacter {
 
   @@map("clan_battle_compensation_characters")
 }
+
+model FutureCharacterPrediction {
+  id               Int      @id @default(autoincrement())
+  character_name   String   @map("角色名稱")
+  prediction_type  String   @map("新增類型") // "六星開花", "專一", "專二", "新出"
+  predicted_year   Int      @map("預計年份")
+  predicted_month  Int      @map("預計月份")
+  notes           String?  @map("備註")
+
+  @@map("future_character_predictions")
+}

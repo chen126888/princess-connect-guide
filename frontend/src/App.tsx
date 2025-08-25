@@ -9,6 +9,7 @@ import Dungeon from './pages/Dungeon/Dungeon';
 import CharacterDevelopmentPage from './pages/CharacterDevelopment/CharacterDevelopment';
 import Newbie from './pages/Newbie/Newbie';
 import ReturnPlayer from './pages/ReturnPlayer/ReturnPlayer';
+import FutureVision from './pages/FutureVision/FutureVision';
 import SuperAdminInitModal from './components/Admin/SuperAdminInitModal';
 import AdminManagement from './components/Admin/AdminManagement';
 import { CharactersProvider } from './contexts/CharactersContext';
@@ -26,7 +27,8 @@ type PageType =
   | 'arena' 
   | 'clanBattle' 
   | 'dungeon' 
-  | 'characterDevelopment';
+  | 'characterDevelopment'
+  | 'futureVision';
 
 
 
@@ -149,7 +151,8 @@ function App() {
       clanBattle: { description: '戰隊戰攻略、陣容推薦' },
       dungeon: { description: '深域探索、關卡攻略' },
       characterDevelopment: { description: '角色培養、裝備建議' },
-      characterEditor: { description: '角色資料編輯管理' }
+      characterEditor: { description: '角色資料編輯管理' },
+      futureVision: { description: '角色六星/專武預測、戰隊戰未來視' }
     };
     return details[key] || { description: '' };
   };
@@ -166,6 +169,7 @@ function App() {
       { key: 'clanBattle' as PageType, label: '戰隊戰', icon: '🛡️' },
       { key: 'dungeon' as PageType, label: '深域', icon: '🗿' },
       { key: 'characterDevelopment' as PageType, label: '角色養成', icon: '📈' },
+      { key: 'futureVision' as PageType, label: '未來視', icon: '🔮' },
     ];
 
     if (isAdminMode) {
@@ -198,6 +202,8 @@ function App() {
         return <Dungeon />;
       case 'characterDevelopment':
         return <CharacterDevelopmentPage />;
+      case 'futureVision':
+        return <FutureVision />;
       default:
         return <Home />;
     }

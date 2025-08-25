@@ -330,4 +330,44 @@ export const healthApi = {
   },
 };
 
+// 未來視預測 API
+export const futurePredictionsApi = {
+  getAll: async () => {
+    const response = await api.get('/future-predictions');
+    return response.data;
+  },
+  getById: async (id: number) => {
+    const response = await api.get(`/future-predictions/${id}`);
+    return response.data;
+  },
+  getByType: async (type: '六星開花' | '專一' | '專二' | '新出') => {
+    const response = await api.get(`/future-predictions/by-type/${type}`);
+    return response.data;
+  },
+  create: async (data: {
+    character_name: string;
+    prediction_type: '六星開花' | '專一' | '專二' | '新出';
+    predicted_year: number;
+    predicted_month: number;
+    notes?: string;
+  }) => {
+    const response = await api.post('/future-predictions', data);
+    return response.data;
+  },
+  update: async (id: number, data: {
+    character_name: string;
+    prediction_type: '六星開花' | '專一' | '專二' | '新出';
+    predicted_year: number;
+    predicted_month: number;
+    notes?: string;
+  }) => {
+    const response = await api.put(`/future-predictions/${id}`, data);
+    return response.data;
+  },
+  delete: async (id: number) => {
+    const response = await api.delete(`/future-predictions/${id}`);
+    return response.data;
+  },
+};
+
 export default api;

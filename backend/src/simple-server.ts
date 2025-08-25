@@ -17,6 +17,7 @@ import ue2PriorityRoutes from './routes/ue2Priority';
 import nonSixstarCharactersRoutes from './routes/nonSixstarCharacters';
 import clanBattleCommonRoutes from './routes/clanBattleCommon';
 import clanBattleCompensationRoutes from './routes/clanBattleCompensation';
+import futurePredictionsRoutes from './routes/futurePredictions';
 
 // 載入環境變數 - 根據 NODE_ENV 選擇配置檔案
 if (process.env.NODE_ENV === 'development') {
@@ -104,6 +105,7 @@ app.use('/api/ue2-priority', ue2PriorityRoutes);
 app.use('/api/non-sixstar-characters', nonSixstarCharactersRoutes);
 app.use('/api/clan-battle-common', clanBattleCommonRoutes);
 app.use('/api/clan-battle-compensation', clanBattleCompensationRoutes);
+app.use('/api/future-predictions', futurePredictionsRoutes);
 
 // 健康檢查端點
 app.get('/api/health', async (req, res) => {
@@ -151,7 +153,8 @@ app.get('/', (req, res) => {
       sixstarPriority: '/api/sixstar-priority',
       ue1Priority: '/api/ue1-priority',
       ue2Priority: '/api/ue2-priority',
-      nonSixstarCharacters: '/api/non-sixstar-characters'
+      nonSixstarCharacters: '/api/non-sixstar-characters',
+      futurePredictions: '/api/future-predictions'
     }
   });
 });
