@@ -9,7 +9,7 @@ interface CharacterPlanningSectionProps {
 const CharacterPlanningSection: React.FC<CharacterPlanningSectionProps> = ({
   onNavigateToCharacterDevelopment
 }) => {
-  const { sixStarAdvice, teamBuildingStrategy, eventStrategy, nonSixStarStrategy, resourceManagement } = characterPlanningData;
+  const { sixStarAdvice, teamBuildingStrategy, gachaTeamStrategy, eventStrategy, nonSixStarStrategy, resourceManagement } = characterPlanningData;
 
   return (
     <Card className="mb-6">
@@ -49,6 +49,12 @@ const CharacterPlanningSection: React.FC<CharacterPlanningSectionProps> = ({
               </span>
             ))}
           </div>
+        </div>
+
+        {/* 抽角&組隊注意 */}
+        <div className="p-4 bg-gradient-to-r from-yellow-50 to-amber-50 rounded-lg border border-yellow-200">
+          <h3 className="text-lg font-semibold text-yellow-800 mb-2">{gachaTeamStrategy.title}</h3>
+          <p className="text-gray-700 leading-relaxed">{gachaTeamStrategy.description}</p>
         </div>
 
         {/* 跟隨加倍活動策略 */}

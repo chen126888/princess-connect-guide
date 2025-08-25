@@ -9,6 +9,10 @@ export interface CharacterPlanningData {
     description: string;
     recommendedTeams: string[];
   };
+  gachaTeamStrategy: {
+    title: string;
+    description: string;
+  };
   eventStrategy: {
     title: string;
     description: string;
@@ -26,13 +30,17 @@ export interface CharacterPlanningData {
 export const characterPlanningData: CharacterPlanningData = {
   sixStarAdvice: {
     title: "確認六星角色",
-    description: "首先，確認你離開後推出的重要六星角色是否都已開花。建議將 A級以上 的角色都練起來，競技場角色有一隊就足夠，另一隊可以先用默涅隊代替，等後期戰隊戰重要角色都養完了再考慮。",
+    description: "首先，確認你離開後推出的重要六星角色是否都已開花。建議將 A級以上 的角色都練起來，競技場角色有一隊就足夠，另一隊可以先用默涅隊代替，等後期戰隊戰重要角色都養完了再考慮。絕版RE:0角色，後期資源足夠後可考慮拉到六星。",
     actionText: "前往六星角色養成頁面"
   },
   teamBuildingStrategy: {
     title: "善用未來視抽角",
     description: "回鍋玩家的鑽石資源通常較少。請先確認自己的角色池，參考未來視，並以戰隊戰為主來規劃要組的隊伍。因為滿等後還有深域要推，每個屬性都至少要有一隊。",
     recommendedTeams: ["火物", "風物", "暗法"]
+  },
+  gachaTeamStrategy: {
+    title: "抽角&組隊注意",
+    description: "不要以T0角色為標準去抽角色，要以組的出來去抽，不要每個屬性物魔都缺個兩三隻，這樣反而什麼都出不了。現今環境，除非大課長，要不高機率需要放掉一兩種以上。比如我自己放掉整隊光法、風法和暗物部分相對不重要的角色。"
   },
   eventStrategy: {
     title: "跟隨加倍活動",
