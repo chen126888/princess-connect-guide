@@ -227,6 +227,25 @@ const ArenaSection: React.FC<{
                   title={subsection.title}
                 />
               )}
+              {subsection.defenseTeams && (
+                <div className="space-y-3 mt-4">
+                  {subsection.defenseTeams.map((team, teamIndex) => (
+                    <div key={teamIndex} className="p-3 bg-red-50 rounded-lg border border-red-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-red-800">防守陣 {teamIndex + 1}</span>
+                        <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded border border-red-300">
+                          防守
+                        </span>
+                      </div>
+                      <TeamLineup 
+                        characterNames={team}
+                        bgColor="bg-white"
+                        textColor="text-gray-800"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
               {subsection.items && subsection.items.length > 0 && (
                 <div className="space-y-2 mt-3">
                   {subsection.items.map((item, itemIndex) => (

@@ -25,6 +25,7 @@ export interface ArenaSubsection {
   description: string;
   items?: ArenaItem[];
   recommendedCharacters?: (string | string[])[];
+  defenseTeams?: string[][];
 }
 
 export interface ArenaItem {
