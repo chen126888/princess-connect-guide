@@ -36,7 +36,9 @@
       "Bash(NODE_ENV=development npm run dev)",
       "Bash(cat:*)",
       "Bash(npm run preview:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(git reset:*)",
+      "Bash(git restore:*)"
     ],
     "deny": []
   }
