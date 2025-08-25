@@ -117,7 +117,7 @@ const TeamFormation: React.FC = () => {
           <div className="mb-4">
             <h4 className="font-semibold text-gray-800 mb-3">推薦陣容：</h4>
             <TeamLineup 
-              characterNames={['妹弓', '雪', '默涅', '優花梨', '宮子']}
+              characterNames={['凱留','妹弓', '雪', '步未', '宮子']}
               bgColor="bg-red-50"
               textColor="text-red-800"
             />
@@ -126,32 +126,16 @@ const TeamFormation: React.FC = () => {
                 <strong>原因：</strong>
               </p>
               <ul className="list-disc list-inside space-y-1 ml-4">
+                <li>凱留：可以在地下城商店換</li>
                 <li>妹弓：可以在競技場商店換</li>
                 <li>宮子：可以在公主競技場商店換</li>
-                <li>優花梨：可以在地下城商店換</li>
+                <li>步未：可以在地下城商店換</li>
                 <li>雪：用打的</li>
-                <li>默涅：新手FES一定要抽到</li>
               </ul>
             </div>
           </div>
         </div>
 
-        {/* 進階競技場組隊 */}
-        <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-lg border border-purple-200 p-6">
-          <h3 className="text-xl font-semibold text-gray-800 mb-4">後期進階組隊</h3>
-          
-          <div>
-            <h4 className="font-semibold text-gray-800 mb-3">進階陣容：</h4>
-            <TeamLineup 
-              characterNames={['凱留', '妹弓', '雪', '步未', '宮子']}
-              bgColor="bg-purple-50"
-              textColor="text-purple-800"
-            />
-            <p className="text-gray-600 text-sm mt-3">
-              後面可以慢慢換成此陣容，提升競技場戰鬥力。
-            </p>
-          </div>
-        </div>
       </div>
     </Card>
   );
