@@ -26,10 +26,6 @@ const FutureVision: React.FC = () => {
   return (
     <PageContainer>
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">未來視</h1>
-          <p className="text-gray-300 text-lg">角色養成規劃與戰隊戰預測</p>
-        </div>
 
         <TabNavigation
           items={tabs}
