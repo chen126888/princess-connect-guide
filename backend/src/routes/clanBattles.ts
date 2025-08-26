@@ -442,7 +442,8 @@ router.post('/batch-teams', requireAuth, async (req: Request, res: Response) => 
       const charactersData = {
         teams: [{
           fixedCharacters: team.fixedCharacters || [],
-          flexibleOptions: team.flexibleOptions || []
+          flexibleOptions: team.flexibleOptions || [],
+          damageInfo: team.damageInfo || { fullAuto: [], semiAuto: [] }
         }]
       };
 
