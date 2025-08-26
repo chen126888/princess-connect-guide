@@ -200,15 +200,19 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    備註
+                    時間順序
                   </label>
-                  <textarea
+                  <input
+                    type="number"
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                     className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                    rows={3}
-                    placeholder="可選的備註內容..."
+                    placeholder="輸入數字代表時間順序（如：1, 2, 3...）"
+                    min="1"
                   />
+                  <p className="text-xs text-gray-500 mt-1">
+                    輸入數字控制同月份內的排序（數字越小排越前面）
+                  </p>
                 </div>
 
                 <div className="flex gap-2">

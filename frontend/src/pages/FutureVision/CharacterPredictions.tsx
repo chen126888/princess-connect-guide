@@ -59,6 +59,32 @@ const CharacterPredictions: React.FC = () => {
     return acc;
   }, {} as Record<string, FuturePrediction[]>);
 
+  // 提取 notes 中的數字用於排序
+  const extractOrderFromNotes = (notes?: string): number => {
+    if (!notes) return 999; // 沒有 notes 的項目排在最後
+    const trimmedNotes = notes.trim();
+    // 檢查是否只是純數字
+    if (/^\d+$/.test(trimmedNotes)) {
+      return parseInt(trimmedNotes, 10);
+    }
+    // 如果不是純數字，嘗試匹配開頭的數字
+    const match = notes.match(/^(\d+)/);
+    return match ? parseInt(match[1], 10) : 999;
+  };
+
+  // 對每個月份內的預測按照 notes 中的數字排序
+  Object.keys(groupedByMonth).forEach(monthKey => {
+    groupedByMonth[monthKey].sort((a, b) => {
+      const orderA = extractOrderFromNotes(a.notes);
+      const orderB = extractOrderFromNotes(b.notes);
+      if (orderA !== orderB) {
+        return orderA - orderB; // 按數字升序排序
+      }
+      // 如果數字相同，按角色名稱排序
+      return a.character_name.localeCompare(b.character_name);
+    });
+  });
+
   const formatMonth = (year: number, month: number) => {
     return `${year}年${month}月`;
   };
@@ -79,6 +105,18 @@ const CharacterPredictions: React.FC = () => {
     return characters.find(char => 
       char.角色名稱 === characterName || char.暱稱 === characterName
     ) || null;
+  };
+
+  // 格式化 notes 顯示（隱藏純數字，保留其他內容）
+  const formatNotesForDisplay = (notes?: string): string => {
+    if (!notes) return '';
+    const trimmedNotes = notes.trim();
+    // 如果是純數字，不顯示
+    if (/^\d+$/.test(trimmedNotes)) {
+      return '';
+    }
+    // 如果不是純數字，移除開頭的數字和可能的分隔符
+    return notes.replace(/^\d+[\s\.\:\-]*/, '').trim();
   };
 
   if (loading) {
@@ -164,9 +202,9 @@ const CharacterPredictions: React.FC = () => {
                             </div>
                           </div>
                           
-                          {prediction.notes && (
+                          {prediction.notes && formatNotesForDisplay(prediction.notes) && (
                             <p className="text-gray-600 text-sm mt-2">
-                              {prediction.notes}
+                              {formatNotesForDisplay(prediction.notes)}
                             </p>
                           )}
                         </div>
