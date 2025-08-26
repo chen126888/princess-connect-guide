@@ -18,34 +18,7 @@ export const arenaConfigArena: ArenaConfig = {
       },
       {
         title: '新手推薦',
-        description: '先用新人推薦組隊競技場的隊伍+默涅隊，打初期的競技場，前期基本上都是電腦，打不贏也可以靠等級壓制。\n\n進入後期遇到真人玩家後(開始遇到比較現代的防守隊)，就可以開始靠解陣網去打贏，但此時需要的角色就比較多了。\n\n解陣網連結如下，以下都考慮角色滿等開專，但不考慮煉金裝和大師面板等。\n\n來源對岸：https://www.pcrdfans.com/battle\n\n日服：https://appmedia.jp/priconne-redive/4466131',
-        subsections: [
-          {
-            title: '戰鬥競技場 (1 vs 1)：進攻',
-            description: '',
-            recommendedCharacters: ['凱留', '妹弓', ['咲戀(夏日)', '雪'], '步未', ['杏奈', '布丁']]
-          },
-          {
-            title: '戰鬥競技場 (1 vs 1)：防守',
-            description: '',
-            recommendedCharacters: ['厄', '愛梅斯', '默涅', '步未', '酒鬼']
-          },
-          {
-            title: '公主競技場 (3 vs 3)：第一隊',
-            description: '',
-            recommendedCharacters: ['凱留', '妹弓', ['咲戀(夏日)', '雪'], '步未', ['杏奈', '布丁']]
-          },
-          {
-            title: '公主競技場 (3 vs 3)：第二隊',
-            description: '',
-            recommendedCharacters: ['厄', '愛梅斯', '默涅', ['新年帆希', '似似花'], '酒鬼']
-          },
-          {
-            title: '通用隊伍',
-            description: '若上述角色都組不出來可以使用，此為日常推圖及深域3-10前中道通關隊伍。',
-            recommendedCharacters: ['厄', '愛梅斯', '霞',[ '新年帆希','似似花'], '默涅']
-          }
-        ]
+        description: '先用新人推薦組隊競技場的隊伍+默涅隊，打初期的競技場，前期基本上都是電腦，打不贏也可以靠等級壓制。\n\n進入後期遇到真人玩家後(開始遇到比較現代的防守隊)，就可以開始靠解陣網去打贏，但此時需要的角色就比較多了。\n\n解陣網連結如下，以下都考慮角色滿等開專，但不考慮煉金裝和大師面板等。\n\n來源對岸：https://www.pcrdfans.com/battle\n\n日服：https://appmedia.jp/priconne-redive/4466131'
       },
       {
         title: '滿等後期較常見防守陣',
