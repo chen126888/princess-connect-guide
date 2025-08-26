@@ -280,6 +280,22 @@ const ClanBattleFuture: React.FC = () => {
     return getFutureSightMonths();
   };
 
+  // 根據選擇的年月獲取對應的TP上升推薦等級
+  const getTpRecommendation = (year: number, month: number) => {
+    if (year === 2025) {
+      switch (month) {
+        case 8: return 'lv 2.0';
+        case 9: return 'lv 2.0';
+        case 10: return 'lv 2.2';
+        case 11: return 'lv 3.0';
+        case 12: return 'lv 3.3';
+        default: return 'lv 2.0';
+      }
+    }
+    // 可以根據需要擴展其他年份的邏輯
+    return 'lv 2.0';
+  };
+
   return (
     <div className="space-y-6">
       <Card className="p-6">
@@ -296,7 +312,7 @@ const ClanBattleFuture: React.FC = () => {
           )}
         </div>
         <div className="text-gray-600 leading-relaxed mb-6">
-          <p>僅提供較簡單隊伍組成，部分半自動/手動刀高傷害可能未紀錄，且非所有隊伍，詳細時間軸、傷害，請查看資料來源。通常各個王，每個隊伍或組合越靠前的傷害越高。</p>
+          <p>僅提供部分自動/半自動隊伍，每個人實際傷害依據各自屬性加成，半自動有機會比記錄高1000~4000w，改手動可能可以再多2000w，詳細時間軸請查看資料來源。</p>
         </div>
 
         {/* 未來視年月選擇按鈕 */}
@@ -344,6 +360,12 @@ const ClanBattleFuture: React.FC = () => {
                   }
                   return null;
                 })()}
+                {/* TP上升推薦 */}
+                {selectedYear && selectedMonth && (
+                  <p>
+                    TP上升推薦：{getTpRecommendation(selectedYear, selectedMonth)}
+                  </p>
+                )}
               </div>
             )}
           </div>
