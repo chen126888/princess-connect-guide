@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Card from '../Common/Card';
 import TeamLineup from '../Common/TeamLineup';
+import MarkdownText from '../Common/MarkdownText';
 import type { Character } from '../../types';
 import type { ArenaType, ArenaSection as ArenaSectionType, ArenaItem as ArenaItemType } from '../../types/arena';
 import { arenaConfigs } from '../../arenaData';
@@ -45,9 +46,6 @@ const ArenaItem: React.FC<{ item: ArenaItemType }> = ({ item }) => (
   </div>
 );
 
-const renderNewlines = (text: string) => {
-  return { __html: text.replace(/\n/g, '<br />') };
-};
 
 const RecommendedCharacters: React.FC<{ 
   characters: Character[], 
@@ -196,7 +194,7 @@ const ArenaSection: React.FC<{
           <ManagementButton onEdit={editButtonConfig.onClick} />
         )}
       </div>
-      <p className="text-gray-600 mb-4" dangerouslySetInnerHTML={renderNewlines(section.description)}></p>
+      <MarkdownText text={section.description} className="text-gray-600 mb-4" />
 
       {charactersToShow && (
         <RecommendedCharacters 
@@ -219,7 +217,7 @@ const ArenaSection: React.FC<{
           {section.subsections.map((subsection, index) => (
             <div key={index} className="">
               <h4 className="text-lg font-semibold text-gray-800 mb-2">{subsection.title}</h4>
-              <p className="text-gray-600 mb-3" dangerouslySetInnerHTML={renderNewlines(subsection.description)}></p>
+              <MarkdownText text={subsection.description} className="text-gray-600 mb-3" />
               {subsection.recommendedCharacters && (
                 <RecommendedCharacters 
                   characters={allCharacters} 
@@ -230,13 +228,7 @@ const ArenaSection: React.FC<{
               {subsection.defenseTeams && (
                 <div className="space-y-3 mt-4">
                   {subsection.defenseTeams.map((team, teamIndex) => (
-                    <div key={teamIndex} className="p-3 bg-red-50 rounded-lg border border-red-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="text-sm font-medium text-red-800">防守陣 {teamIndex + 1}</span>
-                        <span className="px-2 py-1 text-xs font-medium bg-red-100 text-red-700 rounded border border-red-300">
-                          防守
-                        </span>
-                      </div>
+                    <div key={teamIndex} className="p-3 bg-white rounded-lg border border-gray-200">
                       <TeamLineup 
                         characterNames={team}
                         bgColor="bg-white"
