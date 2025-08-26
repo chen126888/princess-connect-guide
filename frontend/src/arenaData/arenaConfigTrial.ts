@@ -28,10 +28,15 @@ export const arenaConfigTrial: ArenaConfig = {
           {
             title: '第一隊',
             description:'',
-            recommendedCharacters: ['魔霞', '杏奈', '聖誕姊法', '酒鬼', '祈梨']
+            recommendedCharacters: ['新年姆咪', '酒鬼', '姬騎士', '中二', '咲戀(夏日)']
           },
           {
             title: '第二隊',
+            description:'',
+            recommendedCharacters: ['魔霞', '杏奈', '聖誕姊法', '酒鬼', '祈梨']
+          },
+          {
+            title: '第三隊',
             description:'',
             recommendedCharacters: ['優妮', '雪', '凱留', '妹弓', '酒鬼']
           }

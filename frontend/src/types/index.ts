@@ -45,3 +45,26 @@ export interface FilterOptions {
   角色定位?: string[];
   '常駐/限定'?: string[];
 }
+
+// 戰隊戰隊伍相關類型
+export interface TeamData {
+  id?: string;
+  fixedCharacters: string[];
+  flexibleOptions?: string[][];
+  damageInfo?: {
+    fullAuto?: (string | null)[];
+    semiAuto?: (string | null)[];
+  };
+  source_url?: string;
+  boss_number?: number;
+}
+
+// 完整的戰隊戰資料結構
+export interface ClanBattleData {
+  id: number;
+  year: number;
+  month: number;
+  teams: {
+    teams: TeamData[];
+  };
+}

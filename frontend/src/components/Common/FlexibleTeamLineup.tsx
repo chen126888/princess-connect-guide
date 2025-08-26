@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import CharacterAvatar from './CharacterAvatar';
-import type { Character } from '../../types';
+import type { Character, TeamData } from '../../types';
 import { useCharactersContext } from '../../contexts/CharactersContext';
 
-interface FlexibleTeamData {
-  id: string;
-  fixedCharacters: string[];
-  flexibleOptions?: string[][];
-}
-
 interface FlexibleTeamLineupProps {
-  teamData: FlexibleTeamData;
+  teamData: TeamData;
   bgColor?: string;
   textColor?: string;
 }
@@ -54,6 +48,28 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
     setSelectedCombination(combinationIndex);
   };
 
+  // 取得指定組合的傷害資訊
+  const getDamageInfo = (combinationIndex: number = 0) => {
+    if (!teamData.damageInfo) {
+      return { fullAuto: null, semiAuto: null };
+    }
+    
+    return {
+      fullAuto: teamData.damageInfo.fullAuto?.[combinationIndex] || null,
+      semiAuto: teamData.damageInfo.semiAuto?.[combinationIndex] || null
+    };
+  };
+
+  // 檢查是否有任何傷害資訊
+  const hasDamageInfo = () => {
+    if (!teamData.damageInfo) return false;
+    
+    const hasFullAuto = teamData.damageInfo.fullAuto?.some(damage => damage && damage.trim() !== '');
+    const hasSemiAuto = teamData.damageInfo.semiAuto?.some(damage => damage && damage.trim() !== '');
+    
+    return hasFullAuto || hasSemiAuto;
+  };
+
 
   if (loading) {
     return (
@@ -68,7 +84,8 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
   return (
     <div className={`${bgColor} p-4 rounded-lg`}>
       {/* 隊伍成員顯示 */}
-      <div className="flex flex-wrap items-center gap-3 mb-4">
+      <div className="flex items-start gap-6 mb-4">
+        <div className="flex flex-wrap items-center gap-3 flex-1">
         {/* 固定角色 */}
         {teamData.fixedCharacters.map((characterName, index) => {
           const character = findCharacter(characterName);
@@ -109,27 +126,63 @@ const FlexibleTeamLineup: React.FC<FlexibleTeamLineupProps> = ({
             </React.Fragment>
           );
         })}
+        </div>
+
+        {/* 全固定角色的傷害資訊顯示（右側） */}
+        {isAllFixed && hasDamageInfo() && (
+          <div className="p-3 bg-white rounded-lg border border-gray-200 min-w-[200px]">
+            <div className="space-y-1 text-sm">
+              {getDamageInfo(0).fullAuto && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">全自動：</span>
+                  <span className={`${textColor} font-medium`}>
+                    {getDamageInfo(0).fullAuto}
+                  </span>
+                </div>
+              )}
+              {getDamageInfo(0).semiAuto && (
+                <div className="flex justify-between">
+                  <span className="text-gray-600">半自動：</span>
+                  <span className={`${textColor} font-medium`}>
+                    {getDamageInfo(0).semiAuto}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 彈性組合選擇按鈕 */}
       {!isAllFixed && teamData.flexibleOptions && teamData.flexibleOptions.length > 1 && (
         <div className="flex flex-wrap gap-2">
           <span className={`${textColor} text-sm font-medium mr-2`}>彈性組合：</span>
-          {teamData.flexibleOptions.map((combination, index) => (
-            <button
-              key={index}
-              onClick={() => handleCombinationSelect(index)}
-              className={`px-3 py-1 text-sm rounded ${
-                selectedCombination === index
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              組合 {index + 1} ({combination.join('、')})
-            </button>
-          ))}
+          {teamData.flexibleOptions.map((combination, index) => {
+            const damageInfo = getDamageInfo(index);
+            return (
+              <button
+                key={index}
+                onClick={() => handleCombinationSelect(index)}
+                className={`px-3 py-2 text-sm rounded ${
+                  selectedCombination === index
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                <div>組合 {index + 1} ({combination.join('、')})</div>
+                {(damageInfo.fullAuto || damageInfo.semiAuto) && (
+                  <div className="text-xs mt-1 opacity-80">
+                    {damageInfo.fullAuto && <span>全自動: {damageInfo.fullAuto}</span>}
+                    {damageInfo.fullAuto && damageInfo.semiAuto && <span> | </span>}
+                    {damageInfo.semiAuto && <span>半自動: {damageInfo.semiAuto}</span>}
+                  </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
+
     </div>
   );
 };

@@ -4,16 +4,14 @@ import Card from '../../components/Common/Card';
 import FlexibleTeamLineup from '../../components/Common/FlexibleTeamLineup';
 import AddTeamsModal from '../../components/ClanBattle/AddTeamsModal';
 import EditTeamsModal from '../../components/ClanBattle/EditTeamsModal';
+import type { TeamData } from '../../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-interface TeamData {
+interface DatabaseTeamData {
   id: number;
   characters: {
-    teams: Array<{
-      fixedCharacters: string[];
-      flexibleOptions?: string[][];
-    }>;
+    teams: TeamData[];
   };
   source_url?: string;
   boss_number: number;
@@ -24,14 +22,14 @@ interface ClanBattleData {
   id: number;
   year: number;
   month: number;
-  teams: TeamData[];
+  teams: DatabaseTeamData[];
 }
 
 const ClanBattleFuture: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [editingTeam, setEditingTeam] = useState<TeamData | null>(null);
+  const [editingTeam, setEditingTeam] = useState<DatabaseTeamData | null>(null);
   const [clanBattles, setClanBattles] = useState<ClanBattleData[]>([]);
   const [selectedYear, setSelectedYear] = useState<number | null>(null);
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
@@ -163,7 +161,7 @@ const ClanBattleFuture: React.FC = () => {
     }
   };
 
-  const handleEditTeam = (team: TeamData) => {
+  const handleEditTeam = (team: DatabaseTeamData) => {
     setEditingTeam(team);
     setShowEditModal(true);
   };
@@ -210,7 +208,7 @@ const ClanBattleFuture: React.FC = () => {
     }
   };
 
-  const handleDeleteTeam = async (team: TeamData) => {
+  const handleDeleteTeam = async (team: DatabaseTeamData) => {
     if (!confirm(`確定要刪除這個隊伍組合嗎？此操作無法復原。`)) {
       return;
     }
@@ -260,7 +258,7 @@ const ClanBattleFuture: React.FC = () => {
   // 按 Boss 編號分組隊伍
   const getTeamsByBoss = () => {
     const teams = getCurrentTeams();
-    const groupedTeams: { [key: number]: TeamData[] } = {};
+    const groupedTeams: { [key: number]: DatabaseTeamData[] } = {};
     
     // 初始化 1-5 王的分組
     for (let i = 1; i <= 5; i++) {
@@ -405,9 +403,8 @@ const ClanBattleFuture: React.FC = () => {
                             <div key={index} className="mb-4">
                               <FlexibleTeamLineup 
                                 teamData={{
-                                  id: `${team.id}-${index}`,
-                                  fixedCharacters: singleTeam.fixedCharacters || [],
-                                  flexibleOptions: singleTeam.flexibleOptions || []
+                                  ...singleTeam,
+                                  id: `${team.id}-${index}`
                                 }}
                                 bgColor="bg-gray-50"
                                 textColor="text-gray-800"

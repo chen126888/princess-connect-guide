@@ -73,6 +73,7 @@ const RecommendedCharacters: React.FC<{
     title.includes('陣容') || 
     title.includes('第一隊') || 
     title.includes('第二隊') || 
+    title.includes('第三隊') || 
     title.includes('通用隊伍') ||
     title.includes('進攻') ||
     title.includes('防守');
@@ -84,12 +85,14 @@ const RecommendedCharacters: React.FC<{
                    title.includes('防守') ? 'bg-blue-50' :
                    title.includes('第一隊') ? 'bg-green-50' :
                    title.includes('第二隊') ? 'bg-purple-50' :
+                   title.includes('第三隊') ? 'bg-yellow-50' :
                    'bg-gray-50';
     
     const textColor = title.includes('進攻') ? 'text-red-800' : 
                      title.includes('防守') ? 'text-blue-800' :
                      title.includes('第一隊') ? 'text-green-800' :
                      title.includes('第二隊') ? 'text-purple-800' :
+                     title.includes('第三隊') ? 'text-yellow-800' :
                      'text-gray-800';
 
     return (

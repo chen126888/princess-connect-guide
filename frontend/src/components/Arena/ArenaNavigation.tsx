@@ -13,8 +13,8 @@ const ArenaNavigation: React.FC<ArenaNavigationProps> = ({
 }) => {
   const arenaTypes: TabItem<ArenaType>[] = [
     { key: 'arena', label: '競技場', icon: '⚔️' },
-    { key: 'trial', label: '戰鬥試煉場', icon: '🏆' },
-    { key: 'memory', label: '追憶', icon: '📖' }
+    { key: 'trial', label: '戰鬥試煉場' },
+    { key: 'memory', label: '追憶' }
   ];
 
   return (
