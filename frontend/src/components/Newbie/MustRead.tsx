@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Card from '../Common/Card';
-import { newbieRecommendations, newbieCautions, referenceSites, commonQuestions } from '../../newbieData';
+import { newbieRecommendations, newbieTips, newbieCautions, referenceSites, commonQuestions } from '../../newbieData';
 
 type MustReadTab = 'recommendations' | 'cautions' | 'firstThreeDays' | 'questions' | 'references';
 
@@ -28,6 +28,18 @@ const MustRead: React.FC = () => {
                 </li>
               ))}
             </ul>
+            
+            {/* 小技巧區塊 */}
+            <div className="mt-6">
+              <h3 className="text-xl font-bold mb-3 text-green-700">小技巧</h3>
+              <ul className="space-y-3">
+                {newbieTips.map((item) => (
+                  <li key={item.id} className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                    <p className="text-gray-700 leading-relaxed">{item.content}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </Card>
         );
       case 'cautions':
