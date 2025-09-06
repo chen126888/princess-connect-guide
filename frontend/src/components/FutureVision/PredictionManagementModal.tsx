@@ -4,7 +4,7 @@ import { futurePredictionsApi } from '../../services/api';
 interface FuturePrediction {
   id: number;
   character_name: string;
-  prediction_type: '六星開花' | '專一' | '專二' | '新出';
+  prediction_type: '六星開花' | '專一' | '專二' | '新出' | '復刻';
   predicted_year: number;
   predicted_month: number;
   notes?: string;
@@ -22,7 +22,7 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
   const [editingPrediction, setEditingPrediction] = useState<Partial<FuturePrediction> | null>(null);
   const [formData, setFormData] = useState({
     character_name: '',
-    prediction_type: '六星開花' as '六星開花' | '專一' | '專二' | '新出',
+    prediction_type: '六星開花' as '六星開花' | '專一' | '專二' | '新出' | '復刻',
     predicted_year: new Date().getFullYear(),
     predicted_month: new Date().getMonth() + 1,
     notes: ''
@@ -161,9 +161,10 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
                     required
                   >
                     <option value="六星開花">六星開花</option>
-                    <option value="專一">專用裝備一</option>
-                    <option value="專二">專用裝備二</option>
+                    <option value="專一">專武1</option>
+                    <option value="專二">專武2</option>
                     <option value="新出">新角色</option>
+                    <option value="復刻">復刻</option>
                   </select>
                 </div>
 

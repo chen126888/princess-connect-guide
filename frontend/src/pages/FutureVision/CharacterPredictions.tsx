@@ -9,7 +9,7 @@ import PredictionManagementModal from '../../components/FutureVision/PredictionM
 interface FuturePrediction {
   id: number;
   character_name: string;
-  prediction_type: '六星開花' | '專一' | '專二' | '新出';
+  prediction_type: '六星開花' | '專一' | '專二' | '新出' | '復刻';
   predicted_year: number;
   predicted_month: number;
   notes?: string;
@@ -25,9 +25,10 @@ const CharacterPredictions: React.FC = () => {
   const predictionTypes = [
     { value: 'all', label: '全部' },
     { value: '六星開花', label: '六星開花' },
-    { value: '專一', label: '專用裝備一' },
-    { value: '專二', label: '專用裝備二' },
-    { value: '新出', label: '新角色' }
+    { value: '專一', label: '專武1' },
+    { value: '專二', label: '專武2' },
+    { value: '新出', label: '新角色' },
+    { value: '復刻', label: '復刻' }
   ];
 
   useEffect(() => {
@@ -96,6 +97,7 @@ const CharacterPredictions: React.FC = () => {
       case '專一': return `${baseClasses} bg-blue-100 text-blue-800 border border-blue-300`;
       case '專二': return `${baseClasses} bg-purple-100 text-purple-800 border border-purple-300`;
       case '新出': return `${baseClasses} bg-green-100 text-green-800 border border-green-300`;
+      case '復刻': return `${baseClasses} bg-orange-100 text-orange-800 border border-orange-300`;
       default: return `${baseClasses} bg-gray-100 text-gray-800 border border-gray-300`;
     }
   };
@@ -168,6 +170,23 @@ const CharacterPredictions: React.FC = () => {
       ) : (
         <div className="space-y-6">
           {Object.entries(groupedByMonth)
+            .filter(([monthKey]) => {
+              // 過濾掉早於當前月份的資料
+              const [year, month] = monthKey.split('-');
+              const currentDate = new Date();
+              const currentYear = currentDate.getFullYear();
+              const currentMonth = currentDate.getMonth() + 1;
+              
+              const predictionYear = parseInt(year);
+              const predictionMonth = parseInt(month);
+              
+              // 如果年份大於當前年份，顯示
+              if (predictionYear > currentYear) return true;
+              // 如果年份相同，月份大於等於當前月份，顯示
+              if (predictionYear === currentYear && predictionMonth >= currentMonth) return true;
+              // 否則不顯示
+              return false;
+            })
             .sort(([a], [b]) => a.localeCompare(b))
             .map(([monthKey, monthPredictions]) => {
               const [year, month] = monthKey.split('-');

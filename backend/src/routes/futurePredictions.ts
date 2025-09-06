@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
     }
 
     // 驗證預測類型
-    const validTypes = ['六星開花', '專一', '專二', '新出'];
+    const validTypes = ['六星開花', '專一', '專二', '新出', '復刻'];
     if (!validTypes.includes(prediction_type)) {
       return res.status(400).json({ error: '無效的預測類型' });
     }
@@ -102,7 +102,7 @@ router.put('/:id', async (req, res) => {
     }
 
     // 驗證預測類型
-    const validTypes = ['六星開花', '專一', '專二', '新出'];
+    const validTypes = ['六星開花', '專一', '專二', '新出', '復刻'];
     if (!validTypes.includes(prediction_type)) {
       return res.status(400).json({ error: '無效的預測類型' });
     }
@@ -162,7 +162,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/by-type/:type', async (req, res) => {
   try {
     const { type } = req.params;
-    const validTypes = ['六星開花', '專一', '專二', '新出'];
+    const validTypes = ['六星開花', '專一', '專二', '新出', '復刻'];
     
     if (!validTypes.includes(type)) {
       return res.status(400).json({ error: '無效的預測類型' });

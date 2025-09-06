@@ -340,13 +340,13 @@ export const futurePredictionsApi = {
     const response = await api.get(`/future-predictions/${id}`);
     return response.data;
   },
-  getByType: async (type: '六星開花' | '專一' | '專二' | '新出') => {
+  getByType: async (type: '六星開花' | '專一' | '專二' | '新出' | '復刻') => {
     const response = await api.get(`/future-predictions/by-type/${type}`);
     return response.data;
   },
   create: async (data: {
     character_name: string;
-    prediction_type: '六星開花' | '專一' | '專二' | '新出';
+    prediction_type: '六星開花' | '專一' | '專二' | '新出' | '復刻';
     predicted_year: number;
     predicted_month: number;
     notes?: string;
@@ -356,7 +356,7 @@ export const futurePredictionsApi = {
   },
   update: async (id: number, data: {
     character_name: string;
-    prediction_type: '六星開花' | '專一' | '專二' | '新出';
+    prediction_type: '六星開花' | '專一' | '專二' | '新出' | '復刻';
     predicted_year: number;
     predicted_month: number;
     notes?: string;

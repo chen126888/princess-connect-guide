@@ -8,7 +8,7 @@ const FutureVision: React.FC = () => {
   const [activeTab, setActiveTab] = useState('predictions');
 
   const tabs = [
-    { key: 'predictions', label: '角色六星/專武' },
+    { key: 'predictions', label: '角色' },
     { key: 'clan-battle', label: '戰隊戰' }
   ];
 
