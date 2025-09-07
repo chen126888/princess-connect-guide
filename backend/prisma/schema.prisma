@@ -137,3 +137,23 @@ model FutureCharacterPrediction {
 
   @@map("future_character_predictions")
 }
+
+model AbyssRaid {
+  id         Int    @id @default(autoincrement())
+  year       Int    // 年份 (如: 2025)
+  month      Int    // 月份 (如: 9)
+  source_url String? @db.VarChar // 該月份的攻略影片連結
+  teams      AbyssTeam[]  // 關聯到隊伍表
+
+  @@map("abyss_raids")
+}
+
+model AbyssTeam {
+  id            Int       @id @default(autoincrement())
+  characters    Json      // 隊伍配置 JSON (與戰隊戰相同格式)
+  boss_position String    // "left", "middle", "right" (左王/中王/右王)
+  abyss_raid_id Int       // 外鍵關聯到主表
+  abyss_raid    AbyssRaid @relation(fields: [abyss_raid_id], references: [id], onDelete: Cascade)
+
+  @@map("abyss_teams")
+}

@@ -3,13 +3,15 @@ import PageContainer from '../../components/Common/PageContainer';
 import TabNavigation from '../../components/Common/TabNavigation';
 import CharacterPredictions from './CharacterPredictions';
 import ClanBattleFuture from './ClanBattleFuture';
+import AbyssRaidFuture from './AbyssRaidFuture';
 
 const FutureVision: React.FC = () => {
   const [activeTab, setActiveTab] = useState('predictions');
 
   const tabs = [
     { key: 'predictions', label: '角色' },
-    { key: 'clan-battle', label: '戰隊戰' }
+    { key: 'clan-battle', label: '戰隊戰' },
+    { key: 'abyss-raid', label: '深淵討伐' }
   ];
 
   const renderContent = () => {
@@ -18,6 +20,8 @@ const FutureVision: React.FC = () => {
         return <CharacterPredictions />;
       case 'clan-battle':
         return <ClanBattleFuture />;
+      case 'abyss-raid':
+        return <AbyssRaidFuture />;
       default:
         return <CharacterPredictions />;
     }

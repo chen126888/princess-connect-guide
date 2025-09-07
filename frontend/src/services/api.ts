@@ -370,4 +370,69 @@ export const futurePredictionsApi = {
   },
 };
 
+// 深淵討伐 API
+export const abyssRaidsApi = {
+  // 獲取所有深淵討伐資料
+  getAll: async () => {
+    const response = await api.get('/abyss-raids');
+    return response.data;
+  },
+  
+  // 獲取特定年月的深淵討伐資料
+  getByYearMonth: async (year: number, month: number) => {
+    const response = await api.get(`/abyss-raids/${year}/${month}`);
+    return response.data;
+  },
+  
+  // 新增深淵討伐期間 (需要認證)
+  create: async (data: {
+    year: number;
+    month: number;
+    source_url?: string;
+  }) => {
+    const response = await api.post('/abyss-raids', data);
+    return response.data;
+  },
+  
+  // 更新深淵討伐期間 (需要認證)
+  update: async (id: number, data: {
+    year?: number;
+    month?: number;
+    source_url?: string;
+  }) => {
+    const response = await api.put(`/abyss-raids/${id}`, data);
+    return response.data;
+  },
+  
+  // 刪除深淵討伐期間 (需要認證)
+  delete: async (id: number) => {
+    const response = await api.delete(`/abyss-raids/${id}`);
+    return response.data;
+  },
+  
+  // 新增隊伍到指定期間 (需要認證)
+  addTeam: async (raidId: number, teamData: {
+    characters: any;
+    boss_position: 'left' | 'middle' | 'right';
+  }) => {
+    const response = await api.post(`/abyss-raids/${raidId}/teams`, teamData);
+    return response.data;
+  },
+  
+  // 更新深淵討伐隊伍 (需要認證)
+  updateTeam: async (teamId: number, data: {
+    characters?: any;
+    boss_position?: 'left' | 'middle' | 'right';
+  }) => {
+    const response = await api.put(`/abyss-raids/teams/${teamId}`, data);
+    return response.data;
+  },
+  
+  // 刪除深淵討伐隊伍 (需要認證)
+  deleteTeam: async (teamId: number) => {
+    const response = await api.delete(`/abyss-raids/teams/${teamId}`);
+    return response.data;
+  },
+};
+
 export default api;

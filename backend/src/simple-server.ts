@@ -18,6 +18,7 @@ import nonSixstarCharactersRoutes from './routes/nonSixstarCharacters';
 import clanBattleCommonRoutes from './routes/clanBattleCommon';
 import clanBattleCompensationRoutes from './routes/clanBattleCompensation';
 import futurePredictionsRoutes from './routes/futurePredictions';
+import abyssRaidsRoutes from './routes/abyssRaids';
 
 // 載入環境變數 - 根據 NODE_ENV 選擇配置檔案
 if (process.env.NODE_ENV === 'development') {
@@ -106,6 +107,7 @@ app.use('/api/non-sixstar-characters', nonSixstarCharactersRoutes);
 app.use('/api/clan-battle-common', clanBattleCommonRoutes);
 app.use('/api/clan-battle-compensation', clanBattleCompensationRoutes);
 app.use('/api/future-predictions', futurePredictionsRoutes);
+app.use('/api/abyss-raids', abyssRaidsRoutes);
 
 // 健康檢查端點
 app.get('/api/health', async (req, res) => {
