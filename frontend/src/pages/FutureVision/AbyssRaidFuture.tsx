@@ -14,6 +14,7 @@ interface DatabaseAbyssTeamData {
     teams: TeamData[];
   };
   boss_position: string; // "left", "middle", "right"
+  source_url?: string;
   abyss_raid_id: number;
 }
 
@@ -172,7 +173,8 @@ const AbyssRaidFuture: React.FC = () => {
           },
           body: JSON.stringify({
             characters: { teams: [team] },
-            boss_position: getBossPosition(team.bossNumber)
+            boss_position: getBossPosition(data.bossNumber),
+            source_url: data.sourceUrl
           })
         });
 
@@ -238,7 +240,8 @@ const AbyssRaidFuture: React.FC = () => {
           characters: {
             teams: data.teams
           },
-          boss_position: getBossPosition(data.bossNumber)
+          boss_position: getBossPosition(data.bossNumber),
+          source_url: data.sourceUrl
         })
       });
 
@@ -330,17 +333,11 @@ const AbyssRaidFuture: React.FC = () => {
     return getAbyssRaidFutureSightMonths();
   };
 
-  // 獲取當前選擇的深淵討伐資料來源
+  // 獲取當前選擇的深淵討伐資料來源（從隊伍中查找）
   const getCurrentSourceUrl = () => {
-    if (selectedYear === null || selectedMonth === null) {
-      return null;
-    }
-    
-    const currentRaid = abyssRaids.find(
-      raid => raid.year === selectedYear && raid.month === selectedMonth
-    );
-    
-    return currentRaid?.source_url || null;
+    const currentTeams = getCurrentTeams();
+    const firstTeamWithUrl = currentTeams.find(team => team.source_url);
+    return firstTeamWithUrl?.source_url || null;
   };
 
   return (

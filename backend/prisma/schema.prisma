@@ -152,6 +152,7 @@ model AbyssTeam {
   id            Int       @id @default(autoincrement())
   characters    Json      // 隊伍配置 JSON (與戰隊戰相同格式)
   boss_position String    // "left", "middle", "right" (左王/中王/右王)
+  source_url    String?   @db.VarChar // 該隊伍的攻略影片連結
   abyss_raid_id Int       // 外鍵關聯到主表
   abyss_raid    AbyssRaid @relation(fields: [abyss_raid_id], references: [id], onDelete: Cascade)
 

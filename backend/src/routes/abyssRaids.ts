@@ -154,7 +154,7 @@ router.delete('/:id', requireAuth, async (req, res) => {
 router.post('/:id/teams', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { characters, boss_position } = req.body;
+    const { characters, boss_position, source_url } = req.body;
     
     // 驗證必填欄位
     if (!characters || !boss_position) {
@@ -180,6 +180,7 @@ router.post('/:id/teams', requireAuth, async (req, res) => {
       data: {
         characters: characters,
         boss_position: boss_position,
+        source_url: source_url || null,
         abyss_raid_id: parseInt(id)
       }
     });
@@ -195,7 +196,7 @@ router.post('/:id/teams', requireAuth, async (req, res) => {
 router.put('/teams/:id', requireAuth, async (req, res) => {
   try {
     const { id } = req.params;
-    const { characters, boss_position } = req.body;
+    const { characters, boss_position, source_url } = req.body;
     
     // 檢查隊伍是否存在
     const existingTeam = await prisma.abyssTeam.findUnique({
@@ -218,7 +219,8 @@ router.put('/teams/:id', requireAuth, async (req, res) => {
       where: { id: parseInt(id) },
       data: {
         characters: characters !== undefined ? characters : undefined,
-        boss_position: boss_position !== undefined ? boss_position : undefined
+        boss_position: boss_position !== undefined ? boss_position : undefined,
+        source_url: source_url !== undefined ? (source_url || null) : undefined
       }
     });
     
