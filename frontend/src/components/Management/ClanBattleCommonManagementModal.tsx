@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, DeleteButton, AddButton, ModalSelect } from './FormElements';
+import { ModalInput, CharacterModalInput, DeleteButton, AddButton, ModalSelect } from './FormElements';
 import { clanBattleCommonApi } from '../../services/api';
 
 interface ClanBattleCommonCharacter {
@@ -198,7 +198,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
         {/* 新增角色區域 */}
         <div className="space-y-2">
           <div className="flex gap-2">
-            <ModalInput
+            <CharacterModalInput
               value={newCharacter.character_name}
               onChange={(e) => setNewCharacter({ ...newCharacter, character_name: e.target.value })}
               onKeyPress={handleKeyPress}
@@ -251,7 +251,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
           ) : (
             editingCharacters.map((char) => (
               <div key={char.id} className="flex gap-2 items-center">
-                <ModalInput
+                <CharacterModalInput
                   value={char.character_name}
                   onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
                   disabled={loading || saving}

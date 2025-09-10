@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
+import { ModalInput, CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
 import { sixstarPriorityApi, ue1PriorityApi, ue2PriorityApi } from '../../services/api';
 
 interface PriorityCharacter {
@@ -260,7 +260,7 @@ const PriorityManagementModal: React.FC<PriorityManagementModalProps> = ({
         {/* 新增角色區域 */}
         <div className="space-y-2">
           <div className="flex gap-2">
-            <ModalInput
+            <CharacterModalInput
               value={newCharacterName}
               onChange={(e) => setNewCharacterName(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -300,7 +300,7 @@ const PriorityManagementModal: React.FC<PriorityManagementModalProps> = ({
                     <div className="space-y-2">
                       {charactersInTier.map((char) => (
                         <div key={char.id} className="flex gap-2 items-center pl-4">
-                          <ModalInput
+                          <CharacterModalInput
                             value={char.character_name}
                             onChange={(e) => handleUpdateCharacterName(char.id, e.target.value)}
                             disabled={loading || saving}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, DeleteButton, AddButton } from './FormElements';
+import { ModalInput, CharacterModalInput, DeleteButton, AddButton } from './FormElements';
 import { nonSixstarCharactersApi } from '../../services/api';
 
 interface NonSixstarCharacter {
@@ -186,7 +186,7 @@ const NonSixstarManagementModal: React.FC<NonSixstarManagementModalProps> = ({
         <div className="space-y-3 p-4 bg-gray-50 rounded-lg">
           <h4 className="text-sm font-semibold text-gray-700 mb-2">新增角色</h4>
           <div className="space-y-2">
-            <ModalInput
+            <CharacterModalInput
               value={newCharacter.character_name}
               onChange={(e) => setNewCharacter({...newCharacter, character_name: e.target.value})}
               placeholder="角色名稱"
@@ -226,7 +226,7 @@ const NonSixstarManagementModal: React.FC<NonSixstarManagementModalProps> = ({
               <div key={char.id} className="p-4 border border-gray-200 rounded-lg space-y-2">
                 <div className="flex justify-between items-start">
                   <div className="flex-1 space-y-2 mr-4">
-                    <ModalInput
+                    <CharacterModalInput
                       value={char.character_name}
                       onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
                       disabled={loading || saving}

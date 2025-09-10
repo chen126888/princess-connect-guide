@@ -1,5 +1,6 @@
 import React from 'react';
 import { Trash2, Plus } from 'lucide-react';
+import CharacterAutocomplete from '../Common/CharacterAutocomplete';
 
 // 樣式常數
 export const MODAL_STYLES = {
@@ -18,6 +19,26 @@ interface ModalInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const ModalInput: React.FC<ModalInputProps> = ({ className = "w-full", ...props }) => (
   <input className={`${MODAL_STYLES.input} ${className}`} {...props} />
+);
+
+// 角色自動完成輸入框 (用於管理功能中的角色名稱輸入)
+interface CharacterModalInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
+  className?: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+export const CharacterModalInput: React.FC<CharacterModalInputProps> = ({ 
+  className = "w-full", 
+  placeholder = "輸入角色名稱",
+  ...props 
+}) => (
+  <CharacterAutocomplete
+    className={`${MODAL_STYLES.input} ${className}`}
+    placeholder={placeholder}
+    {...props}
+  />
 );
 
 // 通用選擇框

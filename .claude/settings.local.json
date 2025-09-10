@@ -38,7 +38,9 @@
       "Bash(npm run preview:*)",
       "Bash(git checkout:*)",
       "Bash(git reset:*)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(git fetch:*)",
+      "Bash(git merge:*)"
     ],
     "deny": []
   }

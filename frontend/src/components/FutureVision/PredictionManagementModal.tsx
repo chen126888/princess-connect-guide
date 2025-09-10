@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CharacterAutocomplete from '../Common/CharacterAutocomplete';
 import { futurePredictionsApi } from '../../services/api';
 
 interface FuturePrediction {
@@ -141,12 +142,11 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     角色名稱 *
                   </label>
-                  <input
-                    type="text"
+                  <CharacterAutocomplete
                     value={formData.character_name}
                     onChange={(e) => setFormData({ ...formData, character_name: e.target.value })}
                     className="w-full p-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                    required
+                    placeholder="輸入角色名稱"
                   />
                 </div>
 

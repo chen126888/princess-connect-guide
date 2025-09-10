@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
+import { ModalInput, CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
 import { trialCharactersApi } from '../../services/api';
 
 interface TrialCharacter {
@@ -191,7 +191,7 @@ const TrialCharacterManagementModal: React.FC<TrialCharacterManagementModalProps
         {/* 新增角色區域 */}
         <div className="space-y-2">
           <div className="flex gap-2">
-            <ModalInput
+            <CharacterModalInput
               value={newCharacterName}
               onChange={(e) => setNewCharacterName(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -230,7 +230,7 @@ const TrialCharacterManagementModal: React.FC<TrialCharacterManagementModalProps
                       .filter(char => char.category === '推薦練')
                       .map((char) => (
                         <div key={char.id} className="flex gap-2 items-center pl-4">
-                          <ModalInput
+                          <CharacterModalInput
                             value={char.character_name}
                             onChange={(e) => handleUpdateCharacterName(char.id, e.target.value)}
                             disabled={loading || saving}
@@ -260,7 +260,7 @@ const TrialCharacterManagementModal: React.FC<TrialCharacterManagementModalProps
                       .filter(char => char.category === '後期練')
                       .map((char) => (
                         <div key={char.id} className="flex gap-2 items-center pl-4">
-                          <ModalInput
+                          <CharacterModalInput
                             value={char.character_name}
                             onChange={(e) => handleUpdateCharacterName(char.id, e.target.value)}
                             disabled={loading || saving}

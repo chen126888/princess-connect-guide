@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2 } from 'lucide-react';
+import CharacterAutocomplete from '../Common/CharacterAutocomplete';
 import type { TeamData } from '../../types';
 
 interface AddTeamsModalProps {
@@ -289,12 +290,11 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
                     <div className="space-y-2">
                       {team.fixedCharacters.map((char, charIndex) => (
                         <div key={charIndex} className="flex gap-2">
-                          <input
-                            type="text"
+                          <CharacterAutocomplete
                             value={char}
                             onChange={(e) => updateFixedCharacter(teamIndex, charIndex, e.target.value)}
-                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="角色名稱"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                           />
                           <button
                             type="button"
@@ -336,12 +336,11 @@ const AddTeamsModal: React.FC<AddTeamsModalProps> = ({ isOpen, onClose, onSubmit
                           <div className="space-y-2">
                             {group.map((option, optionIndex) => (
                               <div key={optionIndex} className="flex gap-2">
-                                <input
-                                  type="text"
+                                <CharacterAutocomplete
                                   value={option}
                                   onChange={(e) => updateFlexibleOption(teamIndex, groupIndex, optionIndex, e.target.value)}
-                                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                                   placeholder="角色名稱"
+                                  className="flex-1 px-2 py-1 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 />
                                 <button
                                   type="button"
