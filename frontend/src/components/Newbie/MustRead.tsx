@@ -20,7 +20,7 @@ const MustRead: React.FC = () => {
       case 'recommendations':
         return (
           <Card>
-            <h2 className="text-2xl font-bold mb-4 text-blue-700">新人建議</h2>
+            <h2 className="text-2xl font-bold mb-4 text-blue-700">新人建議(約200等後，請去看回鍋頁面)</h2>
             <ul className="space-y-3">
               {newbieRecommendations.map((item) => (
                 <li key={item.id} className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-shadow duration-200">

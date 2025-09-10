@@ -3,13 +3,14 @@ import PageContainer from '../../components/Common/PageContainer';
 import CharacterPlanningSection from '../../components/ReturnPlayer/CharacterPlanningSection';
 import DailyStrategySection from '../../components/ReturnPlayer/DailyStrategySection';
 import NewbieBoostSection from '../../components/ReturnPlayer/NewbieBoostSection';
+import MaxLevelGuideSection from '../../components/ReturnPlayer/MaxLevelGuideSection';
 import Card from '../../components/Common/Card';
 
 interface ReturnPlayerProps {
   onNavigateToPage?: (page: string) => void;
 }
 
-type ReturnPlayerTab = 'planning' | 'development' | 'strategy';
+type ReturnPlayerTab = 'planning' | 'development' | 'strategy' | 'maxLevel';
 
 const ReturnPlayer: React.FC<ReturnPlayerProps> = ({ onNavigateToPage }) => {
   const [activeTab, setActiveTab] = useState<ReturnPlayerTab>('planning');
@@ -18,6 +19,7 @@ const ReturnPlayer: React.FC<ReturnPlayerProps> = ({ onNavigateToPage }) => {
     { key: 'planning', label: '養成與抽角' },
     { key: 'development', label: '同步與屬性' },
     { key: 'strategy', label: '日常與副本攻略' },
+    { key: 'maxLevel', label: '滿等後做什麼' },
   ];
 
   const renderContent = () => {
@@ -77,6 +79,8 @@ const ReturnPlayer: React.FC<ReturnPlayerProps> = ({ onNavigateToPage }) => {
         );
       case 'strategy':
         return <DailyStrategySection />;
+      case 'maxLevel':
+        return <MaxLevelGuideSection />;
       default:
         return null;
     }
