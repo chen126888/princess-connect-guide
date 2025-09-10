@@ -54,13 +54,16 @@ const AbyssRaidFuture: React.FC = () => {
     loadAbyssRaids();
   }, []);
 
-  // 獲取未來視需要的5個月份（當前月份 + 未來4個月）
-  const getFutureSightMonths = () => {
+  // 獲取深淵討伐未來視需要的5個月份（當月10號以後顯示下個月開始的5個月，否則顯示當月開始的5個月）
+  const getAbyssRaidFutureSightMonths = () => {
     const months = [];
     const now = new Date();
     
+    // 如果當前日期是10號或以後，從下個月開始顯示5個月
+    const startOffset = now.getDate() >= 10 ? 1 : 0;
+    
     for (let i = 0; i < 5; i++) {
-      const futureDate = new Date(now.getFullYear(), now.getMonth() + i, 1);
+      const futureDate = new Date(now.getFullYear(), now.getMonth() + startOffset + i, 1);
       months.push({
         year: futureDate.getFullYear(),
         month: futureDate.getMonth() + 1,
@@ -74,7 +77,7 @@ const AbyssRaidFuture: React.FC = () => {
   // 確保未來視所需的 AbyssRaid 記錄都存在
   const ensureFutureSightAbyssRaids = async () => {
     try {
-      const futureSightMonths = getFutureSightMonths();
+      const futureSightMonths = getAbyssRaidFutureSightMonths();
       
       // 檢查並創建缺少的 AbyssRaid
       for (const month of futureSightMonths) {
@@ -125,13 +128,12 @@ const AbyssRaidFuture: React.FC = () => {
       if (response.ok) {
         setAbyssRaids(result);
         
-        // 設定預設選擇當前月份
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
+        // 設定預設選擇月份（根據深淵討伐規則：10號以後選下個月，否則選當月）
+        const futureSightMonths = getAbyssRaidFutureSightMonths();
+        const defaultMonth = futureSightMonths[0]; // 取第一個月份作為預設
         
-        setSelectedYear(currentYear);
-        setSelectedMonth(currentMonth);
+        setSelectedYear(defaultMonth.year);
+        setSelectedMonth(defaultMonth.month);
       } else {
         console.error('載入深淵討伐資料失敗:', result.error);
       }
@@ -325,7 +327,7 @@ const AbyssRaidFuture: React.FC = () => {
 
   // 獲取未來視可選的年月組合（固定5個月）
   const getAvailableMonths = () => {
-    return getFutureSightMonths();
+    return getAbyssRaidFutureSightMonths();
   };
 
   // 獲取當前選擇的深淵討伐資料來源
