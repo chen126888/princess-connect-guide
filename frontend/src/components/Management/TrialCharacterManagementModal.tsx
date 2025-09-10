@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
+import { CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
 import { trialCharactersApi } from '../../services/api';
 
 interface TrialCharacter {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, CharacterModalInput, DeleteButton, AddButton } from './FormElements';
+import { CharacterModalInput, DeleteButton, AddButton } from './FormElements';
 import { arenaCommonApi } from '../../services/api';
 
 interface ArenaCommonCharacter {

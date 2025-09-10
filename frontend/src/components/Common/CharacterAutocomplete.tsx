@@ -100,7 +100,7 @@ const CharacterAutocomplete: React.FC<CharacterAutocompleteProps> = ({
   };
 
   // 處理失焦
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlur = () => {
     // 延遲隱藏建議，允許點擊建議項目
     setTimeout(() => {
       setShowSuggestions(false);
@@ -196,7 +196,7 @@ const CharacterAutocomplete: React.FC<CharacterAutocompleteProps> = ({
               <div className="text-xs text-gray-400 mt-1 flex gap-2">
                 <span>{character.位置}</span>
                 <span>{character.屬性}</span>
-                {character.常駐限定 && <span>{character.常駐限定}</span>}
+                {character['常駐/限定'] && <span>{character['常駐/限定']}</span>}
               </div>
             </div>
           ))}

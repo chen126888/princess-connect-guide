@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BaseModal from './BaseModal';
-import { ModalInput, CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
+import { CharacterModalInput, ModalSelect, DeleteButton, AddButton } from './FormElements';
 import { sixstarPriorityApi, ue1PriorityApi, ue2PriorityApi } from '../../services/api';
 
 interface PriorityCharacter {
