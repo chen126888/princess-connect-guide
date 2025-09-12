@@ -55,15 +55,15 @@ const AbyssRaidFuture: React.FC = () => {
     loadAbyssRaids();
   }, []);
 
-  // 獲取深淵討伐未來視需要的5個月份（當月10號以後顯示下個月開始的5個月，否則顯示當月開始的5個月）
+  // 獲取深淵討伐未來視需要的4個月份（當月10號以後顯示下個月開始的4個月，否則顯示當月開始的4個月）
   const getAbyssRaidFutureSightMonths = () => {
     const months = [];
     const now = new Date();
     
-    // 如果當前日期是10號或以後，從下個月開始顯示5個月
+    // 如果當前日期是10號或以後，從下個月開始顯示4個月
     const startOffset = now.getDate() >= 10 ? 1 : 0;
     
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 4; i++) {
       const futureDate = new Date(now.getFullYear(), now.getMonth() + startOffset + i, 1);
       months.push({
         year: futureDate.getFullYear(),
@@ -328,7 +328,7 @@ const AbyssRaidFuture: React.FC = () => {
     return groupedTeams;
   };
 
-  // 獲取未來視可選的年月組合（固定5個月）
+  // 獲取未來視可選的年月組合（固定4個月）
   const getAvailableMonths = () => {
     return getAbyssRaidFutureSightMonths();
   };
@@ -382,7 +382,7 @@ const AbyssRaidFuture: React.FC = () => {
             ))}
           </div>
           <div className="text-sm text-gray-500 mt-2 space-y-1">
-            <p>※ 未來視資料來源：日服進度（領先台服約5個月）</p>
+            <p>※ 未來視資料來源：日服進度（領先台服約4個月）</p>
             {getCurrentSourceUrl() && (
               <p>
                 資料來源：
