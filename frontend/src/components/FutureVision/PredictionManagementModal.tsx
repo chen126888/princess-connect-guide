@@ -21,6 +21,7 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
   const [predictions, setPredictions] = useState<FuturePrediction[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingPrediction, setEditingPrediction] = useState<Partial<FuturePrediction> | null>(null);
+  const [activeMonth, setActiveMonth] = useState<string>('');  // 格式: "YYYY-MM"
   const [formData, setFormData] = useState({
     character_name: '',
     prediction_type: '六星開花' as '六星開花' | '專一' | '專二' | '新出' | '復刻',
@@ -34,6 +35,22 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
       fetchPredictions();
     }
   }, [isOpen]);
+
+  // 設定預設活躍月份為當前月份
+  useEffect(() => {
+    if (predictions.length > 0 && !activeMonth) {
+      const currentDate = new Date();
+      const currentMonth = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`;
+
+      // 檢查當前月份是否有預測資料，如果沒有則使用最早的月份
+      const availableMonths = getAvailableMonths();
+      if (availableMonths.includes(currentMonth)) {
+        setActiveMonth(currentMonth);
+      } else if (availableMonths.length > 0) {
+        setActiveMonth(availableMonths[0]);
+      }
+    }
+  }, [predictions, activeMonth]);
 
   const fetchPredictions = async () => {
     try {
@@ -88,6 +105,62 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
     });
   };
 
+  // 獲取所有可用月份
+  const getAvailableMonths = (): string[] => {
+    const months = new Set<string>();
+    predictions.forEach(p => {
+      const monthKey = `${p.predicted_year}-${p.predicted_month.toString().padStart(2, '0')}`;
+      months.add(monthKey);
+    });
+    return Array.from(months).sort();
+  };
+
+  // 根據當前選中月份篩選預測
+  const getFilteredPredictions = (): FuturePrediction[] => {
+    if (!activeMonth) return [];
+    const [year, month] = activeMonth.split('-');
+    return predictions.filter(p =>
+      p.predicted_year === parseInt(year) &&
+      p.predicted_month === parseInt(month)
+    ).sort((a, b) => {
+      // 按 notes 中的數字排序（時間順序）
+      const orderA = extractOrderFromNotes(a.notes);
+      const orderB = extractOrderFromNotes(b.notes);
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.character_name.localeCompare(b.character_name);
+    });
+  };
+
+  // 提取 notes 中的數字用於排序
+  const extractOrderFromNotes = (notes?: string): number => {
+    if (!notes) return 999;
+    const trimmedNotes = notes.trim();
+    if (/^\d+$/.test(trimmedNotes)) {
+      return parseInt(trimmedNotes, 10);
+    }
+    const match = notes.match(/^(\d+)/);
+    return match ? parseInt(match[1], 10) : 999;
+  };
+
+  // 當切換月份時，同步更新新增表單的年月
+  const handleMonthChange = (monthKey: string) => {
+    setActiveMonth(monthKey);
+    const [year, month] = monthKey.split('-');
+    setFormData(prev => ({
+      ...prev,
+      predicted_year: parseInt(year),
+      predicted_month: parseInt(month)
+    }));
+  };
+
+  // 格式化月份顯示
+  const formatMonth = (monthKey: string): string => {
+    const [year, month] = monthKey.split('-');
+    return `${year}年${parseInt(month)}月`;
+  };
+
   const handleDelete = async (id: number) => {
     if (confirm('確定要刪除這個預測嗎？')) {
       try {
@@ -130,11 +203,38 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+          {/* 月份標籤頁 */}
+          {predictions.length > 0 && (
+            <div className="border-b border-gray-200 mb-6">
+              <nav className="-mb-px flex space-x-4 overflow-x-auto">
+                {getAvailableMonths().map((monthKey) => (
+                  <button
+                    key={monthKey}
+                    onClick={() => handleMonthChange(monthKey)}
+                    className={`py-2 px-4 border-b-2 font-medium text-sm transition-colors whitespace-nowrap ${
+                      activeMonth === monthKey
+                        ? 'border-blue-500 text-blue-600'
+                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                    }`}
+                  >
+                    {formatMonth(monthKey)}
+                    <span className="ml-1 text-xs text-gray-400">
+                      ({predictions.filter(p => {
+                        const [year, month] = monthKey.split('-');
+                        return p.predicted_year === parseInt(year) && p.predicted_month === parseInt(month);
+                      }).length})
+                    </span>
+                  </button>
+                ))}
+              </nav>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* 新增/編輯表單 */}
             <div className="space-y-4">
               <h3 className="text-lg font-semibold text-gray-700">
-                {editingPrediction ? '編輯預測' : '新增預測'}
+                {editingPrediction ? '編輯預測' : `新增預測${activeMonth ? ` - ${formatMonth(activeMonth)}` : ''}`}
               </h3>
               
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -247,21 +347,21 @@ const PredictionManagementModal: React.FC<Props> = ({ isOpen, onClose, onSave })
 
             {/* 預測列表 */}
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-700">現有預測</h3>
-              
+              <h3 className="text-lg font-semibold text-gray-700">
+                {activeMonth ? `${formatMonth(activeMonth)}預測` : '現有預測'}
+              </h3>
+
               {loading ? (
                 <div className="text-center py-8 text-gray-500">載入中...</div>
               ) : predictions.length === 0 ? (
                 <div className="text-center py-8 text-gray-500">暫無預測資料</div>
+              ) : getFilteredPredictions().length === 0 ? (
+                <div className="text-center py-8 text-gray-500">
+                  {activeMonth ? `${formatMonth(activeMonth)}暫無預測資料` : '請選擇月份'}
+                </div>
               ) : (
                 <div className="space-y-2 max-h-96 overflow-y-auto">
-                  {predictions
-                    .sort((a, b) => {
-                      const dateA = new Date(a.predicted_year, a.predicted_month - 1);
-                      const dateB = new Date(b.predicted_year, b.predicted_month - 1);
-                      return dateA.getTime() - dateB.getTime();
-                    })
-                    .map(prediction => (
+                  {getFilteredPredictions().map(prediction => (
                       <div
                         key={prediction.id}
                         className="bg-gray-50 p-3 rounded border border-gray-200"
