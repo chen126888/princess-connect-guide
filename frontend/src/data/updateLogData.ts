@@ -9,6 +9,17 @@ export interface UpdateLogItem {
 
 export const updateLogs: UpdateLogItem[] = [
   {
+  date: '2025/09/13',
+  version: 'v1.2.0',
+  title: '新增功能',
+  type: 'minor',
+  items: [
+    '深淵討伐未來視',
+    '滿等必做',
+    '其他小項目文字說明更新'
+  ]
+  },
+  {
   date: '2025/08/25',
   version: 'v1.1.0',
   title: '新增功能',

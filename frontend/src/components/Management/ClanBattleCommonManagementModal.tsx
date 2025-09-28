@@ -32,6 +32,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingCharacters, setEditingCharacters] = useState<ClanBattleCommonCharacter[]>([]);
+  const [activeAttribute, setActiveAttribute] = useState('火屬');
 
   // 選項定義
   const attributeOptions = ['火屬', '水屬', '風屬', '光屬', '闇屬'];
@@ -72,11 +73,26 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
       setEditingCharacters([...editingCharacters, newChar]);
       setNewCharacter({
         character_name: '',
-        attribute: '火屬',
+        attribute: activeAttribute, // 使用當前選中的屬性
         damage_type: '物理',
         importance: '核心'
       });
     }
+  };
+
+  // 根據當前選擇的屬性篩選角色
+  const getFilteredCharacters = (damageType?: string) => {
+    return editingCharacters.filter(char => {
+      const attributeMatch = char.attribute === activeAttribute;
+      const damageTypeMatch = damageType ? char.damage_type === damageType : true;
+      return attributeMatch && damageTypeMatch;
+    });
+  };
+
+  // 當切換屬性時，同步更新新增角色的屬性
+  const handleAttributeChange = (attribute: string) => {
+    setActiveAttribute(attribute);
+    setNewCharacter(prev => ({ ...prev, attribute }));
   };
 
   // 刪除角色
@@ -152,6 +168,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
   // 取消變更
   const handleCancel = () => {
     setEditingCharacters([...characters]);
+    setActiveAttribute('火屬');
     setNewCharacter({
       character_name: '',
       attribute: '火屬',
@@ -195,8 +212,31 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
       headerActions={headerActions}
     >
       <div className="p-6 space-y-6">
+        {/* 屬性標籤頁 */}
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-4">
+            {attributeOptions.map((attribute) => (
+              <button
+                key={attribute}
+                onClick={() => handleAttributeChange(attribute)}
+                className={`py-2 px-4 border-b-2 font-medium text-sm transition-colors ${
+                  activeAttribute === attribute
+                    ? 'border-blue-500 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {attribute}
+                <span className="ml-1 text-xs text-gray-400">
+                  ({getFilteredCharacters().length})
+                </span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
         {/* 新增角色區域 */}
-        <div className="space-y-2">
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h4 className="text-sm font-medium text-gray-700 mb-3">新增{activeAttribute}角色</h4>
           <div className="flex gap-2">
             <CharacterModalInput
               value={newCharacter.character_name}
@@ -204,23 +244,13 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
               onKeyPress={handleKeyPress}
               placeholder="輸入角色名稱"
               disabled={loading || saving}
-              className="w-2/5"
+              className="flex-1"
             />
-            <ModalSelect
-              value={newCharacter.attribute}
-              onChange={(e) => setNewCharacter({ ...newCharacter, attribute: e.target.value })}
-              disabled={loading || saving}
-              className="w-1/5"
-            >
-              {attributeOptions.map(attr => (
-                <option key={attr} value={attr}>{attr}</option>
-              ))}
-            </ModalSelect>
             <ModalSelect
               value={newCharacter.damage_type}
               onChange={(e) => setNewCharacter({ ...newCharacter, damage_type: e.target.value })}
               disabled={loading || saving}
-              className="w-1/5"
+              className="w-20"
             >
               {damageTypeOptions.map(type => (
                 <option key={type} value={type}>{type}</option>
@@ -230,7 +260,7 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
               value={newCharacter.importance}
               onChange={(e) => setNewCharacter({ ...newCharacter, importance: e.target.value })}
               disabled={loading || saving}
-              className="w-1/5"
+              className="w-20"
             >
               {importanceOptions.map(imp => (
                 <option key={imp} value={imp}>{imp}</option>
@@ -242,55 +272,84 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
           </div>
         </div>
 
-        {/* 角色列表 */}
-        <div className="space-y-2 max-h-96 overflow-y-auto">
+        {/* 當前屬性的角色列表 */}
+        <div className="space-y-4">
           {loading ? (
-            <div className="text-center py-4 text-gray-500">載入中...</div>
-          ) : editingCharacters.length === 0 ? (
-            <div className="text-center py-4 text-gray-500">目前沒有角色資料</div>
+            <div className="text-center py-8 text-gray-500">載入中...</div>
           ) : (
-            editingCharacters.map((char) => (
-              <div key={char.id} className="flex gap-2 items-center">
-                <CharacterModalInput
-                  value={char.character_name}
-                  onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
-                  disabled={loading || saving}
-                  className="w-2/5 flex-shrink-0"
-                  placeholder="角色名稱"
-                />
-                <ModalSelect
-                  value={char.attribute}
-                  onChange={(e) => handleUpdateCharacter(char.id, 'attribute', e.target.value)}
-                  disabled={loading || saving}
-                  className="w-1/5"
-                >
-                  {attributeOptions.map(attr => (
-                    <option key={attr} value={attr}>{attr}</option>
-                  ))}
-                </ModalSelect>
-                <ModalSelect
-                  value={char.damage_type}
-                  onChange={(e) => handleUpdateCharacter(char.id, 'damage_type', e.target.value)}
-                  disabled={loading || saving}
-                  className="w-1/5"
-                >
-                  {damageTypeOptions.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </ModalSelect>
-                <ModalSelect
-                  value={char.importance}
-                  onChange={(e) => handleUpdateCharacter(char.id, 'importance', e.target.value)}
-                  disabled={loading || saving}
-                  className="w-1/5"
-                >
-                  {importanceOptions.map(imp => (
-                    <option key={imp} value={imp}>{imp}</option>
-                  ))}
-                </ModalSelect>
-                <DeleteButton onClick={() => handleDeleteCharacter(char.id)} />
+            <>
+              {/* 物理角色 */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-red-500 rounded-full mr-2"></span>
+                  物理角色 ({getFilteredCharacters('物理').length}個)
+                </h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {getFilteredCharacters('物理').length === 0 ? (
+                    <div className="text-center py-4 text-gray-400 text-sm">暫無{activeAttribute}物理角色</div>
+                  ) : (
+                    getFilteredCharacters('物理').map((char) => (
+                      <div key={char.id} className="flex gap-2 items-center bg-white p-2 rounded border">
+                        <CharacterModalInput
+                          value={char.character_name}
+                          onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
+                          disabled={loading || saving}
+                          className="flex-1"
+                          placeholder="角色名稱"
+                        />
+                        <ModalSelect
+                          value={char.importance}
+                          onChange={(e) => handleUpdateCharacter(char.id, 'importance', e.target.value)}
+                          disabled={loading || saving}
+                          className="w-20"
+                        >
+                          {importanceOptions.map(imp => (
+                            <option key={imp} value={imp}>{imp}</option>
+                          ))}
+                        </ModalSelect>
+                        <DeleteButton onClick={() => handleDeleteCharacter(char.id)} />
+                      </div>
+                    ))
+                  )}
+                </div>
               </div>
-            ))
+
+              {/* 法術角色 */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <span className="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+                  法術角色 ({getFilteredCharacters('法術').length}個)
+                </h4>
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {getFilteredCharacters('法術').length === 0 ? (
+                    <div className="text-center py-4 text-gray-400 text-sm">暫無{activeAttribute}法術角色</div>
+                  ) : (
+                    getFilteredCharacters('法術').map((char) => (
+                      <div key={char.id} className="flex gap-2 items-center bg-white p-2 rounded border">
+                        <CharacterModalInput
+                          value={char.character_name}
+                          onChange={(e) => handleUpdateCharacter(char.id, 'character_name', e.target.value)}
+                          disabled={loading || saving}
+                          className="flex-1"
+                          placeholder="角色名稱"
+                        />
+                        <ModalSelect
+                          value={char.importance}
+                          onChange={(e) => handleUpdateCharacter(char.id, 'importance', e.target.value)}
+                          disabled={loading || saving}
+                          className="w-20"
+                        >
+                          {importanceOptions.map(imp => (
+                            <option key={imp} value={imp}>{imp}</option>
+                          ))}
+                        </ModalSelect>
+                        <DeleteButton onClick={() => handleDeleteCharacter(char.id)} />
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
