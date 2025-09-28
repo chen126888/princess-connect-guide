@@ -80,12 +80,24 @@ const ClanBattleCommonManagementModal: React.FC<ClanBattleCommonManagementModalP
     }
   };
 
-  // 根據當前選擇的屬性篩選角色
+  // 根據當前選擇的屬性篩選角色，並按重要性排序
   const getFilteredCharacters = (damageType?: string) => {
     return editingCharacters.filter(char => {
       const attributeMatch = char.attribute === activeAttribute;
       const damageTypeMatch = damageType ? char.damage_type === damageType : true;
       return attributeMatch && damageTypeMatch;
+    }).sort((a, b) => {
+      // 重要性排序：核心 -> 重要 -> 普通
+      const importanceOrder = { '核心': 0, '重要': 1, '普通': 2 };
+      const orderA = importanceOrder[a.importance as keyof typeof importanceOrder] ?? 999;
+      const orderB = importanceOrder[b.importance as keyof typeof importanceOrder] ?? 999;
+
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+
+      // 相同重要性時按角色名稱排序
+      return a.character_name.localeCompare(b.character_name);
     });
   };
 
