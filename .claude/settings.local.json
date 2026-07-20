@@ -40,7 +40,9 @@
       "Bash(git reset:*)",
       "Bash(git restore:*)",
       "Bash(git fetch:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(pg_dump --version)",
+      "Bash(sudo apt-get install -y postgresql-client-17)"
     ],
     "deny": []
   }
