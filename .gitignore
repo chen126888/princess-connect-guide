@@ -112,3 +112,6 @@ batch_update*.sh
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# 本地 DB 備份，不進版控
+db_backup/
