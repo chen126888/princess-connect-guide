@@ -1,0 +1,55 @@
+# git-cliff 設定：從 Conventional Commits 產生開發者 CHANGELOG.md
+# 用法：pnpm changelog
+# 註：這是「給開發者看的版本紀錄」；「給訪客看的網站更新日誌」是 DB 裡的
+#     UpdateLog（見 ARCHITECTURE.md §8），兩者不同。
+
+[changelog]
+header = """
+# 更新紀錄
+
+本檔由 git-cliff 依 Conventional Commits 自動產生，請勿手動編輯。\n
+"""
+body = """
+{% if version %}\
+## {{ version | trim_start_matches(pat="v") }} — {{ timestamp | date(format="%Y-%m-%d") }}
+{% else %}\
+## 未發布
+{% endif %}\
+{% for group, commits in commits | group_by(attribute="group") %}
+### {{ group | upper_first }}
+{% for commit in commits %}
+- {% if commit.scope %}**{{ commit.scope }}**: {% endif %}{{ commit.message | upper_first }}\
+{% endfor %}
+{% endfor %}\n
+"""
+trim = true
+
+[git]
+conventional_commits = true
+filter_unconventional = true
+protect_breaking_commits = true
+split_commits = false
+tag_pattern = "v[0-9]*"
+topo_order = false
+sort_commits = "newest"
+
+# commit type → CHANGELOG 分組標題
+commit_parsers = [
+  { message = "^feat", group = "新功能" },
+  { message = "^fix", group = "問題修正" },
+  { message = "^perf", group = "效能" },
+  { message = "^refactor", group = "重構" },
+  { message = "^docs", group = "文件" },
+  { message = "^test", group = "測試" },
+  { message = "^build|^ci", group = "建置與 CI" },
+  { message = "^chore\\(release\\)", skip = true },
+  { message = "^chore", group = "雜項" },
+  { body = ".*security", group = "安全性" },
+
+  # ── 以下為 v1 時期（導入 Conventional Commits 之前）的非標準 type，
+  #    對應到標準分組，避免 CHANGELOG 出現 Add/Update/Debug 等雜亂標題。
+  { message = "^add", group = "新功能" },
+  { message = "^security", group = "安全性" },
+  { message = "^update|^style", group = "雜項" },
+  { message = "^debug", skip = true },
+]

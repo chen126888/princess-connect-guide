@@ -1,0 +1,13 @@
+legacy/
+data/
+db_backup/
+docs/
+node_modules/
+dist/
+build/
+.turbo/
+pnpm-lock.yaml
+
+# Markdown 排除：文件含大量中文表格，Prettier 以字元數（而非顯示寬度）
+# 對齊欄位，對雙寬的 CJK 字元會產生視覺上歪掉的結果與大量假 diff。
+*.md

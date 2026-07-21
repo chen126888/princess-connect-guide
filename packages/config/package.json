@@ -1,0 +1,26 @@
+{
+  "name": "@pcr/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "共用開發設定：tsconfig base、eslint flat config、prettier",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./eslint": "./eslint/base.js",
+    "./prettier": "./prettier/index.js"
+  },
+  "scripts": {
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@eslint/js": "catalog:",
+    "eslint": "catalog:",
+    "eslint-config-prettier": "catalog:",
+    "globals": "catalog:",
+    "prettier": "catalog:",
+    "typescript-eslint": "catalog:"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  }
+}

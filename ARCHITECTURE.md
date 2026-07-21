@@ -329,6 +329,60 @@ model PageSection {
 3. **多個 repository 出現重複樣板** → 抽 `BaseRepository<T>` 泛型基底。但等重複真的
    出現第三次再抽，不要預先抽象（錯的抽象比重複更貴）。
 
+### 4.5 Character schema 重整（Phase 2 施工規格）
+
+以下決策依據 **2026-06-30 備份的 314 筆實測資料**（非文件推測）。舊 schema 把多個正交維度
+擠在同一個字串欄位，導致值域失控（`常駐/限定` 長出 12 種值、`角色定位` 長出 12+ 種）。
+
+#### 4.5.1 角色定位：改為 enum 陣列（一個角色可多個定位）
+
+新角色普遍是多功能的，舊的單一字串欄位只能靠 `妨礙兼破防`、`破防兼輸出`、`加速跟補TP`
+這種複合字串硬湊。改為**固定 6 值的 enum 陣列**：
+
+```prisma
+enum CharacterRole {
+  DPS        @map("輸出")
+  BREAKER    @map("破防")
+  HEALER     @map("補師")
+  BUFFER     @map("增益")
+  DEBUFFER   @map("妨礙")
+  TP_SUPPORT @map("補TP")
+}
+```
+
+**為何用 enum 陣列而非關聯表**：6 個固定標籤、無 per-relation 額外欄位，關聯表是過度設計。
+Postgres 原生陣列 + GIN 索引即可高效篩選。**enum 在 DB 層強制值域**，正是用來根治
+「值域從 6 種失控成 12+ 種」的病根——代價是新增第 7 種定位需要一次 migration，而這正是想要的約束。
+
+（Prisma enum 名稱僅允許 ASCII，中文顯示值靠 `@map`。）
+
+#### 4.5.2 `常駐/限定` 拆成三個正交欄位
+
+舊欄位混了「卡池類別 / 獲取來源 / 初始星級 / 是否絕版」四件事，拆解為：
+
+| 新欄位 | 型別 | 說明 |
+|--------|------|------|
+| `gachaPool` 卡池 | enum | 常駐 / 限定 / FES限定(公主祭典) / 聯名限定 |
+| `acquisitionSource` 獲取來源 | enum | 轉蛋 / 活動(支線可農) / 兌換 等（確切值域 Phase 2 全量盤點後定案）|
+| `initialRarity` 初始星級 | Int | 僅 1 / 2 / 3 |
+
+**`isDiscontinued` 不儲存**——絕版可由 `gachaPool === 聯名限定` 推導，不存可推導的資料。
+
+實測驗證：資料中 8 筆標記「絕版」的角色（卯月、未央、凜、拉姆、雷姆、雷姆(夏日)、
+愛蜜莉雅、愛蜜莉雅(夏日)）**全部是偶像大師與 Re:Zero 聯名角**；另有 1 筆花凜(煉金術)
+標為「聯動限定活動角」。共 9 個聯名角、歷史標記不一致，但「只有聯名會絕版」的規則完全成立。
+→ **Phase 2 資料遷移時，這 8 筆需重新歸類為 `聯名限定`。**
+
+#### 4.5.3 待清理的髒資料
+
+| 欄位 | 髒值 | 處理 |
+|------|------|------|
+| 評級（四個維度）| `T3.5`（1 筆）、`不知道`（1 筆）、null | 遷移時就近歸入合法級距（往上或往下皆可，後續會再調整）|
+| `常駐/限定` | 見 4.5.2 的 8 筆絕版標記 | 改歸 `聯名限定` |
+
+乾淨且值域封閉的欄位（位置 3 值、屬性 5 值、評級 6 值）已於 Phase 1 定義於
+`packages/shared/src/constants/character.ts`。注意**屬性沒有「土屬」**——是「風屬」，舊型別註解有誤。
+
 ---
 
 ## 5. 監控：Prometheus + Grafana + Exporters + Alerting
@@ -589,7 +643,7 @@ Phase 1 是地基，幾乎全循序依賴。因網站已停運（§0），**不�
 |------|--------|------|
 | 1.1 | 建 `pnpm-workspace.yaml`（packages globs + catalog）、根 `package.json`、`turbo.json` | `pnpm install` 成功、`turbo --version` 可執行 |
 | 1.2 | `backend/` `frontend/` → `legacy/`（不進 workspace）；建立空的 `apps/`、`packages/`、`infra/` 骨架 | `pnpm install` 不掃到 legacy、工作目錄結構符合 §2.2 |
-| 1.3 | 建 `packages/config`：共用 `tsconfig` base（strict）、eslint flat config | 其他 package 可 extends、lint 可執行 |
+| 1.3 | 建 `packages/config`：共用 `tsconfig` base（strict）、eslint flat config、prettier 設定 | 其他 package 可 extends、lint 與 format 可執行 |
 | 1.4 | 建 `packages/shared` 空殼（zod schema 與共用常數的家，Phase 2/3 才填內容） | 可被 workspace 引用（`workspace:*`）|
 | 1.5 | 根目錄工具鏈：husky + commitlint（Conventional Commits）+ git-cliff 設定檔 | 違規格式的 commit 被擋下、`git-cliff` 能產出 CHANGELOG |
 | 1.6 | `.env.example`、`.gitignore` 補齊（`.turbo/`、`legacy/` 的 node_modules 等） | 乾淨的 `git status` |
