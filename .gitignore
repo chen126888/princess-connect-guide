@@ -70,17 +70,16 @@ coverage/
 # TypeScript cache
 *.tsbuildinfo
 
-# Migration and test scripts (may contain sensitive data)
-**/scripts/migrate*.ts
-**/scripts/test*.ts
-**/*migrate*.ts
-**/*test*.ts
-**/*test*.sql
-**/*export*.sql
+# ⚠️ 已於 v2 重構移除以下規則（原意是防止提交含憑證的腳本）：
+#     **/*migrate*.ts  **/*test*.ts  **/scripts/migrate*.ts  **/scripts/test*.ts
+#     batch_update*.sh
+# 這些模式過寬，會靜默忽略「所有」單元測試與資料遷移腳本，
+# 導致 Phase 2/3 的正常原始碼無法進版控（且 git add 不會報錯，極難察覺）。
+# 憑證外洩應由下方的 .env 規則防範，而不是用檔名模式把原始碼排除在版控外。
+# 原則：機密放 .env（已忽略），程式碼一律進版控。
 
-# Batch update scripts (may contain credentials)
-batch_update*.sh
-**/batch_update*.sh
+# 資料庫匯出檔（可能含正式資料）
+**/*export*.sql
 
 # Optional npm cache directory
 .npm
