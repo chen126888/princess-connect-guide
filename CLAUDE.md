@@ -1,560 +1,115 @@
-# 公主連結攻略網站開發指南
+# 公主連結攻略網站 — 開發指南
 
-## 專案概述
-- **目標**: 建立公主連結遊戲攻略網站
-- **技術棧**: React + TypeScript + Tailwind CSS (前端), Node.js + Express + PostgreSQL (後端)
-- **目前階段**: 所有主要功能已完成，包含角色自動完成輸入、未來視系統、深淵討伐管理、回鍋玩家滿等指南等最新功能，並具備完整的資料庫管理和未來視預測系統
-- **開發環境**: Ubuntu 22.04 LTS, VS Code, Claude Code
+## ⚠️ 現況：v2 全面重構進行中
 
-## 專案結構
-```
-princess-connect-guide/
-├── frontend/                    # React 前端應用
-│   ├── public/
-│   ├── src/
-│   │   ├── components/         # 可複用 UI 元件
-│   │   │   ├── Character/      # 角色相關元件
-│   │   │   │   ├── CharacterImageCard.tsx
-│   │   │   │   ├── CharacterInfoCard.tsx
-│   │   │   │   ├── CharacterSearch.tsx
-│   │   │   │   ├── CharacterSortControls.tsx
-│   │   │   │   └── CharacterTierGroup.tsx
-│   │   │   ├── CharacterEditor/ # 角色編輯相關元件
-│   │   │   │   ├── EditModeSelector.tsx
-│   │   │   │   ├── DragRatingManager.tsx      # ✅ 拖拽評級主管理器
-│   │   │   │   ├── DragRatingNavigation.tsx   # ✅ 分類導航
-│   │   │   │   ├── SingleCategoryRating.tsx   # ✅ 單分類評級管理
-│   │   │   │   └── modals/     # 編輯用對話框
-│   │   │   │       ├── AddCharacterModal.tsx
-│   │   │   │       ├── CharacterInfoModal.tsx
-│   │   │   │       ├── DeleteConfirmModal.tsx
-│   │   │   │       ├── DeleteSearchModal.tsx
-│   │   │   │       └── EditCharacterModal.tsx
-│   │   │   ├── Arena/          # 競技場頁面元件
-│   │   │   │   ├── ArenaNavigation.tsx
-│   │   │   │   └── ArenaContent.tsx
-│   │   │   ├── ClanBattle/     # ✅ 戰隊戰元件
-│   │   │   │   ├── AttributeSelector.tsx
-│   │   │   │   ├── CommonCharactersSection.tsx
-│   │   │   │   ├── CompensationKnifeContentSection.tsx
-│   │   │   │   └── YoutubeChannelsSection.tsx
-│   │   │   ├── CharacterDevelopment/ # ✅ 角色養成元件
-│   │   │   │   ├── CharacterDevelopmentTabs.tsx     # 養成分類標籤頁
-│   │   │   │   ├── CharacterDevelopmentDescription.tsx # 養成描述說明
-│   │   │   │   ├── PriorityTierSection.tsx         # 優先度分級顯示
-│   │   │   │   └── CharacterCard.tsx               # 角色卡片元件
-│   │   │   ├── Newbie/         # ✅ 新人指南元件
-│   │   │   │   ├── MustRead.tsx
-│   │   │   │   ├── ItemOverview.tsx
-│   │   │   │   ├── CharacterSystem.tsx
-│   │   │   │   └── EventIntro.tsx
-│   │   │   ├── ReturnPlayer/   # ✅ 回鍋玩家指南元件
-│   │   │   │   ├── CharacterPlanningSection.tsx    # 角色與資源規劃
-│   │   │   │   ├── DailyStrategySection.tsx        # 日常與副本攻略
-│   │   │   │   ├── NewbieBoostSection.tsx          # 同步與屬性
-│   │   │   │   └── MaxLevelGuideSection.tsx        # ✅ 滿等後指南
-│   │   │   ├── AbyssRaid/      # ✅ 深淵討伐元件
-│   │   │   │   ├── AddAbyssTeamsModal.tsx          # 新增深淵討伐隊伍
-│   │   │   │   └── EditAbyssTeamsModal.tsx         # 編輯深淵討伐隊伍
-│   │   │   ├── FutureVision/   # ✅ 未來視元件
-│   │   │   │   └── PredictionManagementModal.tsx   # 角色預測管理
-│   │   │   ├── Shop/           # 商店頁面元件
-│   │   │   │   ├── ShopNavigation.tsx
-│   │   │   │   ├── ShopItemCard.tsx
-│   │   │   │   ├── CurrencyIcon.tsx
-│   │   │   │   ├── PriorityBadge.tsx
-│   │   │   │   ├── ShopTitleTooltip.tsx
-│   │   │   │   └── ManualResetButton.tsx
-│   │   │   └── Common/         # 通用元件
-│   │   │       ├── Button.tsx
-│   │   │       ├── Card.tsx
-│   │   │       ├── FilterButton.tsx
-│   │   │       ├── PageContainer.tsx
-│   │   │       ├── CharacterTooltip.tsx
-│   │   │       ├── MarkdownText.tsx
-│   │   │       ├── UnifiedCharacterCard.tsx     # ✅ 統一角色卡片元件
-│   │   │       ├── TabNavigation.tsx            # ✅ 標籤頁導航元件
-│   │   │       ├── TeamLineup.tsx               # ✅ 隊伍編成元件
-│   │   │       ├── FlexibleTeamLineup.tsx       # ✅ 彈性隊伍編成元件
-│   │   │       ├── CharacterAvatar.tsx          # ✅ 角色頭像元件
-│   │   │       ├── CharacterAutocomplete.tsx    # ✅ 角色自動完成輸入元件
-│   │   │       └── UpdateLogManager.tsx         # ✅ 更新日誌管理元件
-│   │   ├── hooks/              # 自定義 React Hooks
-│   │   │   ├── useCharacterFilters.ts
-│   │   │   ├── useCharacters.ts
-│   │   │   ├── useImageErrorHandler.ts
-│   │   │   └── useTooltip.ts
-│   │   ├── pages/              # 頁面元件
-│   │   │   ├── Characters/     # 角色圖鑑頁面
-│   │   │   ├── CharacterEditor/ # 角色編輯頁面
-│   │   │   ├── Home/           # ✅ 首頁
-│   │   │   ├── CharacterDevelopment/ # ✅ 角色養成頁面
-│   │   │   ├── Shop/           # 商店攻略頁面
-│   │   │   ├── Arena/          # 競技場頁面
-│   │   │   ├── ClanBattle/     # ✅ 戰隊戰頁面
-│   │   │   ├── Dungeon/        # ✅ 深域頁面
-│   │   │   ├── Newbie/         # ✅ 新人指南頁面
-│   │   │   ├── ReturnPlayer/   # ✅ 回鍋玩家指南頁面
-│   │   │   └── FutureVision/   # ✅ 未來視頁面
-│   │   │       ├── FutureVision.tsx            # 未來視主頁面
-│   │   │       ├── ClanBattleFuture.tsx        # 戰隊戰未來視
-│   │   │       ├── AbyssRaidFuture.tsx         # 深淵討伐未來視
-│   │   │       └── CharacterPredictions.tsx    # 角色預測管理
-│   │   ├── services/           # API 服務
-│   │   │   └── api.ts
-│   │   ├── types/              # TypeScript 類型定義
-│   │   │   ├── index.ts
-│   │   │   ├── arena.ts
-│   │   │   └── shop.ts
-│   │   ├── shopData/           # 商店資料配置
-│   │   ├── arenaData/          # 競技場資料配置
-│   │   ├── clanBattleData/     # ✅ 戰隊戰資料配置
-│   │   ├── dungeonData/        # ✅ 深域資料配置
-│   │   ├── characterDevelopmentData/ # ✅ 角色養成資料配置
-│   │   ├── newbieData/         # ✅ 新人指南資料配置
-│   │   ├── returnPlayerData/   # ✅ 回鍋玩家指南資料配置
-│   │   ├── config/             # ✅ 通用配置
-│   │   ├── utils/              # ✅ 工具函數
-│   │   ├── App.tsx             # 主應用 (含導航)
-│   │   └── main.tsx
-│   ├── tailwind.config.cjs     # Tailwind 配置
-│   └── package.json
-├── backend/                     # Node.js 後端
-│   ├── src/
-│   │   ├── routes/             # API 路由
-│   │   │   ├── auth.ts         # 認證相關 API
-│   │   │   ├── characters.ts   # 角色 CRUD API
-│   │   │   ├── arenaCommon.ts  # 競技場常用角色 API
-│   │   │   ├── trialCharacters.ts # 戰鬥試煉場角色 API
-│   │   │   ├── sixstarPriority.ts # 六星優先度 API
-│   │   │   ├── ue1Priority.ts  # 專用裝備1優先度 API
-│   │   │   ├── ue2Priority.ts  # 專用裝備2優先度 API
-│   │   │   ├── nonSixstarCharacters.ts # 非六星角色 API
-│   │   │   ├── clanBattles.ts  # ✅ 戰隊戰未來視 API
-│   │   │   ├── abyssRaids.ts   # ✅ 深淵討伐未來視 API
-│   │   │   ├── futurePredictions.ts # ✅ 角色未來視預測 API
-│   │   │   ├── clanBattleCommon.ts # ✅ 戰隊戰常用角色 API
-│   │   │   ├── clanBattleCompensation.ts # ✅ 戰隊戰補償刀 API
-│   │   │   └── upload.ts       # 檔案上傳 API
-│   │   ├── utils/              # 工具函數
-│   │   │   └── database.ts     # 資料庫連接與操作
-│   │   └── simple-server.ts    # 主服務器
-│   ├── prisma/
-│   │   ├── migrations/         # 資料庫遷移檔案
-│   │   └── schema.prisma       # 資料庫 schema (PostgreSQL)
-│   ├── .env                    # 環境變數配置
-│   └── package.json
-├── data/
-│   ├── images/
-│   │   ├── characters/         # 角色圖片資料夾 (305+ 角色圖片)
-│   │   ├── icons/              # ✅ 各類圖標資源
-│   │   │   ├── 商店圖標/       # 商店相關圖標
-│   │   │   ├── 道具圖標/       # 各種遊戲道具圖標
-│   │   │   └── 屬性圖標/       # 角色屬性圖標
-│   │   └── ArenaAndRem/        # ✅ 競技場和追憶相關圖片
-└── CLAUDE.md                   # 本檔案
-```
+**這個專案正在被完全重寫，不是在維護一個完成品。**
 
-## 已完成功能
+- 舊版（React + Express，功能完整但已淘汰）現位於 `legacy/`，**僅供改寫時對照，不編譯、不維護**
+- 新版是 pnpm monorepo：**Vue 3 + NestJS**，`apps/` 目前刻意留空，等各 Phase 陸續建置
+- 網站目前**全面停運**，因此不需維持舊站可運作，可以大刀闊斧改
 
-### ✅ 角色圖鑑系統
-- **完整的角色資料庫**: 305 個角色資料，含中文欄位名稱
-- **精確評級系統**: 拆分為四個獨立評級欄位
-  - 競技場進攻評級
-  - 競技場防守評級  
-  - 戰隊戰評級
-  - 深域及抄作業評級
-- **多維度篩選系統**:
-  - 位置篩選 (前衛、中衛、後衛)
-  - 屬性篩選 (火屬、水屬、風屬、光屬、闇屬)
-  - 用途篩選 (競技場進攻/防守、戰隊戰、深域及抄作業)
-  - 定位篩選 (輸出、破防、補師、增益、妨礙、補TP)
-  - 獲得方式篩選 (常駐、限定)
-- **智能搜索**: 支援角色名稱和暱稱搜索
-- **評級排序**: T0→倉管 或 倉管→T0 排序
-- **分組顯示**: 按競技場進攻評級分組展示
-- **懸停詳情**: 滑鼠懸停顯示完整角色資訊
+### 開工前必讀
 
-### ✅ 商店攻略系統
-- **9個商店類型**: 地下城、競技場、戰隊戰、女神的秘石、大師、EX裝備、巡遊商店
-- **智能推薦系統**: 基於優先級的角色碎片推薦
-- **懸停提示**: 商店名稱懸停顯示貨幣獲取方式
-- **詳細說明**: 每個商店的購買建議和注意事項
+**`ARCHITECTURE.md` 是本重構的唯一設計依據（「憲法」）。動任何程式碼之前先讀它**，特別是：
 
-### ✅ 競技場/試煉/追憶頁面
-- **三個功能分類**: 競技場、試煉、追憶
-- **導航系統**: 類似商店頁面的分類導航
-- **詳細內容**: 每個分類的完整攻略說明
-
-### ✅ 導航系統
-- **主導航**: 8 個功能按鈕（新人、回鍋玩家、角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成）
-- **單頁應用**: 切換頁面無需重新載入
-- **已實現頁面**: 角色圖鑑、商店攻略、競技場、戰隊戰、深域、角色養成、新人指南、回鍋玩家指南
-
-### ✅ 角色編輯系統
-- **完整 CRUD 操作**: 新增、查看、編輯、刪除角色
-- **四種編輯模式**: 完整編輯、評價編輯、補充資料、拖拽評級
-- **批次搜尋刪除**: 支援按角色名稱搜尋後批次刪除
-- **模組化 UI 元件**: 可複用的對話框和表單元件
-- **檔案上傳功能**: 支援角色圖片上傳
-- **管理員認證**: 基本的登入驗證系統
-
-### ✅ 資料庫管理系統
-- **六個新增資料表管理**: 
-  - 競技場常用角色 (arena_common_characters)
-  - 戰鬥試煉場角色 (trial_characters) - 包含推薦練/後期練分類
-  - 六星優先度 (sixstar_priority) - SS/S/A/B/C 分級
-  - 專用裝備1優先度 (ue1_priority) - SS/S/A/B 分級
-  - 專用裝備2優先度 (ue2_priority) - SS/S/A 分級  
-  - 非六星角色 (non_sixstar_characters) - 包含描述和取得方式
-- **統一管理介面**: 使用 BaseModal 提供一致的管理體驗
-- **頂部按鈕設計**: 保存/取消按鈕位於右上角，無需滾動操作
-- **即時編輯功能**: 支援新增、修改、刪除資料
-- **分類顯示**: 按優先度或類別自動分組顯示
-- **批次操作**: 支援資料的批次變更和提交
-
-### ✅ 拖拽評級調整系統
-**完整實現**: 提供直觀的拖拽介面來快速調整角色評級，大幅提升管理效率
-
-#### 系統特色
-- **四個評級分類**: 競技場進攻、競技場防守、戰隊戰、深域及抄作業
-- **六個評級區塊**: T0、T1、T2、T3、T4、倉管
-- **屬性篩選**: 支援按火、水、風、光、闇屬性篩選角色
-- **拖拽操作**: 角色頭像可在不同評級區塊間自由拖拽
-- **批次提交**: 手動批次儲存變更，避免頻繁API呼叫
-
-#### 技術實現
-- **組件架構**: 
-  - `DragRatingManager.tsx`: 主管理組件
-  - `DragRatingNavigation.tsx`: 分類導航
-  - `SingleCategoryRating.tsx`: 單分類評級管理
-  - `AttributeSelector.tsx`: 屬性篩選器
-- **HTML5 Drag & Drop API**: 原生拖拽支援
-- **本地狀態管理**: 即時預覽，手動提交
-- **批次API**: `PATCH /api/characters/batch-ratings` 端點
-
-#### 用戶體驗
-- **視覺反饋**: 拖拽時半透明效果，有效區域高亮
-- **變更追蹤**: 顯示待儲存變更數量
-- **錯誤處理**: 詳細的錯誤回報機制
-- **響應式設計**: 支援各種螢幕尺寸
-
-### ✅ 戰隊戰攻略頁面
-- **完整攻略系統**: 戰隊戰簡介、階段建議、等級參考
-- **YouTube 頻道推薦**: 精選戰隊戰攻略頻道
-- **角色推薦系統**: 
-  - 按屬性分類 (火、水、風、光、闇)
-  - 按傷害類型分類 (物理、法術)
-  - 角色重要性分級 (核心、重要、普通)
-- **補償刀專區**: 專門的補償刀角色推薦
-- **視覺化角色頭像**: 整合角色圖片展示
-
-### ✅ 深域攻略頁面  
-- **深域系統介紹**: 完整的深域機制說明
-- **強化系統詳解**: 
-  - 屬性等級系統
-  - 屬性等級節點
-  - 大師技能
-  - 職階專精
-- **道具圖示整合**: 各種強化道具的視覺化展示
-- **外部資源連結**: 提供詳細的Excel攻略連結
-
-### ✅ 角色養成指南
-- **四大養成分類**: 六星、專用裝備1、專用裝備2、非六星
-- **優先度系統**: S級、A級、B級、C級分級推薦
-- **非六星角色推薦**: 9個常用非六星角色的詳細說明
-  - 碧(工作服/插班生)、魔霞、優妮(聖學祭)、霞(夏日)
-  - 七七香(夏日)、空花(大江戶)、香織(夏日)、真步(灰姑娘)
-  - 優先度指導: 開專>升五星的養成策略
-- **角色搜尋**: 支援角色名稱搜尋功能
-- **詳細養成資訊**: 每個角色的養成建議和重要性說明
-- **圖片整合**: 角色頭像和六星頭像展示，非六星角色左圖右文顯示
-- **懸停提示**: 完整角色資訊展示
-
-### ✅ 新人指南系統
-- **四大指南分類**: 
-  - 新人必看: 基礎遊戲概念和建議
-  - 道具總覽: 各種遊戲道具說明
-  - 角色系統: 角色養成相關介紹  
-  - 活動介紹: 各類活動機制說明
-- **分頁導航**: 清晰的標籤頁切換
-- **豐富內容**: 詳細的文字說明和建議
-- **視覺化展示**: 整合相關圖示和說明
-
-### ✅ 回鍋玩家指南系統
-- **四大指南分類**:
-  - 養成與抽角: 角色培養和抽卡策略
-  - 同步與屬性: 等級同步和屬性強化
-  - 日常與副本攻略: 日常任務和副本推進
-  - **滿等後做什麼**: 達到滿等後的進階指導
-- **角色與資源規劃**:
-  - 六星角色確認和養成建議
-  - 非六星常用角色刷取策略
-  - 善用未來視抽角規劃
-  - 跟隨加倍活動資源優化
-- **滿等後指南**: 包含每日、每週、月度、長期四大類任務指導
-- **專業建議**: 針對回鍋玩家的具體情況提供建議
-- **優先度指導**: 清晰的養成和資源分配優先順序
-
-### ✅ 角色自動完成輸入系統
-**完整實現**: 統一所有角色輸入欄位，提供智能搜索和自動完成功能
-
-#### 系統特色
-- **統一輸入體驗**: 替換所有編輯功能中的角色名稱輸入欄位
-- **智能搜索**: 同時搜索角色名稱和暱稱
-- **鍵盤導航**: 支援方向鍵、Enter、Escape 完整鍵盤操作
-- **視覺化提示**: 角色詳細資訊顯示（位置、屬性、常駐/限定）
-- **文字高亮**: 匹配文字的黃色背景高亮顯示
-
-#### 技術實現
-- **核心組件**: `CharacterAutocomplete.tsx` 提供完整功能
-- **包裝組件**: `CharacterModalInput.tsx` 適配管理介面樣式
-- **無需額外API**: 重用現有 `useCharacters` hook
-- **Portal 渲染**: 下拉選單避免 z-index 衝突
-- **兼容設計**: 保持與原有 input 元素相同的 API
-
-#### 應用範圍
-- **隊伍管理**: 戰隊戰和深淵討伐的隊伍新增/編輯
-- **管理功能**: 11個管理介面的角色名稱輸入
-- **未來視系統**: 角色預測管理功能
-- **排除範圍**: 角色編輯器頁面維持原有設計
-
-### ✅ 未來視系統
-**完整實現**: 提供日服領先內容的預測和隊伍管理功能
-
-#### 戰隊戰未來視
-- **5個月預測**: 當前月份+未來4個月的隊伍配置
-- **完整隊伍管理**: 新增、編輯、刪除隊伍推薦
-- **Boss分類**: 按1-5王分組顯示隊伍
-- **彈性配置**: 支援固定角色和彈性選項
-- **傷害資訊**: 全自動和半自動傷害數據
-- **資料來源**: 整合攻略影片連結
-
-#### 深淵討伐未來視  
-- **4個月預測**: 領先台服約4個月的內容（10號分界規則）
-- **王位置管理**: 左王、中王、右王分類管理
-- **智能日期**: 當月10號後自動顯示下個月開始的4個月
-- **完整CRUD**: 支援隊伍的新增、編輯、刪除操作
-- **來源追蹤**: 每個隊伍可設定獨立的攻略來源連結
-
-#### 角色未來視預測
-- **角色開花預測**: 六星開花、專武1、專武2、新出、復刻預測
-- **時間規劃**: 按年月組織的未來角色規劃
-- **管理介面**: 可新增、編輯、刪除預測資料
-- **備註功能**: 詳細的預測說明和備註資訊
-
-### ✅ 戰隊戰管理系統
-**完整實現**: 可編輯的戰隊戰角色推薦管理
-
-#### 系統功能
-- **常用角色管理**: 角色名稱、屬性、傷害類型、重要程度分級
-- **補償刀角色**: 專門的補償刀角色推薦管理
-- **管理員介面**: 完整的新增、編輯、刪除功能
-- **前端整合**: 與戰隊戰攻略頁面無縫整合
-- **分類顯示**: 按重要程度自動分組（核心、重要、普通）
-
-## 🚧 未來優化計劃
-
-### 新功能開發
-- **更新日誌系統**: 自動化的功能更新記錄和展示
-- **角色對比功能**: 多角色數據並排比較
-- **導出功能**: 支援資料匯出為Excel/CSV格式
-- **個人化設定**: 使用者偏好設定和書籤功能
-
-### 效能優化
-- **虛擬化滾動**: 處理大量角色資料時的效能提升
-- **圖片懶載入**: 減少初始載入時間
-- **API 快取**: 減少重複網路請求
-
-### 功能增強
-- **角色比較功能**: 並排比較多個角色數據
-- **個人化設定**: 使用者偏好設定儲存
-- **匯出功能**: 支援將資料匯出為各種格式
-
-## 技術實現
-
-### 前端技術棧
-- **框架**: React 18 + TypeScript
-- **建置工具**: Vite
-- **樣式**: Tailwind CSS
-- **HTTP 客戶端**: Axios
-- **圖標**: Lucide React
-- **UI 設計**: 圓形 checkbox, 漸層背景, 懸停效果
-
-### 後端技術棧
-- **執行環境**: Node.js + TypeScript
-- **框架**: Express.js
-- **資料庫**: PostgreSQL (使用 Prisma ORM)
-- **ORM**: Prisma Client
-- **認證**: JWT + bcrypt 密碼雜湊
-- **CORS**: 支援前端跨域請求
-
-### 資料庫 Schema (PostgreSQL + Prisma)
-```prisma
-// 主要角色表
-model Character {
-  id          String @id
-  name        String @unique @map("角色名稱")
-  nickname    String? @map("暱稱")
-  position    String @map("位置")
-  role        String? @map("角色定位")
-  rarity      String? @map("常駐/限定")
-  element     String? @map("屬性")
-  ability     String? @map("能力偏向")
-  arena_atk   String? @map("競技場進攻")
-  arena_def   String? @map("競技場防守")
-  clan_battle String? @map("戰隊戰")
-  dungeon     String? @map("深域及抄作業")
-  description String? @map("說明")
-  avatar      String? @map("頭像檔名")
-  avatar_6    String? @map("六星頭像檔名")
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  @@map("characters")
-}
-
-// 新增資料表
-model ArenaCommonCharacter { ... }        // 競技場常用角色
-model TrialCharacter { ... }               // 戰鬥試煉場角色
-model SixstarPriority { ... }              // 六星優先度
-model Ue1Priority { ... }                  // 專用裝備1優先度  
-model Ue2Priority { ... }                  // 專用裝備2優先度
-model NonSixstarCharacter { ... }          // 非六星角色
-
-// 戰隊戰管理系統
-model ClanBattleCommonCharacter { ... }    // 戰隊戰常用角色
-model ClanBattleCompensationCharacter { ... } // 戰隊戰補償刀角色
-
-// 未來視系統
-model ClanBattle { ... }                   // 戰隊戰期間
-model Team { ... }                         // 戰隊戰隊伍
-model AbyssRaid { ... }                    // 深淵討伐期間
-model AbyssTeam { ... }                    // 深淵討伐隊伍
-model FutureCharacterPrediction { ... }    // 角色未來視預測
-```
-
-## 開發環境設定
-
-### 環境變數設定
-```bash
-# backend/.env
-DATABASE_URL="postgresql://username:password@localhost:5432/princess_connect_db"
-JWT_SECRET="your-jwt-secret-key"
-```
-
-### 啟動服務
-```bash
-# 後端服務 (port 3000)
-cd backend
-npm install
-npx prisma generate          # 生成 Prisma Client
-npx prisma migrate dev       # 執行資料庫遷移
-npx ts-node src/simple-server.ts
-
-# 前端服務 (port 5173)
-cd frontend
-npm install
-npm run dev
-```
-
-### API 端點
-
-#### 角色管理
-- `GET /api/characters` - 獲取角色列表 (支援篩選參數)
-- `GET /api/characters/:id` - 獲取單一角色
-- `POST /api/characters` - 新增角色
-- `PUT /api/characters/:id` - 更新角色資料
-- `PATCH /api/characters/batch-ratings` - 批次更新角色評級
-- `DELETE /api/characters/:id` - 刪除角色
-
-#### 認證系統
-- `POST /api/auth/login` - 管理員登入
-- `GET /api/auth/check-init` - 檢查是否需要初始化
-- `POST /api/auth/init-superadmin` - 初始化超級管理員
-- `POST /api/auth/create-admin` - 創建管理員帳號
-- `GET /api/auth/me` - 獲取目前登入管理員資訊
-
-#### 新增資料表管理
-- `GET /api/arena-common` - 競技場常用角色
-- `GET /api/trial-characters` - 戰鬥試煉場角色
-- `GET /api/sixstar-priority` - 六星優先度
-- `GET /api/ue1-priority` - 專用裝備1優先度
-- `GET /api/ue2-priority` - 專用裝備2優先度
-- `GET /api/non-sixstar-characters` - 非六星角色
-- `GET /api/clan-battle-common` - 戰隊戰常用角色
-- `GET /api/clan-battle-compensation` - 戰隊戰補償刀角色
-- (各表支援 POST/PUT/DELETE 操作)
-
-#### 未來視系統
-- `GET /api/clan-battles` - 戰隊戰未來視期間列表
-- `POST /api/clan-battles` - 新增戰隊戰期間
-- `GET /api/clan-battles/:year/:month` - 獲取指定期間
-- `POST /api/clan-battles/:id/teams` - 新增隊伍到指定期間
-- `PUT /api/teams/:id` - 更新隊伍資料
-- `DELETE /api/teams/:id` - 刪除隊伍
-- `GET /api/abyss-raids` - 深淵討伐未來視期間列表
-- `POST /api/abyss-raids/:id/teams` - 新增深淵討伐隊伍
-- `PUT /api/abyss-raids/teams/:id` - 更新深淵討伐隊伍
-- `DELETE /api/abyss-raids/teams/:id` - 刪除深淵討伐隊伍
-- `GET /api/future-predictions` - 角色未來視預測
-- `POST /api/future-predictions` - 新增角色預測
-- `PUT /api/future-predictions/:id` - 更新角色預測
-- `DELETE /api/future-predictions/:id` - 刪除角色預測
-
-#### 檔案上傳
-- `POST /api/upload/character-photo` - 上傳角色圖片
-
-### 篩選參數
-- `位置`: 前衛、中衛、後衛
-- `屬性`: 火屬、水屬、風屬、光屬、闇屬
-- `競技場進攻`: T0、T1、T2、T3、T4、倉管
-- `競技場防守`: T0、T1、T2、T3、T4、倉管
-- `戰隊戰`: T0、T1、T2、T3、T4、倉管
-- `深域及抄作業`: T0、T1、T2、T3、T4、倉管
-- `page`: 頁數 (預設 1)
-- `limit`: 每頁數量 (預設 100)
-
-## 資料來源
-- Excel 檔案: `2025公主連結角色簡略介紹表_converted.xlsx`
-- 工作表: 前衛、中衛、後衛角色資料  
-- 角色圖片: `data/images/characters/`
-- 圖標資源: `data/images/icons/`
-
-## 核心功能完成度
-
-✅ **已完成的主要功能**:
-- 角色圖鑑系統 (完整，含拖拽評級)
-- 商店攻略系統 (完整)
-- 競技場/試煉/追憶 (完整)
-- 戰隊戰攻略 (完整，含管理系統)
-- 深域攻略 (完整)
-- 角色養成指南 (完整，含非六星角色)
-- 新人指南 (完整)
-- 回鍋玩家指南 (完整，含滿等後指南)
-- 角色編輯系統 (完整，含拖拽評級)
-- 資料庫管理系統 (完整，八個新增資料表)
-- 角色自動完成輸入系統 (完整)
-- 未來視系統 (完整，含戰隊戰、深淵討伐、角色預測)
-- 戰隊戰管理系統 (完整)
-
-🎯 **功能已100%完成**: 專案的所有主要功能模組均已實現並可正常使用
-
-## 使用方式
-1. 訪問 `http://localhost:5173`
-2. 主要功能導航：
-   - **角色圖鑑**: 查看完整角色資料庫和評級系統
-   - **商店攻略**: 各商店購買建議和優先度指導
-   - **競技場**: 競技場、試煉、追憶攻略
-   - **戰隊戰**: 攻略指南和未來視隊伍推薦
-   - **深域**: 深域系統介紹和未來視隊伍
-   - **角色養成**: 六星、專武、非六星養成指導
-   - **新人指南**: 四大分類的新手攻略
-   - **回鍋玩家**: 包含滿等後指南的回歸攻略
-   - **未來視**: 角色預測和隊伍管理系統
-3. 管理功能：角色編輯器提供完整的資料管理，支援拖拽評級和自動完成輸入
+| 章節 | 內容 |
+|------|------|
+| §0 | 重構前提（為何舊碼降級為 legacy） |
+| §2 | monorepo 結構與 pnpm catalog |
+| §4.2.1 | **後端三層架構鐵律**（Controller → Service → Repository） |
+| §4.5 | Character schema 重整規格（Phase 2 施工用） |
+| §10 / §13 | 階段路線圖與施工計畫 |
 
 ---
 
-**最後更新**: 2025年9月10日  
-**負責人**: 開發者  
-**專案狀態**: 🎯 **100%完成** - 所有主要功能模組均已實現，包含角色自動完成輸入、完整未來視系統、深淵討伐管理、回鍋玩家滿等指南、戰隊戰管理系統等全方位功能。專案已達到功能完整性，具備完善的使用者介面和管理後台。
+## 目前結構
+
+```
+princess-connect-guide/
+├── ARCHITECTURE.md      設計憲法（先讀這個）
+├── pnpm-workspace.yaml  workspace + catalog（依賴版本單一來源）
+├── turbo.json           任務管線
+├── apps/                ← 留空。Phase 3 建 api(NestJS)、Phase 5 建 web(Vue)
+├── packages/
+│   ├── config/          共用 tsconfig(strict) / eslint / prettier
+│   └── shared/          前後端共用領域常數、DTO、zod schema
+├── infra/               ← 留空。Phase 4 放 docker / monitoring
+├── data/images/         角色圖片（382 張，之後上 Cloudflare R2）
+├── db_backup/           DB 備份 SQL（.gitignore；Phase 2 灌本地 Postgres 用）
+└── legacy/              舊 React + Express，唯讀參考，Phase 8 刪除
+```
+
+## 常用指令
+
+```bash
+pnpm install          # 安裝（Node >= 22，pnpm 由 corepack 提供）
+pnpm dev              # turbo dev：啟動所有 app
+pnpm build            # turbo build
+pnpm lint             # turbo lint
+pnpm typecheck        # turbo typecheck
+pnpm format           # prettier --write
+pnpm changelog        # git-cliff 產生 CHANGELOG.md
+```
+
+---
+
+## 開發慣例（請遵守）
+
+1. **Commit 訊息用 Conventional Commits**，由 commitlint + husky 強制檢查。
+   格式 `type(scope): 中文說明`，例：`refactor(api): 將角色路由改為三層架構`
+   常用 scope：`api` `web` `database` `shared` `config` `infra` `deps` `monorepo`
+
+2. **一個 Phase 一條 branch**：`refactor/phase-N-<名稱>`，驗收通過才合回 `main`。
+
+3. **依賴版本一律寫在 `pnpm-workspace.yaml` 的 catalog**，各 package 只寫 `"套件": "catalog:"`。
+   不要在個別 package.json 直接寫版本號——那正是重構要消滅的問題。
+
+4. **後端分層鐵律**（詳見 §4.2.1）：
+   - Controller 不寫業務邏輯、不碰 Prisma
+   - Service 不 import Prisma、不碰 req/res
+   - Repository 是唯一能碰 Prisma 的地方
+   - 跨模組要用別人的能力 → 注入對方的 **service**，絕不直接戳別人的 repository
+
+5. **`legacy/` 唯讀**。可以讀它理解舊行為，但不要修它、不要讓它進 build。
+
+6. **不要為了「以後可能要改」就把靜態內容搬進 DB**——判斷標準是「誰改、多常改」（§4.4）。
+
+---
+
+## Phase 5 功能對等清單
+
+目標是**全功能對等才重新上線**。以下是 `legacy/frontend` 現有頁面，Phase 5 需逐一改寫為 Vue：
+
+| 頁面 | 內容 | 難度 |
+|------|------|------|
+| 首頁 | 網站簡介、更新日誌 | 低 |
+| 新人指南 | 4 分頁：必看／道具／角色系統／活動 | 低（靜態內容） |
+| 回鍋玩家 | 4 分頁：養成抽角／同步屬性／日常副本／滿等後 | 低（靜態內容） |
+| 商店攻略 | 9 種商店的購買優先度建議 | 低（靜態內容） |
+| 深域 | 系統介紹、強化說明、外部連結 | 低 |
+| 競技場 | 競技場／試煉／追憶三分類 | 中 |
+| 角色養成 | 六星／專武1／專武2／非六星，優先度分級 | 中 |
+| 戰隊戰 | 攻略、YouTube 頻道、常用角色（依屬性/傷害類型分類）、補償刀 | 中 |
+| **角色圖鑑** | 多維度篩選、搜尋、評級排序分組、懸停詳情 | **高**（核心） |
+| **未來視** | 戰隊戰未來視、深淵討伐未來視、角色預測，含 CRUD | **高** |
+| **角色編輯器** | 完整 CRUD、四種編輯模式、**拖拽評級**、圖片上傳 | **最高**（最後做） |
+| 管理後台 | 各資料表的管理介面、角色自動完成輸入 | 高 |
+
+---
+
+## 領域資料要點（實測自 314 筆角色資料，非文件推測）
+
+寫任何與角色資料相關的程式碼前請注意這些坑：
+
+- **屬性只有 5 種：火屬／水屬／風屬／光屬／闇屬**。舊型別註解寫的「土屬」是錯的。
+- **位置 3 種**：前衛／中衛／後衛。
+- **評級 6 級**：T0 → T4 → 倉管。但舊資料含髒值 `T3.5`、`不知道`、null，Phase 2 遷移時清理。
+- **角色定位**舊資料有 12+ 種（含複合值如「妨礙兼破防」）→ v2 改為固定 6 值的 **enum 陣列**（一角色可多定位）。
+- **「常駐/限定」舊資料混了 3 個維度** → v2 拆為 `卡池` / `獲取來源` / `初始星級`。
+  絕版狀態**由卡池推導**（只有聯名會絕版），不另存欄位。
+
+以上乾淨值域已定義於 `packages/shared/src/constants/character.ts`，請直接引用，不要重新寫死字串。
+
+---
+
+**最後更新**: 2026-07-21 ｜ Phase 1（monorepo 地基）已完成
