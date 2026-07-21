@@ -1,6 +1,20 @@
 {
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.864.0",
-    "dotenv": "^17.2.1"
+  "name": "princess-connect-guide",
+  "private": true,
+  "version": "2.0.0",
+  "description": "公主連結攻略網站 — monorepo（見 ARCHITECTURE.md）",
+  "packageManager": "pnpm@11.15.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.10.5"
   }
 }

@@ -115,3 +115,10 @@ batch_update*.sh
 
 # 本地 DB 備份，不進版控
 db_backup/
+
+# Turborepo 快取
+.turbo/
+
+# legacy 僅供參考，不編譯；若曾安裝依賴也不進版控
+legacy/**/node_modules/
+legacy/**/dist/
