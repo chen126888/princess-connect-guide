@@ -74,6 +74,11 @@ pnpm changelog        # git-cliff 產生 CHANGELOG.md
 
 6. **不要為了「以後可能要改」就把靜態內容搬進 DB**——判斷標準是「誰改、多常改」（§4.4）。
 
+7. **`CHANGELOG.md` 是生成物，不要手寫**。開發期間不用管它；**Phase branch 合回 `main` 前**
+   跑一次 `pnpm changelog`，以 `chore(release): 更新 CHANGELOG` 提交
+   （此類 commit 已在 `cliff.toml` 設定為不計入 CHANGELOG 本身）。
+   → 重構全部完成後改為 tag 驅動的發版流程，屆時再設計 GitHub 自動化。
+
 ---
 
 ## Phase 5 功能對等清單

@@ -489,6 +489,13 @@ Postgres 原生陣列 + GIN 索引即可高效篩選。**enum 在 DB 層強制�
    - **Conventional Commits**（`feat:`/`fix:`/`refactor:`...）+ **commitlint + husky** 強制格式
    - **git-cliff** 從 commit 歷史自動生成 `CHANGELOG.md`（比 changesets 適合——changesets 是為了
      「發布 npm 套件」設計的，網站應用用 commit 驅動的 git-cliff 更順）。
+   - **生成時機（重構期間）**：`CHANGELOG.md` 是生成物，開發期間放著不管；
+     **Phase branch 合回 `main` 前**跑 `pnpm changelog`，以 `chore(release): 更新 CHANGELOG` 提交。
+     `cliff.toml` 已將 `chore(release)` 設為 skip，故該 commit 不會污染 CHANGELOG 本身。
+     （每次 commit 都自動生成會有雞生蛋問題：生成後的提交又要再生成一次。）
+   - **重構完成後**：改為 **tag 驅動**的發版流程（`v[0-9]*`，`cliff.toml` 的 `tag_pattern` 已預留），
+     由版本標籤劃分 CHANGELOG 區塊。屆時再評估 GitHub Actions 自動化
+     （打 tag → 生成 CHANGELOG → 建立 Release），此部分待 Phase 7 上雲後一併設計。
 
 ---
 
