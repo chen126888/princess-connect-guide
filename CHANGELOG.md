@@ -6,6 +6,7 @@
 
 ### 問題修正
 
+- **repo**: 移除過寬的 .gitignore 規則，避免測試與遷移腳本無法進版控
 - 修復 TypeScript 編譯錯誤，移除未使用的變數
 - 修復管理介面表單元件寬度類別衝突問題
 - 修復戰隊戰角色顯示問題
@@ -41,8 +42,14 @@
 - Add patterns to prevent future sensitive file commits
 - Remove sensitive migration scripts and test files
 
+### 建置與 CI
+
+- **monorepo**: 建立共用設定、shared 套件與 git 工具鏈
+
 ### 文件
 
+- 補上 CHANGELOG 生成慣例
+- 更新 CLAUDE.md 反映 v2 重構現況
 - 完成 v2 重構架構設計與施工計畫
 - Update documentation files
 
