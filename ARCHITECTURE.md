@@ -1,8 +1,24 @@
 # 專案架構（v2 重構版）：公主連結攻略網站
 
-> 本文件是大重構的目標架構與工具選型依據。舊版架構（React + Express 平鋪路由 + Render/Netlify）已淘汰，僅供歷史參考（見 git 歷史）。
+> 本文件是大重構的目標架構與工具選型依據。舊版架構（React + Express 平鋪路由 + Render/Netlify）已淘汰。
 >
-> **狀態**: 設計定稿，尚未動工。實作順序見「§10 遷移路線圖」。
+> **狀態**: 設計定稿，Phase 1 進行中。實作順序見「§10 遷移路線圖」，施工細節見「§13」。
+
+## 0. 重構前提：網站已停運
+
+**本次重構期間網站全面停運，不需維持舊站運作。** 這個前提決定了整體策略，寫在最前面因為它推翻了
+「漸進遷移」的常見預設：
+
+- **不做「搬移 → 逐步替換」，改為「全新搭建 → 舊碼僅供參考」**。舊 React/Express 反正會被
+  Vue/NestJS 完全取代，先花力氣讓它們在新 monorepo 裡跑得起來（catalog 化依賴、接上 turbo）
+  是純浪費——那些工在 Phase 3/5 會整包丟掉。
+- **舊程式碼移入 `legacy/`**：不進 workspace、不編譯、不維護，純粹作為改寫時的對照
+  （篩選邏輯、拖拽評級、日期規則等細節仍需人工參考），Phase 8 收尾時刪除。
+- **不需維持 API 路徑相容**。原本 Phase 3 綁著「舊 React 要能邊接邊驗」的限制，現已解除，
+  API 可直接設計成最合理的形狀。
+- **全功能對等才重新上線**：10+ 頁面全數移植完成後才部署，不維護「新舊並存」的過渡狀態。
+- **不變的資產**（重構真正要繼承的東西）：Prisma schema、`db_backup/*.sql` 資料備份、
+  `data/images/`、以及舊 route 裡累積的業務規則知識。
 
 ---
 
@@ -60,9 +76,16 @@ princess-connect-guide/
 ├── infra/
 │   ├── docker/                  # 各 app 的 Dockerfile
 │   └── monitoring/              # prometheus.yml、grafana provisioning + dashboards
-└── data/
-    └── images/                  # 靜態圖片源檔（上傳到 R2 的來源，不進部署）
+├── data/
+│   └── images/                  # 靜態圖片源檔（上傳到 R2 的來源，不進部署）
+├── db_backup/                   # 本地 DB 備份（.gitignore，Phase 2 用來灌本地 Postgres）
+└── legacy/                      # ★ 舊實作，僅供改寫時對照（見 §0）
+    ├── backend/                 # 舊 Express + 14 支平鋪 route
+    └── frontend/                # 舊 React 實作
 ```
+
+`legacy/` **不列在 `pnpm-workspace.yaml` 的 packages 裡**，因此不被 pnpm 安裝、不被 turbo 編譯、
+不被 lint。它就是一份放在手邊的參考資料，Phase 8 刪除。
 
 `pnpm-workspace.yaml` 範例：
 
@@ -306,6 +329,60 @@ model PageSection {
 3. **多個 repository 出現重複樣板** → 抽 `BaseRepository<T>` 泛型基底。但等重複真的
    出現第三次再抽，不要預先抽象（錯的抽象比重複更貴）。
 
+### 4.5 Character schema 重整（Phase 2 施工規格）
+
+以下決策依據 **2026-06-30 備份的 314 筆實測資料**（非文件推測）。舊 schema 把多個正交維度
+擠在同一個字串欄位，導致值域失控（`常駐/限定` 長出 12 種值、`角色定位` 長出 12+ 種）。
+
+#### 4.5.1 角色定位：改為 enum 陣列（一個角色可多個定位）
+
+新角色普遍是多功能的，舊的單一字串欄位只能靠 `妨礙兼破防`、`破防兼輸出`、`加速跟補TP`
+這種複合字串硬湊。改為**固定 6 值的 enum 陣列**：
+
+```prisma
+enum CharacterRole {
+  DPS        @map("輸出")
+  BREAKER    @map("破防")
+  HEALER     @map("補師")
+  BUFFER     @map("增益")
+  DEBUFFER   @map("妨礙")
+  TP_SUPPORT @map("補TP")
+}
+```
+
+**為何用 enum 陣列而非關聯表**：6 個固定標籤、無 per-relation 額外欄位，關聯表是過度設計。
+Postgres 原生陣列 + GIN 索引即可高效篩選。**enum 在 DB 層強制值域**，正是用來根治
+「值域從 6 種失控成 12+ 種」的病根——代價是新增第 7 種定位需要一次 migration，而這正是想要的約束。
+
+（Prisma enum 名稱僅允許 ASCII，中文顯示值靠 `@map`。）
+
+#### 4.5.2 `常駐/限定` 拆成三個正交欄位
+
+舊欄位混了「卡池類別 / 獲取來源 / 初始星級 / 是否絕版」四件事，拆解為：
+
+| 新欄位 | 型別 | 說明 |
+|--------|------|------|
+| `gachaPool` 卡池 | enum | 常駐 / 限定 / FES限定(公主祭典) / 聯名限定 |
+| `acquisitionSource` 獲取來源 | enum | 轉蛋 / 活動(支線可農) / 兌換 等（確切值域 Phase 2 全量盤點後定案）|
+| `initialRarity` 初始星級 | Int | 僅 1 / 2 / 3 |
+
+**`isDiscontinued` 不儲存**——絕版可由 `gachaPool === 聯名限定` 推導，不存可推導的資料。
+
+實測驗證：資料中 8 筆標記「絕版」的角色（卯月、未央、凜、拉姆、雷姆、雷姆(夏日)、
+愛蜜莉雅、愛蜜莉雅(夏日)）**全部是偶像大師與 Re:Zero 聯名角**；另有 1 筆花凜(煉金術)
+標為「聯動限定活動角」。共 9 個聯名角、歷史標記不一致，但「只有聯名會絕版」的規則完全成立。
+→ **Phase 2 資料遷移時，這 8 筆需重新歸類為 `聯名限定`。**
+
+#### 4.5.3 待清理的髒資料
+
+| 欄位 | 髒值 | 處理 |
+|------|------|------|
+| 評級（四個維度）| `T3.5`（1 筆）、`不知道`（1 筆）、null | 遷移時就近歸入合法級距（往上或往下皆可，後續會再調整）|
+| `常駐/限定` | 見 4.5.2 的 8 筆絕版標記 | 改歸 `聯名限定` |
+
+乾淨且值域封閉的欄位（位置 3 值、屬性 5 值、評級 6 值）已於 Phase 1 定義於
+`packages/shared/src/constants/character.ts`。注意**屬性沒有「土屬」**——是「風屬」，舊型別註解有誤。
+
 ---
 
 ## 5. 監控：Prometheus + Grafana + Exporters + Alerting
@@ -412,6 +489,13 @@ model PageSection {
    - **Conventional Commits**（`feat:`/`fix:`/`refactor:`...）+ **commitlint + husky** 強制格式
    - **git-cliff** 從 commit 歷史自動生成 `CHANGELOG.md`（比 changesets 適合——changesets 是為了
      「發布 npm 套件」設計的，網站應用用 commit 驅動的 git-cliff 更順）。
+   - **生成時機（重構期間）**：`CHANGELOG.md` 是生成物，開發期間放著不管；
+     **Phase branch 合回 `main` 前**跑 `pnpm changelog`，以 `chore(release): 更新 CHANGELOG` 提交。
+     `cliff.toml` 已將 `chore(release)` 設為 skip，故該 commit 不會污染 CHANGELOG 本身。
+     （每次 commit 都自動生成會有雞生蛋問題：生成後的提交又要再生成一次。）
+   - **重構完成後**：改為 **tag 驅動**的發版流程（`v[0-9]*`，`cliff.toml` 的 `tag_pattern` 已預留），
+     由版本標籤劃分 CHANGELOG 區塊。屆時再評估 GitHub Actions 自動化
+     （打 tag → 生成 CHANGELOG → 建立 Release），此部分待 Phase 7 上雲後一併設計。
 
 ---
 
@@ -456,22 +540,25 @@ model PageSection {
 
 > 本節是高階階段圖；每個 Phase 的細部施工步驟、分支策略與 multi-agent 用法見 **§13**。
 
-每一階段結束都是可運作狀態，避免長期「兩邊都壞」：
+因網站已停運（§0），各階段不必維持舊站運作；但每階段仍以「該階段產出能實際跑起來」為驗收標準，
+避免累積無法驗證的半成品：
 
 1. **Monorepo 骨架**：pnpm workspace + catalog + turbo + 根目錄工具鏈（husky、commitlint、git-cliff）。
-   先把現有 backend/frontend 原封搬進 `apps/`（React 暫時保留能跑），確認 `turbo dev` 全通。
-2. **packages/database**：Prisma schema 抽出，本地 Docker Postgres 起起來，migration 重整
-   （含 8 合 1 的 `CharacterRecommendation` 新表設計 + 資料搬遷 script）。
-3. **NestJS API**：按 §4 模組逐一移植，**維持 API 路徑相容**（舊 React 前端可以邊接邊驗），
-   加 Swagger、zod 驗證、統一錯誤格式。完成後刪 Express。
-4. **監控**：Prometheus + Grafana 進 compose，API 掛 metrics 模組，建首發 dashboard。
-5. **Vue 前端**：`apps/web` 從零 scaffold，按頁面逐頁移植（建議順序：公開內容頁（Newbie/
-   ReturnPlayer/Shop 這類靜態配置頁最簡單）→ 角色圖鑑（篩選/排序核心）→ 未來視 → 編輯器/
-   管理後台（最複雜，拖拽評級與 autocomplete 最後做）。全部完成後刪 React。
+   舊 `backend/`、`frontend/` 移入 `legacy/`，`apps/` 留給全新實作。
+2. **packages/database**：Prisma schema 抽出並重整（含 8 合 1 的 `CharacterRecommendation`
+   與 `PageSection` 新設計）；本地 Docker Postgres 起起來，`db_backup/*.sql` 灌入，
+   寫資料轉換 script 把舊表資料搬進新結構。
+3. **NestJS API**：按 §4 全新建置（`legacy/backend` 僅作業務規則參考），照 §4.2.1 三層架構，
+   加 Swagger、zod 驗證、統一錯誤格式。**API 形狀重新設計，不受舊路徑約束**。
+4. **監控**：Prometheus + Grafana + exporters 進 compose，API 掛 metrics 模組，建首發 dashboard 與告警規則。
+5. **Vue 前端**：`apps/web` 從零 scaffold，逐頁改寫（`legacy/frontend` 作對照）。建議順序：
+   公開內容頁（Newbie/ReturnPlayer/Shop 這類靜態配置頁最簡單）→ 角色圖鑑（篩選/排序核心）
+   → 未來視 → 編輯器/管理後台（最複雜，拖拽評級與 autocomplete 最後做）。
+   **本階段是 multi-agent 併行的主戰場**（見 §13.2）。
 6. **RBAC + Changelog**：User/role 表與 Guard、update-logs 模組與頁面。
-7. **上雲**：R2 圖片同步 → Supabase 建庫跑 migration + 資料匯入 → Cloudflare Pages 接 repo
-   自動部署 → 後端容器上 Render free → DNS 切換 → Supabase keep-alive 排程。
-8. **收尾**：刪除 `data/excel`、舊 scripts、`db_backup/`，更新 CLAUDE.md 與本文件。
+7. **上雲**（全功能對等後才進行）：R2 圖片同步 → Supabase 建庫跑 migration + 資料匯入 →
+   Cloudflare Pages 接 repo 自動部署 → 後端容器上 Render free → DNS 切換 → Supabase keep-alive 排程。
+8. **收尾**：刪除 `legacy/`、`data/excel`、舊 scripts，更新 CLAUDE.md 與本文件。
 
 ---
 
@@ -536,11 +623,12 @@ model PageSection {
 
 ### 13.1 分支策略：一個 Phase 一條 branch
 
-本重構是「漸進遷移、舊站持續能跑」，剛好對應 §10 的「每階段結束都可運作」。因此：
+網站已停運（§0），`main` 不再背負「隨時可部署」的義務，因此分支策略純粹是為了**施工檢查點**
+而非保護生產環境：
 
-- **一個 Phase 一條 branch**，綠了就合回 `main`（例：`refactor/phase-1-monorepo` → 測通 → merge）。
-- **不開**單一長命 `refactor/v2` branch拖數月——長期分叉會累積成一次恐怖的大合並，也違背「舊站持續能跑」。
-- 每個 Phase 合回 `main` 後，`main` 永遠是「當下最好、能跑」的狀態。
+- **一個 Phase 一條 branch**，該階段驗收通過就合回 `main`（例：`refactor/phase-1-monorepo`）。
+- **不開**單一長命 `refactor/v2` 拖數月——那會累積成一次難以審查的巨大 diff，出錯時也無法
+  二分定位是哪個階段引入的問題。每階段合並讓 `main` 成為一連串可回溯的里程碑。
 - 舊的 feature branch（`clanBattle`、`arena_tst` 等）本次用不到，全部完成後清除。
 - 設計文件（本檔）永遠提交在 `main`，不隨 branch 走，確保各 branch 看到同一份「憲法」。
 
@@ -553,18 +641,23 @@ model PageSection {
 
 ### 13.3 Phase 1 細部步驟（monorepo 骨架）
 
-Phase 1 是地基，幾乎全循序依賴。**核心原則：只搬不改**——先讓新結構跑起來，
-舊 React/Express 原樣保留；真正的改寫留給 Phase 2+。這樣出問題能立刻分辨是「搬移壞的」
-還是「改寫壞的」。
+Phase 1 是地基，幾乎全循序依賴。因網站已停運（§0），**不做「搬移舊 code 讓它繼續跑」**——
+舊實作直接降級為 `legacy/` 參考資料，`apps/` 留白給後續 Phase 全新建置。
+
+因此 Phase 1 的產出是**一個乾淨、可運作的空骨架**，而非「能跑舊站的 monorepo」：
 
 | 步驟 | 做什麼 | 驗證 |
 |------|--------|------|
-| 1.1 | 建 `pnpm-workspace.yaml`（含 catalog）、根 `package.json`、`turbo.json`；定義 `apps/*` `packages/*` | `pnpm install` 成功 |
-| 1.2 | **原封搬移**：`backend/` → `apps/api/`、`frontend/` → `apps/web/`，只改路徑不改程式碼 | 兩邊各自 `pnpm dev` 仍能單獨跑起來 |
-| 1.3 | 兩邊 `package.json` 依賴版本改引用 catalog（`"typescript": "catalog:"` 等） | `pnpm install` 後版本無漂移、能跑 |
-| 1.4 | 抽 `packages/database`：`apps/api/prisma/` 移出成獨立 package，api 改從它 import PrismaClient | api 連 DB、`prisma generate` 正常 |
-| 1.5 | 抽 `packages/config`：共用 `tsconfig` base、eslint config，兩 app 繼承 | lint/build 通過 |
-| 1.6 | 根目錄工具鏈：husky + commitlint（Conventional Commits）+ git-cliff；設定 `turbo dev` 一鍵起前後端 | `turbo dev` 同時起兩服務、commit 格式檢查生效 |
+| 1.1 | 建 `pnpm-workspace.yaml`（packages globs + catalog）、根 `package.json`、`turbo.json` | `pnpm install` 成功、`turbo --version` 可執行 |
+| 1.2 | `backend/` `frontend/` → `legacy/`（不進 workspace）；建立空的 `apps/`、`packages/`、`infra/` 骨架 | `pnpm install` 不掃到 legacy、工作目錄結構符合 §2.2 |
+| 1.3 | 建 `packages/config`：共用 `tsconfig` base（strict）、eslint flat config、prettier 設定 | 其他 package 可 extends、lint 與 format 可執行 |
+| 1.4 | 建 `packages/shared` 空殼（zod schema 與共用常數的家，Phase 2/3 才填內容） | 可被 workspace 引用（`workspace:*`）|
+| 1.5 | 根目錄工具鏈：husky + commitlint（Conventional Commits）+ git-cliff 設定檔 | 違規格式的 commit 被擋下、`git-cliff` 能產出 CHANGELOG |
+| 1.6 | `.env.example`、`.gitignore` 補齊（`.turbo/`、`legacy/` 的 node_modules 等） | 乾淨的 `git status` |
+
+**catalog 的內容**：只放**新技術棧**會用到的依賴。舊 React/Express 的依賴不進 catalog——
+`legacy/` 不被 pnpm 安裝，列進去只是噪音。catalog 隨 Phase 2/3/5 逐步長出（加 NestJS 時補
+NestJS 條目、加 Vue 時補 Vue 條目），而不是一次寫死。
 
 ### 13.4 各 Phase 對應 branch 一覽
 
@@ -582,4 +675,5 @@ Phase 1 是地基，幾乎全循序依賴。**核心原則：只搬不改**—�
 ---
 
 **最後更新**: 2026-07-21
-**狀態**: 架構定稿，Phase 1 待開工（分支策略與施工步驟見 §13）
+**狀態**: 架構定稿，Phase 1 進行中。重構前提見 §0（網站已停運，舊碼降級為 `legacy/` 參考），
+分支策略與施工步驟見 §13。

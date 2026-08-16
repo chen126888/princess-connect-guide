@@ -1,0 +1,34 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+# 注意：legacy/ 刻意不列入 —— 舊實作僅供參考，不安裝、不編譯（見 ARCHITECTURE.md §0）
+
+# ── catalog：依賴版本的單一來源（見 ARCHITECTURE.md §2.1）
+# 各 package 的 package.json 只寫 "xxx": "catalog:"，版本一律在這裡改。
+#
+# 只放「新技術棧」實際用到的依賴，隨 Phase 逐步長出：
+#   Phase 2 → Prisma           Phase 3 → NestJS 系列
+#   Phase 5 → Vue 系列          Phase 4 → prom-client 等
+catalog:
+  # ── 工具鏈（Phase 1）
+  typescript: ^5.8.3
+  '@types/node': ^24.1.0
+
+  # ── Lint / Format（Phase 1）
+  eslint: ^9.30.1
+  '@eslint/js': ^9.30.1
+  typescript-eslint: ^8.35.1
+  globals: ^16.3.0
+  prettier: ^3.4.2
+  eslint-config-prettier: ^10.0.1
+
+  # ── Git 工具鏈（Phase 1）
+  husky: ^9.1.7
+  lint-staged: ^15.3.0
+  '@commitlint/cli': ^19.6.1
+  '@commitlint/config-conventional': ^19.6.0
+  git-cliff: ^2.7.0
+
+  # ── 資料層（Phase 2）
+  prisma: ^6.12.0
+  '@prisma/client': ^6.12.0
