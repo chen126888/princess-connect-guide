@@ -9,6 +9,8 @@
  */
 export default {
   extends: ['@commitlint/config-conventional'],
+  // 略過 merge commit（如 `Merge branch ...`）—— 合併節點不受 Conventional Commits 約束
+  ignores: [(message) => message.startsWith('Merge ')],
   rules: {
     // commit 訊息以中文撰寫，大小寫規則對 CJK 無意義
     'subject-case': [0],
